@@ -61,6 +61,16 @@ class Log {
 		return this[$LEVELS];
 	}
 
+	get levelNames() {
+		return Lodash.uniq(Lodash.flatten(this[$LEVELS].map((level)=>{
+			return [
+				level.name.toLowerCase(),
+				level.name.toUpperCase(),
+				level.name.slice(0,1).toUpperCase()+level.name.slice(1).toLowerCase()
+			];
+		})));
+	}
+
 	get definedWriters() {
 		return Lodash.extend(this[$DEFINED_WRITERS]);
 	}
@@ -119,6 +129,8 @@ class Log {
 
 	start() {
 		if (this.running) return;
+
+		this[$HISTORY] = [];
 
 		if (this[$BACKLOG]) {
 			this[$BACKLOG].forEach((logentry)=>{
@@ -196,7 +208,6 @@ class Log {
 const initLevels = function initLevels() {
 	// If we have pre-existing levels, remove the functions...
 	this[$LEVELS].forEach((level)=>{
-		delete this[level.name];
 		delete this[level.name.toLowerCase()];
 		delete this[level.name.toUpperCase()];
 		delete this[level.name.slice(0,1).toUpperCase()+level.name.slice(1).toLowerCase()];
@@ -220,7 +231,6 @@ const initLevels = function initLevels() {
 	this[$LEVELS].forEach((level)=>{
 		let lf = this.log.bind(this,level);
 
-		this[level.name] = lf;
 		this[level.name.toLowerCase()] = lf;
 		this[level.name.toUpperCase()] = lf;
 		this[level.name.slice(0,1).toUpperCase()+level.name.slice(1).toLowerCase()] = lf;
@@ -282,7 +292,7 @@ const write = function write(logentry) {
 
 	this[$WRITERS].forEach((writer)=>{
 		if (!writer.takesLevel(logentry.level)) return;
-		writer.write(writer.format(logentry));
+		writer.write(writer.format(logentry),logentry); // message,logentry
 	});
 };
 

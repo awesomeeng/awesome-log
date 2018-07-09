@@ -79,7 +79,7 @@ class LogWriter {
 		return this.formatter && this.formatter.format && this.formatter.format(logentry) || logentry;
 	}
 
-	write(/*message*/) {
+	write(/*message,logentry*/) {
 		throw new Error("Must be overloaded by subclass.");
 	}
 
