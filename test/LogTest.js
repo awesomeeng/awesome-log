@@ -22,18 +22,18 @@ describe("Log",()=>{
 		Log.stop();
 	});
 
-	it("Log.initialize()",()=>{
+	it("initialize",()=>{
 		Log.init();
 		assert(Log.initialized);
 	});
 
-	it("Log.start()",()=>{
+	it("start",()=>{
 		assert(!Log.running);
 		Log.start();
 		assert(Log.running);
 	});
 
-	it("Log.stop()",()=>{
+	it("stop",()=>{
 		assert(!Log.running);
 		Log.start();
 		assert(Log.running);
@@ -41,7 +41,7 @@ describe("Log",()=>{
 		assert(!Log.running);
 	});
 
-	it("Log.log()",()=>{
+	it("log",()=>{
 		Log.start();
 		Log.stop();
 		Log.init({
@@ -80,7 +80,31 @@ describe("Log",()=>{
 		Log.stop();
 	});
 
-	it("Log.levels()",function(){
+	it("pause/resume",function(){
+		Log.stop();
+		Log.init({
+			writers: [],
+			disableLoggingNotices: true,
+		});
+		Log.start();
+		assert.equal(Log.history.length,0);
+		Log.info("test","Testing pause/resume 1.");
+		assert.equal(Log.history.length,1);
+		Log.info("test","Testing pause/resume 2.");
+		assert.equal(Log.history.length,2);
+		Log.pause();
+		assert.equal(Log.history.length,2);
+		Log.info("test","Testing pause/resume 3.");
+		assert.equal(Log.history.length,2);
+		Log.info("test","Testing pause/resume 4.");
+		assert.equal(Log.history.length,2);
+		Log.resume();
+		assert.equal(Log.history.length,4);
+		Log.info("test","Testing pause/resume 5.");
+		assert.equal(Log.history.length,5);
+	});
+
+	it("levels",function(){
 		Log.stop();
 		Log.init({
 			writers: [],
@@ -165,16 +189,18 @@ describe("Log",()=>{
 		assert(Log.history.length===0);
 	});
 
-	it("Log.events",function(done){
+	it("events",function(done){
 		let x = 0;
 
 		Log.stop();
 
-		Log.once("initialized",()=>x += 1);
-		Log.once("started",()=>x += 2);
-		Log.once("log",()=>x += 3);
-		Log.once("stopped",()=>{
-			assert.equal(x,6);
+		Log.once("initialized",() => x+=1);
+		Log.once("started",() => x+=2);
+		Log.once("log",() => x+=3);
+		Log.once("paused",() => x+=5);
+		Log.once("resumed",() => x+=7);
+		Log.once("stopped",() => {
+			assert.equal(x,18);
 			done();
 		});
 
@@ -183,7 +209,10 @@ describe("Log",()=>{
 			disableLoggingNotices: true
 		});
 		Log.start();
-		Log.debug("test","testing events.");
+		Log.debug("test","testing events 1.");
+		Log.pause();
+		Log.debug("test","testing events 2.");
+		Log.resume();
 		Log.stop();
 	});
 

@@ -18,6 +18,7 @@ const $HISTORY = Symbol("history");
 const $FUNCTIONS = Symbol("functions");
 const $LEVELS = Symbol("levels");
 const $WRITERS = Symbol("writers");
+const $RUNNING = Symbol("running");
 
 class Log extends Events {
 	constructor() {
@@ -31,6 +32,7 @@ class Log extends Events {
 		this[$FUNCTIONS] = {};
 		this[$LEVELS] = [];
 		this[$WRITERS] = [];
+		this[$RUNNING] = false;
 	}
 
 	get LogWriter() {
@@ -46,7 +48,7 @@ class Log extends Events {
 	}
 
 	get running() {
-		return this[$BACKLOG]===null;
+		return this[$RUNNING];
 	}
 
 	get config() {
@@ -143,6 +145,7 @@ class Log extends Events {
 	start() {
 		if (this.running) return;
 
+		this[$RUNNING] = true;
 		this[$HISTORY] = [];
 
 		if (this[$BACKLOG]) {
@@ -159,17 +162,32 @@ class Log extends Events {
 	stop() {
 		if (!this.running) return;
 		this[$BACKLOG] = this[$BACKLOG] || [];
+		this[$RUNNING] = false;
 
 		if (!this.config.disableLoggingNotices) this.log(this.config.loggingNoticesLevel,"AwesomeLog","Log stopped.");
 		this.emit("stopped");
 	}
 
 	pause() {
+		if (!this.running) return;
+		this[$BACKLOG] = this[$BACKLOG] || [];
 
+		if (!this.config.disableLoggingNotices) this.log(this.config.loggingNoticesLevel,"AwesomeLog","Log paused.");
+		this.emit("paused");
 	}
 
 	resume() {
+		if (!this.running) return;
 
+		if (this[$BACKLOG]) {
+			this[$BACKLOG].forEach((logentry)=>{
+				write.call(this,logentry);
+			});
+		}
+		this[$BACKLOG] = null;
+
+		if (!this.config.disableLoggingNotices) this.log(this.config.loggingNoticesLevel,"AwesomeLog","Log resumed.");
+		this.emit("resumed");
 	}
 
 	clearBacklog() {
@@ -219,7 +237,7 @@ class Log extends Events {
 			pid: process.pid
 		};
 
-		if (!this.running) this[$BACKLOG].push(logentry);
+		if (this[$BACKLOG]) this[$BACKLOG].push(logentry);
 		else write.call(this,logentry);
 
 		this.emit("log",logentry);
