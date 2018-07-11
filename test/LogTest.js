@@ -216,6 +216,46 @@ describe("Log",()=>{
 		Log.stop();
 	});
 
+	it("defaultFormatter",function(){
+		Log.start();
+		Log.stop();
+		Log.init({
+			// writers: [],
+			historyFormatter: "default",
+			disableLoggingNotices: true,
+		});
+		Log.start();
+
+		Log.info("Test","Testing argument formatting...",null);
+		assert(Log.history[0].endsWith("| null"));
+		Log.clearHistory();
+
+		Log.info("Test","Testing argument formatting...",true);
+		assert(Log.history[0].endsWith("| true"));
+		Log.clearHistory();
+
+		Log.info("Test","Testing argument formatting...",false);
+		assert(Log.history[0].endsWith("| false"));
+		Log.clearHistory();
+
+		Log.info("Test","Testing argument formatting...",123);
+		assert(Log.history[0].endsWith("| 123"));
+		Log.clearHistory();
+
+		Log.info("Test","Testing argument formatting...","abc");
+		assert(Log.history[0].endsWith("| abc"));
+		Log.clearHistory();
+
+		Log.info("Test","Testing argument formatting...",[1,"2","three"]);
+		Log.clearHistory();
+
+		Log.info("Test","Testing argument formatting...",{one:1,two:"2",three:"three"});
+		Log.clearHistory();
+
+		Log.info("Test","Testing argument formatting...",new Error("test error."));
+		Log.clearHistory();
+	});
+
 
 
 });

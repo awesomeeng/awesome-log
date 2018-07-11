@@ -190,8 +190,8 @@ class Log extends Events {
 		this.emit("resumed");
 	}
 
-	clearBacklog() {
-
+	clearHistory() {
+		this[$HISTORY] = [];
 	}
 
 	getLevel(level) {
@@ -226,7 +226,7 @@ class Log extends Events {
 		if (!message) throw new Error("Missing message argument.");
 		if (typeof message!=="string") throw new Error("Invalid message argument.");
 
-		args = Lodash.compact(Lodash.flatten([args]));
+		args = Lodash.flatten([args]);
 
 		let logentry = {
 			level,
