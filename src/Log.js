@@ -124,8 +124,8 @@ class Log extends Events {
 			disableLoggingNotices: false,
 			loggingNoticesLevel: "info",
 			writers: [{
-				type: "default",
 				name: "console",
+				type: "default",
 				levels: "*",
 				formatter: "default",
 				options: {}
@@ -300,12 +300,11 @@ const initWriters = function initWriters() {
 		if (!type) throw new Error("Missing writer type.");
 		type = type.toLowerCase();
 
-		let levels = writer.levels || null;
+		let levels = writer.levels || "*";
 		if (!levels) throw new Error("Missing writer levels.");
 		levels = levels.toLowerCase();
 
-		let formatter = writer.formatter || null;
-		if (!formatter) formatter = "default";
+		let formatter = writer.formatter || "default";
 		if (typeof formatter==="string") formatter = this[$DEFINED_FORMATTERS][formatter.toLowerCase()];
 		if (!formatter) throw new Error("Missing writer formatter '"+writer.formatter+"'.");
 		if (!(formatter instanceof LogFormatter)) throw new Error("Invalid writer formatter '"+writer.formatter+"', must be of type LogFormatter.");
