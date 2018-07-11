@@ -13,7 +13,9 @@ const Log = require("../src/Log");
 describe("Log",()=>{
 	beforeEach(()=>{
 		Log.stop();
-		Log.init({});
+		Log.init({
+			disableLoggingNotices: true
+		});
 	});
 
 	afterEach(()=>{
@@ -44,7 +46,8 @@ describe("Log",()=>{
 		Log.stop();
 		Log.init({
 			// writers: [],
-			historyFormatter: "js"
+			historyFormatter: "js",
+			disableLoggingNotices: true,
 		});
 		Log.start();
 
@@ -82,7 +85,8 @@ describe("Log",()=>{
 		Log.init({
 			writers: [],
 			levels: "banana,aPPle,orangE",
-			historyFormatter: "js"
+			historyFormatter: "js",
+			disableLoggingNotices: true
 		});
 
 		assert.equal(Log.levelNames.length,9);
@@ -149,7 +153,8 @@ describe("Log",()=>{
 		Log.init({
 			writers: [],
 			levels: "banana,apple,orange,gar$bage,spa ced",
-			historyFormatter: "js"
+			historyFormatter: "js",
+			disableLoggingNotices: true
 		});
 		Log.start();
 
@@ -158,6 +163,27 @@ describe("Log",()=>{
 		});
 
 		assert(Log.history.length===0);
+	});
+
+	it("Log.events",function(done){
+		let x = 0;
+
+		Log.stop();
+
+		Log.once("initialized",()=>x += 1);
+		Log.once("started",()=>x += 2);
+		Log.once("log",()=>x += 3);
+		Log.once("stopped",()=>{
+			assert.equal(x,6);
+			done();
+		});
+
+		Log.init({
+			disableLoggingNotices: true
+		});
+		Log.start();
+		Log.debug("test","testing events.");
+		Log.stop();
 	});
 
 

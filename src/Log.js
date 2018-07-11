@@ -2,6 +2,8 @@
 
 "use strict";
 
+const Events = require("events");
+
 const Lodash = require("lodash");
 
 const LogLevel = require("./LogLevel");
@@ -17,8 +19,10 @@ const $FUNCTIONS = Symbol("functions");
 const $LEVELS = Symbol("levels");
 const $WRITERS = Symbol("writers");
 
-class Log {
+class Log extends Events {
 	constructor() {
+		super();
+
 		this[$CONFIG] = null;
 		this[$DEFINED_WRITERS] = {};
 		this[$DEFINED_FORMATTERS] = {};
@@ -89,6 +93,8 @@ class Log {
 		if (this[$DEFINED_FORMATTERS][name]) throw new Error("Formatter already defined.");
 
 		this[$DEFINED_FORMATTERS][name] = new konstructor(this);
+
+		this.emit("formatter_added",name);
 	}
 
 	defineWriter(name,konstructor) {
@@ -101,6 +107,8 @@ class Log {
 		if (this[$DEFINED_WRITERS][name]) throw new Error("Writer already defined.");
 
 		this[$DEFINED_WRITERS][name] = konstructor;
+
+		this.emit("writer_added",name);
 	}
 
 	init(config) {
@@ -110,14 +118,16 @@ class Log {
 			history: true,
 			historySizeLimit: 100,
 			historyFormatter: "default",
+			levels: "access,error,warn,info,debug",
+			disableLoggingNotices: false,
+			loggingNoticesLevel: "info",
 			writers: [{
 				type: "default",
 				name: "console",
 				levels: "*",
 				formatter: "default",
 				options: {}
-			}],
-			levels: "access,error,warn,info,debug"
+			}]
 		},config||{});
 
 		this[$CONFIG].historyFormatter = this[$DEFINED_FORMATTERS][this[$CONFIG].historyFormatter.toLowerCase()];
@@ -125,6 +135,9 @@ class Log {
 
 		initLevels.call(this);
 		initWriters.call(this);
+
+		if (!this.config.disableLoggingNotices) this.log(this.config.loggingNoticesLevel,"AwesomeLog","Log initialized.");
+		this.emit("initialized",config);
 	}
 
 	start() {
@@ -138,11 +151,17 @@ class Log {
 			});
 		}
 		this[$BACKLOG] = null;
+
+		if (!this.config.disableLoggingNotices) this.log(this.config.loggingNoticesLevel,"AwesomeLog","Log started.");
+		this.emit("started");
 	}
 
 	stop() {
 		if (!this.running) return;
 		this[$BACKLOG] = this[$BACKLOG] || [];
+
+		if (!this.config.disableLoggingNotices) this.log(this.config.loggingNoticesLevel,"AwesomeLog","Log stopped.");
+		this.emit("stopped");
 	}
 
 	pause() {
@@ -202,6 +221,8 @@ class Log {
 
 		if (!this.running) this[$BACKLOG].push(logentry);
 		else write.call(this,logentry);
+
+		this.emit("log",logentry);
 	}
 }
 
