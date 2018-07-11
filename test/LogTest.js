@@ -45,7 +45,7 @@ describe("Log",()=>{
 		Log.start();
 		Log.stop();
 		Log.init({
-			// writers: [],
+			writers: [],
 			historyFormatter: "js",
 			disableLoggingNotices: true,
 		});
@@ -179,6 +179,7 @@ describe("Log",()=>{
 		});
 
 		Log.init({
+			writers: [],
 			disableLoggingNotices: true
 		});
 		Log.start();
