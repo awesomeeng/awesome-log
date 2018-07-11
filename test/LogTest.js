@@ -220,8 +220,7 @@ describe("Log",()=>{
 		Log.start();
 		Log.stop();
 		Log.init({
-			// writers: [],
-			historyFormatter: "default",
+			writers: [],
 			disableLoggingNotices: true,
 		});
 		Log.start();

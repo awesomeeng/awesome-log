@@ -223,10 +223,15 @@ class Log extends Events {
 		if (typeof system!=="string") throw new Error("Invalid system argument.");
 		system = system.replace(/[^\w\d_\-.]/g,""); // strip out any non-alpha characters. _ - and . are also allowed.
 
+		args = Lodash.flatten([args]); // has to come before message check
+
 		if (!message) throw new Error("Missing message argument.");
+		if (message instanceof Error) {
+			args.unshift(message);
+			message = message.message;
+		}
 		if (typeof message!=="string") throw new Error("Invalid message argument.");
 
-		args = Lodash.flatten([args]);
 
 		let logentry = {
 			level,
