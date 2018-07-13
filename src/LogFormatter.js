@@ -2,7 +2,7 @@
 
 "use strict";
 
-const $PARENT = Symbol("type");
+const $PARENT = Symbol("parent");
 
 class LogFormatter {
 	constructor(parent) {
@@ -10,7 +10,7 @@ class LogFormatter {
 		this[$PARENT] = parent;
 	}
 
-	get type() {
+	get parent() {
 		return this[$PARENT];
 	}
 
