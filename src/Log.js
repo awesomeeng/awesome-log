@@ -353,6 +353,7 @@ instance.defineFormatter("default",require("./formatters/DefaultFormatter"));
 instance.defineFormatter("json",require("./formatters/JSONFormatter"));
 instance.defineFormatter("js",require("./formatters/JSObjectFormatter"));
 instance.defineFormatter("jsobject",require("./formatters/JSObjectFormatter"));
+instance.defineFormatter("csv",require("./formatters/CSVFormatter"));
 
 // export the instance.
 module.exports = instance;
