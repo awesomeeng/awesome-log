@@ -121,8 +121,14 @@ You may also use the `Log.log()` method which takes the level as the first argum
 
 ## Writing a Custom Log Formatter
 
+## The Awesome Engineering Company
+
+AwesomeLog is written and maintained by The Awesome Engineering Company. We belive in building clean, configurable, creative software for engineers and architects and customers.
+
+To learn more about The Awesome Engineering Company and our suite of products, visit us on the web at https://awesomeeng.com.
+
 ## Support and Help
 
 ## License
 
-AwesomeLog is released un the MIT License. Please read the  [LICENSE](https://github.com/awesomeeng/AwesomeLog/blob/master/README.md) file for details.
+AwesomeLog is released under the MIT License. Please read the  [LICENSE](https://github.com/awesomeeng/AwesomeLog/blob/master/README.md) file for details.
