@@ -1,8 +1,10 @@
 # AwesomeLog
 
-AwesomeLog is a Log System for Enterprise Ready nodejs applications. It provides a basic out of the box Logging solution that is ready to go with zero configuration, or a highly configurable logging solution that gives you the power to do your logging right. It's up to you.
+AwesomeLog is a Log System for Enterprise Ready nodejs applications. It provides a basic out of the box Logging solution that is ready to go with zero configuration, or a highly configurable logging solution that gives you the power to do your logging right.
 
-## Feature
+It's up to you.
+
+## Features
 
 AwesomeLog provides...
  - A Basic out of the box Logging solution that is ready to go with zero configuration, or a highly configurable logging solution that gives you the power to do your logging right. It's up to you.
@@ -17,7 +19,7 @@ AwesomeLog provides...
    - Use one of our out of the box formatters: Console, File
    - Or write your own custon Log Writer.
    - Each writer can have its own Log Formatter.
-   - Each writer can display all log message, or limit to a specific set of log levels.
+   - Each writer can display messages for all log levels, or limit to a specific set of log levels.
  - Colorized Console Logging
  - Log History for seeing a pre-defined number of previous log messages programatically.
  - Pause/Resume control over logging.
@@ -27,7 +29,7 @@ AwesomeLog provides...
 
 ## Why Another Log Solution?
 
-AwesomeLog is similar to Winston, Log, Log4js, etc. and those are all good products.  AwesomeLog just provides a different, better, method of Logging. If you want to use Winston/Log/Log4js/whatever, that's perfectly fine by us. But if you want to try something a little cleaner, with a bit more features, consider AwesomeLog.
+AwesomeLog is similar to Winston, Log, Log4js, etc. and those are all good products.  AwesomeLog just provides a different method of Logging; one we think is cleaner and more stable. If you want to use Winston/Log/Log4js/whatever, that's perfectly fine by us. But if you want to try something a little cleaner, with a bit more features, consider AwesomeLog.
 
 ## Installation
 
@@ -38,7 +40,7 @@ Couldn't be easier.
 
 ## Setup
 
-It is best if you configure AwesomeLog at the top of your application. We recommened you do this immediately near the top of your main file.
+It is best if you configure AwesomeLog at the top of your application. We recommened you do this immediately near the top of your main node entry point.
 
 Setup has three steps:
 
@@ -94,7 +96,7 @@ The log levels you configure (Access, Error, Warn, Info, Debug by default) all h
 	Log.debug(...)
 ```
 
-You may also use the `Log.log()`` method which takes the level as the first argument, so you can programmatically use it.
+You may also use the `Log.log()` method which takes the level as the first argument, so you can programmatically use it.
 ```
 	Log.log("level","system","message");
 ```
@@ -123,4 +125,4 @@ You may also use the `Log.log()`` method which takes the level as the first argu
 
 ## License
 
-AwesomeLog is released un the MIT License. Please read it at [https://github.com/awesomeeng/AwesomeLog/blob/master/README.md](LICENSE).
+AwesomeLog is released un the MIT License. Please read it at (https://github.com/awesomeeng/AwesomeLog/blob/master/README.md)[LICENSE].
