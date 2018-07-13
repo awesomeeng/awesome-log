@@ -125,4 +125,4 @@ You may also use the `Log.log()` method which takes the level as the first argum
 
 ## License
 
-AwesomeLog is released un the MIT License. Please read it at [LICENSE](https://github.com/awesomeeng/AwesomeLog/blob/master/README.md).
+AwesomeLog is released un the MIT License. Please read the  [LICENSE](https://github.com/awesomeeng/AwesomeLog/blob/master/README.md) file for details.
