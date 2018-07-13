@@ -131,4 +131,4 @@ To learn more about The Awesome Engineering Company and our suite of products, v
 
 ## License
 
-AwesomeLog is released under the MIT License. Please read the  [LICENSE](https://github.com/awesomeeng/AwesomeLog/blob/master/README.md) file for details.
+AwesomeLog is released under the MIT License. Please read the  [LICENSE](https://github.com/awesomeeng/AwesomeLog/blob/master/LICENSE) file for details.
