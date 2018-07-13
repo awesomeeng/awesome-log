@@ -68,13 +68,9 @@ class Log extends Events {
 	}
 
 	get levelNames() {
-		return Lodash.uniq(Lodash.flatten(this[$LEVELS].map((level)=>{
-			return [
-				level.name.toLowerCase(),
-				level.name.toUpperCase(),
-				level.name.slice(0,1).toUpperCase()+level.name.slice(1).toLowerCase()
-			];
-		})));
+		return this[$LEVELS].map((level)=>{
+			return level.name;
+		});
 	}
 
 	get definedWriters() {
@@ -123,20 +119,20 @@ class Log extends Events {
 			levels: "access,error,warn,info,debug",
 			disableLoggingNotices: false,
 			loggingNoticesLevel: "info",
-			writers: [{
-				name: "console",
-				type: "default",
-				levels: "*",
-				formatter: "default",
-				options: {}
-			}]
+			writers: []
 		},config||{});
+		if (this[$CONFIG].writers.length<1) this[$CONFIG].writers.push({
+			name: "console",
+			type: "default",
+			levels: "*",
+			formatter: "default",
+			options: {}
+		});
+		
+		initLevels.call(this);
 
 		this[$CONFIG].historyFormatter = this[$DEFINED_FORMATTERS][this[$CONFIG].historyFormatter.toLowerCase()];
 		if (!this[$CONFIG].historyFormatter) throw new Error("Invalid history formatter.");
-
-		initLevels.call(this);
-		initWriters.call(this);
 
 		if (!this.config.disableLoggingNotices) this.log(this.config.loggingNoticesLevel,"AwesomeLog","Log initialized.");
 		this.emit("initialized",config);
@@ -147,6 +143,8 @@ class Log extends Events {
 
 		this[$RUNNING] = true;
 		this[$HISTORY] = [];
+
+		initWriters.call(this);
 
 		if (this[$BACKLOG]) {
 			this[$BACKLOG].forEach((logentry)=>{
@@ -163,6 +161,11 @@ class Log extends Events {
 		if (!this.running) return;
 		this[$BACKLOG] = this[$BACKLOG] || [];
 		this[$RUNNING] = false;
+
+		this[$WRITERS].forEach((writer)=>{
+			writer.flush();
+			writer.close();
+		});
 
 		if (!this.config.disableLoggingNotices) this.log(this.config.loggingNoticesLevel,"AwesomeLog","Log stopped.");
 		this.emit("stopped");
@@ -343,10 +346,14 @@ const write = function write(logentry) {
 let instance = new Log();
 
 // define built in writers
+instance.defineWriter("null",require("./writers/NullWriter"));
+instance.defineWriter("nullwriter",require("./writers/NullWriter"));
 instance.defineWriter("default",require("./writers/ConsoleWriter"));
 instance.defineWriter("console",require("./writers/ConsoleWriter"));
 instance.defineWriter("consolewriter",require("./writers/ConsoleWriter"));
 instance.defineWriter("stdout",require("./writers/ConsoleWriter"));
+instance.defineWriter("file",require("./writers/FileWriter"));
+instance.defineWriter("filewriter",require("./writers/FileWriter"));
 
 // define built in formatters
 instance.defineFormatter("default",require("./formatters/DefaultFormatter"));
