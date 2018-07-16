@@ -7,6 +7,8 @@ const FS = require("fs");
 
 const Lodash = require("lodash");
 const Moment = require("moment");
+const Mkdirp = require("mkdirp");
+const Glob = require("glob");
 
 const AwesomeUtils  = require("AwesomeUtils");
 
@@ -25,7 +27,7 @@ class FileWriter extends LogWriter {
 
 		super(parent,"File",name,levels,formatter,options);
 
-		this[$ROOT] = Path.resolve(process.cwd());
+		this[$ROOT] = Path.resolve(process.cwd()).replace(/\\|\\\\/g,"/");
 		this[$FILE] = null;
 		this[$FILENAME] = null;
 
@@ -77,7 +79,7 @@ const openLogFile = function openLogFile(filename) {
 	this[$FILENAME] = filename;
 
 	let dir = Path.dirname(this[$FILENAME]);
-	if (!AwesomeUtils.FS.existsSync(dir)) FS.mkdirSync(dir);
+	if (!AwesomeUtils.FS.existsSync(dir)) Mkdirp.sync(dir);
 
 	this[$FILE] = FS.openSync(this[$FILENAME],"a");
 };
@@ -87,6 +89,7 @@ const closeLogFile = function closeLogFile() {
 
 	FS.closeSync(this[$FILE]);
 	this[$FILE] = null;
+	this[$FILENAME] = null;
 
 	housekeeping.call(this);
 };
@@ -105,12 +108,12 @@ const housekeeping = function housekeeping() {
 	if (!this.options.filename.match(/\{[\w\d-._]+\}/)) return;
 
 	let duration = AwesomeUtils.Date.duration(this.options.housekeeping);
-	let path = Path.resolve(this[$ROOT],this.options.filename);
+	let path = Path.resolve(this[$ROOT],this.options.filename).replace(/\\|\\\\/g,"/");
 
-	let dir = Path.dirname(path);
+	let dir = this[$ROOT];
 	if (!AwesomeUtils.FS.existsSync(dir)) return;
 
-	let filename = Path.basename(path);
+	let filename = this.options.filename.replace(/\\|\\\\/g,"/");
 	filename = filename.split(/\{[\w\d-._]+\}/g);
 	filename = filename.map((filename)=>{
 		return filename.replace(/\./g,"\\.");
@@ -118,16 +121,16 @@ const housekeeping = function housekeeping() {
 	filename = filename.join("(.+?)");
 	let matcher = new RegExp("^"+filename+"$");
 
-	let files = FS.readdirSync(dir);
+	let files = Glob.sync(dir+"/**");
 	files.forEach((file)=>{
-		if (file===this[$FILENAME]) return;
+		let full = Path.resolve(dir,file);
+		if (full===this[$FILENAME]) return;
 
 		let match = matcher.exec(file);
 		if (!match) return;
 
 		let dates = [...match];
 		dates.shift();
-
 		let old = dates.every((date)=>{
 			if (!date) return;
 
@@ -140,7 +143,13 @@ const housekeeping = function housekeeping() {
 		});
 
 		if (old) {
-			FS.unlinkSync(file);
+			try {
+				// console.log("remove "+file);
+				FS.unlinkSync(full);
+			}
+			catch (ex) {
+				if (!ex.message.startsWith("ENOENT")) throw ex;
+			}
 		}
 	});
 };
