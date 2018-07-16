@@ -3,12 +3,21 @@
 "use strict";
 
 const Events = require("events");
+const Process = require("process");
 
 const Lodash = require("lodash");
 
 const LogLevel = require("./LogLevel");
 const LogWriter = require("./LogWriter");
 const LogFormatter = require("./LogFormatter");
+
+let Worker;
+try {
+	Worker = require('worker_threads');
+}
+catch (ex) {
+	Worker = null;
+}
 
 const $CONFIG = Symbol("config");
 const $DEFINED_WRITERS = Symbol("defined_writers");
@@ -19,6 +28,7 @@ const $FUNCTIONS = Symbol("functions");
 const $LEVELS = Symbol("levels");
 const $WRITERS = Symbol("writers");
 const $RUNNING = Symbol("running");
+const $SUBPROCESSES = Symbol("subprocesshandler");
 
 class Log extends Events {
 	constructor() {
@@ -33,6 +43,7 @@ class Log extends Events {
 		this[$LEVELS] = [];
 		this[$WRITERS] = [];
 		this[$RUNNING] = false;
+		this[$SUBPROCESSES] = new Map();
 	}
 
 	get LogWriter() {
@@ -117,18 +128,18 @@ class Log extends Events {
 			historySizeLimit: 100,
 			historyFormatter: "default",
 			levels: "access,error,warn,info,debug",
-			disableLoggingNotices: false,
+			disableLoggingNotices: isSubProcess() ? true : false,
 			loggingNoticesLevel: "info",
 			writers: []
 		},config||{});
 		if (this[$CONFIG].writers.length<1) this[$CONFIG].writers.push({
 			name: "console",
-			type: "default",
+			type:  isSubProcess() ? "subprocess" : "default",
 			levels: "*",
-			formatter: "default",
+			formatter: isSubProcess() ? "subprocess" : "default",
 			options: {}
 		});
-		
+
 		initLevels.call(this);
 
 		this[$CONFIG].historyFormatter = this[$DEFINED_FORMATTERS][this[$CONFIG].historyFormatter.toLowerCase()];
@@ -146,6 +157,11 @@ class Log extends Events {
 
 		initWriters.call(this);
 
+		[...this[$SUBPROCESSES].keys()].forEach((subprocess)=>{
+			this[$SUBPROCESSES].delete(subprocess);
+			this.captureSubProcess(subprocess);
+		});
+
 		if (this[$BACKLOG]) {
 			this[$BACKLOG].forEach((logentry)=>{
 				write.call(this,logentry);
@@ -162,10 +178,17 @@ class Log extends Events {
 		this[$BACKLOG] = this[$BACKLOG] || [];
 		this[$RUNNING] = false;
 
+		[...this[$SUBPROCESSES].keys()].forEach((subprocess)=>{
+			this.releaseSubProcess(subprocess);
+			this[$SUBPROCESSES].set(subprocess,null);
+		});
+
 		this[$WRITERS].forEach((writer)=>{
 			writer.flush();
 			writer.close();
 		});
+
+
 
 		if (!this.config.disableLoggingNotices) this.log(this.config.loggingNoticesLevel,"AwesomeLog","Log stopped.");
 		this.emit("stopped");
@@ -250,7 +273,29 @@ class Log extends Events {
 
 		this.emit("log",logentry);
 	}
+
+	captureSubProcess(subprocess) {
+		if (!subprocess) return;
+		if (!subprocess.on) return;
+		if (this[$SUBPROCESSES].has(subprocess)) return;
+
+		this[$SUBPROCESSES].set(subprocess,subProcessHandler.bind(this));
+		subprocess.on("message",this[$SUBPROCESSES].get(subprocess));
+	}
+
+	releaseSubProcess(subprocess) {
+		if (!subprocess) return;
+		if (!subprocess.off) return;
+		if (!this[$SUBPROCESSES].has(subprocess)) return;
+
+		subprocess.off("message",this[$SUBPROCESSES].get(subprocess));
+		this[$SUBPROCESSES].delete(subprocess);
+	}
 }
+
+const isSubProcess = function isSubProcess() {
+	return !!Process.channel || Worker && Worker.parentPort && Worker.parentPort.postMessage || false;
+};
 
 const initLevels = function initLevels() {
 	// If we have pre-existing levels, remove the functions...
@@ -342,12 +387,24 @@ const write = function write(logentry) {
 	});
 };
 
+const subProcessHandler = function subProcessHandler(message) {
+	if (!message) return;
+	if (!message.cmd) return;
+	if (!message.cmd==="AwesomeLog") return;
+
+	let logentry = message.logentry;
+	this.getLevel(logentry.level); // cuases an exception of the process used a level we dont know.
+
+	this.log(logentry);
+};
+
 // create our singleton instance
 let instance = new Log();
 
 // define built in writers
 instance.defineWriter("null",require("./writers/NullWriter"));
 instance.defineWriter("nullwriter",require("./writers/NullWriter"));
+instance.defineWriter("subprocess",require("./writers/SubProcessWriter"));
 instance.defineWriter("default",require("./writers/ConsoleWriter"));
 instance.defineWriter("console",require("./writers/ConsoleWriter"));
 instance.defineWriter("consolewriter",require("./writers/ConsoleWriter"));
@@ -357,6 +414,7 @@ instance.defineWriter("filewriter",require("./writers/FileWriter"));
 
 // define built in formatters
 instance.defineFormatter("default",require("./formatters/DefaultFormatter"));
+instance.defineFormatter("subprocess",require("./formatters/SubProcessFormatter"));
 instance.defineFormatter("json",require("./formatters/JSONFormatter"));
 instance.defineFormatter("js",require("./formatters/JSObjectFormatter"));
 instance.defineFormatter("jsobject",require("./formatters/JSObjectFormatter"));
