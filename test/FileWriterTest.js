@@ -16,19 +16,24 @@ const AwesomeUtils = require("AwesomeUtils");
 const Log = require("../src/Log");
 
 describe("FileWriterTest",()=>{
+	let id,dir,testfile;
+
 	beforeEach(()=>{
 		Log.stop();
 
+		id = AwesomeUtils.Random.string(16);
+		testfile = Path.resolve(process.cwd(),"./temp."+id+".tmp");
+		dir = Path.resolve(process.cwd(),"./temp."+AwesomeUtils.Random.string(16));
 	});
 
 	afterEach(()=>{
 		Log.stop();
+
+		if (AwesomeUtils.FS.existsSync(testfile)) FS.unlinkSync(testfile);
+		if (AwesomeUtils.FS.existsSync(dir)) Rimraf.sync(dir);
 	});
 
 	it("create",function(){
-		let id = AwesomeUtils.Random.string(16);
-		let testfile = Path.resolve(process.cwd(),"./temp."+id+".tmp");
-
 		Log.init({
 			writers: [{
 				name: "file-writer-test",
@@ -45,17 +50,14 @@ describe("FileWriterTest",()=>{
 		Log.start();
 
 		Log.info("Test","Testing file creation...");
+
 		assert(AwesomeUtils.FS.existsSync(testfile));
 
 		Log.stop();
 
-		if (AwesomeUtils.FS.existsSync(testfile)) FS.unlinkSync(testfile);
 	});
 
 	it("write",function(){
-		let id = AwesomeUtils.Random.string(16);
-		let testfile = Path.resolve(process.cwd(),"./temp."+id+".tmp");
-
 		Log.init({
 			writers: [{
 				name: "file-writer-test",
@@ -81,15 +83,12 @@ describe("FileWriterTest",()=>{
 		let content = FS.readFileSync(testfile);
 
 		assert.deepStrictEqual(content.toString("utf-8"),Log.history.join("\n")+"\n");
-
-		if (AwesomeUtils.FS.existsSync(testfile)) FS.unlinkSync(testfile);
 	});
 
 	it("rotate",async function(){
 		this.slow(3000);
 		this.timeout(4000);
 
-		let dir = Path.resolve(process.cwd(),"./temp."+AwesomeUtils.Random.string(16));
 		let id = AwesomeUtils.Random.string(16);
 
 		Log.init({
@@ -127,17 +126,12 @@ describe("FileWriterTest",()=>{
 			return file.startsWith("temp."+id+".") && file.endsWith(".tmp");
 		});
 
-		if (AwesomeUtils.FS.existsSync(dir)) Rimraf.sync(dir);
-
 		assert(!found);
 	});
 
 	it("rotate multi",async function(){
 		this.slow(3000);
 		this.timeout(4000);
-
-		let dir = Path.resolve(process.cwd(),"./temp."+AwesomeUtils.Random.string(16));
-		let id = AwesomeUtils.Random.string(16);
 
 		Log.init({
 			writers: [{
@@ -173,8 +167,6 @@ describe("FileWriterTest",()=>{
 		let found = files.some((file)=>{
 			return file.startsWith("temp."+id+".") && file.endsWith(".tmp");
 		});
-
-		if (AwesomeUtils.FS.existsSync(dir)) Rimraf.sync(dir);
 
 		assert(!found);
 	});
