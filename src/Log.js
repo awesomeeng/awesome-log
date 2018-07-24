@@ -44,6 +44,8 @@ class Log extends Events {
 		this[$WRITERS] = [];
 		this[$RUNNING] = false;
 		this[$SUBPROCESSES] = new Map();
+
+		initLevels.call(this,"access,error,warn,info,debug");
 	}
 
 	get LogWriter() {
@@ -140,13 +142,15 @@ class Log extends Events {
 			options: {}
 		});
 
-		initLevels.call(this);
+		initLevels.call(this,this.config.levels);
 
 		this[$CONFIG].historyFormatter = this[$DEFINED_FORMATTERS][this[$CONFIG].historyFormatter.toLowerCase()];
 		if (!this[$CONFIG].historyFormatter) throw new Error("Invalid history formatter.");
 
 		if (!this.config.disableLoggingNotices) this.log(this.config.loggingNoticesLevel,"AwesomeLog","Log initialized.");
 		this.emit("initialized",config);
+
+		return this;
 	}
 
 	start() {
@@ -171,6 +175,8 @@ class Log extends Events {
 
 		if (!this.config.disableLoggingNotices) this.log(this.config.loggingNoticesLevel,"AwesomeLog","Log started.");
 		this.emit("started");
+
+		return this;
 	}
 
 	stop() {
@@ -188,10 +194,10 @@ class Log extends Events {
 			writer.close();
 		});
 
-
-
 		if (!this.config.disableLoggingNotices) this.log(this.config.loggingNoticesLevel,"AwesomeLog","Log stopped.");
 		this.emit("stopped");
+
+		return this;
 	}
 
 	pause() {
@@ -200,6 +206,8 @@ class Log extends Events {
 
 		if (!this.config.disableLoggingNotices) this.log(this.config.loggingNoticesLevel,"AwesomeLog","Log paused.");
 		this.emit("paused");
+
+		return this;
 	}
 
 	resume() {
@@ -214,10 +222,14 @@ class Log extends Events {
 
 		if (!this.config.disableLoggingNotices) this.log(this.config.loggingNoticesLevel,"AwesomeLog","Log resumed.");
 		this.emit("resumed");
+
+		return this;
 	}
 
 	clearHistory() {
 		this[$HISTORY] = [];
+
+		return this;
 	}
 
 	getLevel(level) {
@@ -272,6 +284,8 @@ class Log extends Events {
 		else write.call(this,logentry);
 
 		this.emit("log",logentry);
+
+		return this;
 	}
 
 	captureSubProcess(subprocess) {
@@ -281,6 +295,8 @@ class Log extends Events {
 
 		this[$SUBPROCESSES].set(subprocess,subProcessHandler.bind(this));
 		subprocess.on("message",this[$SUBPROCESSES].get(subprocess));
+
+		return this;
 	}
 
 	releaseSubProcess(subprocess) {
@@ -290,6 +306,8 @@ class Log extends Events {
 
 		subprocess.off("message",this[$SUBPROCESSES].get(subprocess));
 		this[$SUBPROCESSES].delete(subprocess);
+
+		return this;
 	}
 }
 
@@ -297,7 +315,7 @@ const isSubProcess = function isSubProcess() {
 	return !!Process.channel || Worker && Worker.parentPort && Worker.parentPort.postMessage || false;
 };
 
-const initLevels = function initLevels() {
+const initLevels = function initLevels(levels) {
 	// If we have pre-existing levels, remove the functions...
 	this[$LEVELS].forEach((level)=>{
 		delete this[level.name.toLowerCase()];
@@ -307,7 +325,7 @@ const initLevels = function initLevels() {
 
 	this[$LEVELS] = [];
 
-	let configlevels = this.config.levels;
+	let configlevels = levels;
 	if (!configlevels) throw new Error("No levels configured.");
 	if (typeof configlevels==="string") configlevels = configlevels.split(",");
 	if (!(configlevels instanceof Array)) throw new Error("Invalid levels configured.");
