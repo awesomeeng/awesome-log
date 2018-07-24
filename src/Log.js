@@ -132,7 +132,8 @@ class Log extends Events {
 			levels: "access,error,warn,info,debug",
 			disableLoggingNotices: isSubProcess() ? true : false,
 			loggingNoticesLevel: "info",
-			writers: []
+			writers: [],
+			backlogSizeLimit: 1000
 		},config||{});
 		if (this[$CONFIG].writers.length<1) this[$CONFIG].writers.push({
 			name: "console",
@@ -280,7 +281,10 @@ class Log extends Events {
 			pid: process.pid
 		};
 
-		if (this[$BACKLOG]) this[$BACKLOG].push(logentry);
+		if (this[$BACKLOG]) {
+			this[$BACKLOG].push(logentry);
+			if (this[$BACKLOG].length>this.config.backlogSizeLimit) this[$BACKLOG] = this[$BACKLOG].slice(Math.floor(this.backlogSizeLimit*0.1));
+		}
 		else write.call(this,logentry);
 
 		this.emit("log",logentry);
