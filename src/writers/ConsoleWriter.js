@@ -40,8 +40,8 @@ class ConsoleWriter extends LogWriter {
 	write(message,logentry) {
 		/*eslint no-console: off */
 		if (this.options.colorize) {
-			if (this.options.colorStyle==="level") console.log(message.replace(logentry.level.name,Colors.stylize(logentry.level.name,this[$THEME][logentry.level.name])));
-			else console.log(Colors.stylize(message,this[$THEME][logentry.level.name]));
+			if (this.options.colorStyle==="level") process.stdout.write(message.replace(logentry.level.name,Colors.stylize(logentry.level.name,this[$THEME][logentry.level.name]))+"\n");
+			else process.stdout.write(Colors.stylize(message,this[$THEME][logentry.level.name])+"\n");
 		}
 		else console.log(message);
 	}
