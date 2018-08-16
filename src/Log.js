@@ -144,6 +144,7 @@ class Log extends Events {
 		});
 
 		initLevels.call(this,this.config.levels);
+		if (!this.getLevel(this.config.loggingNoticesLevel)) this[$CONFIG].loggingNoticesLevel = this.levels.slice(-1)[0] && this.levels.slice(-1)[0].name || null;
 
 		this[$CONFIG].historyFormatter = this[$DEFINED_FORMATTERS][this[$CONFIG].historyFormatter.toLowerCase()];
 		if (!this[$CONFIG].historyFormatter) throw new Error("Invalid history formatter.");
@@ -156,6 +157,8 @@ class Log extends Events {
 
 	start() {
 		if (this.running) return;
+
+		if (this[$CONFIG]===null) this.init();
 
 		this[$RUNNING] = true;
 		this[$HISTORY] = [];
