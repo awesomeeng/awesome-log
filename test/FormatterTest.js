@@ -151,9 +151,9 @@ describe("LogFormatter",()=>{
 		Log.info("Test","Testing formatting...",123);
 		Log.info("Test","Testing formatting...",123,"abc");
 		Log.info("Test","Testing formatting...",123,"abc",[456,"def"]);
-		assert(Log.history[0].match(/^\d+,"INFO",\d+,"\w+",".*"$/));
-		assert(Log.history[1].match(/^\d+,"INFO",\d+,"\w+",".*",123$/));
-		assert(Log.history[2].match(/^\d+,"INFO",\d+,"\w+",".*",123,"abc"$/));
-		assert(Log.history[3].match(/^\d+,"INFO",\d+,"\w+",".*",123,"abc","\[456,\\"def\\"\]"$/));
+		assert(Log.history[0].match(/^\d+,"INFO",\d+,"Test","Testing formatting..."$/));
+		assert(Log.history[1].match(/^\d+,"INFO",\d+,"Test","Testing formatting...",123$/));
+		assert(Log.history[2].match(/^\d+,"INFO",\d+,"Test","Testing formatting...",123,"abc"$/));
+		assert(Log.history[3].match(/^\d+,"INFO",\d+,"Test","Testing formatting...",123,"abc","\[456,\\"def\\"\]"$/));
 	});
 });

@@ -2,7 +2,7 @@
 
 "use strict";
 
-const Lodash = require("lodash");
+const AwesomeUtils = require("AwesomeUtils");
 
 const LogFormatter = require("./LogFormatter");
 
@@ -41,7 +41,7 @@ class LogWriter {
 		this[$FORMATTER] = formatter;
 
 		if (!options) throw new Error("Missing options argument.");
-		if (!Lodash.isPlainObject(options)) throw new Error("Invalid options argument");
+		if (!AwesomeUtils.Object.isPlainObject(options)) throw new Error("Invalid options argument");
 		this[$OPTIONS] = options;
 	}
 

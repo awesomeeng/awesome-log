@@ -2,7 +2,7 @@
 
 "use strict";
 
-const Lodash = require("lodash");
+const AwesomeUtils = require("AwesomeUtils");
 
 const LogFormatter = require("../LogFormatter");
 
@@ -16,11 +16,11 @@ class DefaultFormatter extends LogFormatter {
 
 		msg += new Date(logentry.timestamp).toISOString();
 		msg += " : ";
-		msg += Lodash.padEnd("#"+logentry.pid+"",6);
+		msg += ("#"+logentry.pid).padEnd(6);
 		msg += " : ";
-		msg += Lodash.padEnd(Lodash.truncate(logentry.level.name,8),8);
+		msg += logentry.level.name.slice(0,10).padEnd(10);
 		msg += " : ";
-		msg += Lodash.padEnd(Lodash.truncate(logentry.system,16),16);
+		msg += logentry.system.slice(0,16).padEnd(16);
 
 		let args = logentry.args || [];
 		if (args.length>0) {
@@ -44,7 +44,7 @@ const formatArg = function formatArg(prefix,arg) {
 	if (arg instanceof Error) {
 		return "\n"+prefix+(arg.stack && arg.stack.split(/\n[\t\s]*/).join("\n"+prefix) || arg.message || ""+arg);
 	}
-	else if (arg instanceof Array || Lodash.isPlainObject(arg)) {
+	else if (arg instanceof Array || AwesomeUtils.Object.isPlainObject(arg)) {
 		return JSON.stringify(arg,null,2).split(/\n/).map((s)=>{
 			return "\n"+prefix+s;
 		}).join("");

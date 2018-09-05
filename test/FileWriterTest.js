@@ -10,8 +10,6 @@ const assert = require("assert");
 const FS = require("fs");
 const Path = require("path");
 
-const Rimraf = require("rimraf");
-
 const AwesomeUtils = require("AwesomeUtils");
 const Log = require("../src/Log");
 
@@ -30,7 +28,7 @@ describe("FileWriterTest",()=>{
 		Log.stop();
 
 		if (AwesomeUtils.FS.existsSync(testfile)) FS.unlinkSync(testfile);
-		if (AwesomeUtils.FS.existsSync(dir)) Rimraf.sync(dir);
+		if (AwesomeUtils.FS.existsSync(dir)) AwesomeUtils.FS.recursiveRmdirSync(dir);
 	});
 
 	it("create",function(){
@@ -97,7 +95,7 @@ describe("FileWriterTest",()=>{
 				type: "file",
 				options: {
 					housekeeping: 10,
-					filename: Path.resolve(dir,"./temp."+id+".{x}.tmp")
+					filename: Path.resolve(dir,"./tempt."+id+".{x}.tmp")
 				}
 			}],
 			disableLoggingNotices: true,
@@ -170,5 +168,4 @@ describe("FileWriterTest",()=>{
 
 		assert(!found);
 	});
-
 });

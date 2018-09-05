@@ -3,7 +3,7 @@
 "use strict";
 
 const Colors = require("colors");
-const Lodash = require("lodash");
+const AwesomeUtils = require("AwesomeUtils");
 
 const LogWriter = require("../LogWriter");
 
@@ -11,7 +11,7 @@ const $THEME = Symbol("theme");
 
 class ConsoleWriter extends LogWriter {
 	constructor(parent,name,levels,formatter,options) {
-		options = Lodash.extend({
+		options = AwesomeUtils.Object.extend({
 			colorize: true,
 			colorStyle: "level", // "line" or "level"
 			colors: {

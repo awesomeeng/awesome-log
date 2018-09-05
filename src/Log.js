@@ -5,7 +5,7 @@
 const Events = require("events");
 const Process = require("process");
 
-const Lodash = require("lodash");
+const AwesomeUtils = require("AwesomeUtils");
 
 const LogLevel = require("./LogLevel");
 const LogWriter = require("./LogWriter");
@@ -65,7 +65,7 @@ class Log extends Events {
 	}
 
 	get config() {
-		return Lodash.extend({},this[$CONFIG]);
+		return AwesomeUtils.Object.extend({},this[$CONFIG]);
 	}
 
 	get history() {
@@ -87,11 +87,11 @@ class Log extends Events {
 	}
 
 	get definedWriters() {
-		return Lodash.extend(this[$DEFINED_WRITERS]);
+		return AwesomeUtils.Object.extend(this[$DEFINED_WRITERS]);
 	}
 
 	get definedFormatters() {
-		return Lodash.extend(this[$DEFINED_FORMATTERS]);
+		return AwesomeUtils.Object.extend(this[$DEFINED_FORMATTERS]);
 	}
 
 	defineFormatter(name,konstructor) {
@@ -125,7 +125,7 @@ class Log extends Events {
 	init(config) {
 		if (this.initialized && this.running) throw new Error("Cannot initialize while running. stop() first.");
 
-		this[$CONFIG] = Lodash.extend({
+		this[$CONFIG] = AwesomeUtils.Object.extend({
 			history: true,
 			historySizeLimit: 100,
 			historyFormatter: "default",
@@ -241,9 +241,11 @@ class Log extends Events {
 		if (level instanceof LogLevel) return level;
 		if (typeof level==="string") {
 			level = level.toUpperCase();
-			let index = Lodash.findIndex(this[$LEVELS],(x)=>{
-				return x && x.name && x.name===level || false;
-			});
+			let index = this[$LEVELS].reduce((index,x,i)=>{
+				if (index>-1) return index;
+				if (x && x.name && x.name===level) return i;
+				return -1;
+			},-1);
 			return index>-1 && this[$LEVELS][index] || null;
 		}
 		throw new Error("Invalid level argument.");
@@ -265,7 +267,7 @@ class Log extends Events {
 		if (typeof system!=="string") throw new Error("Invalid system argument.");
 		system = system.replace(/[^\w\d_\-.]/g,""); // strip out any non-alpha characters. _ - and . are also allowed.
 
-		args = Lodash.flatten([args]); // has to come before message check
+		args = [].concat(args); // has to come before message check
 
 		if (!message) throw new Error("Missing message argument.");
 		if (message instanceof Error) {
@@ -338,7 +340,7 @@ const initLevels = function initLevels(levels) {
 	if (!(configlevels instanceof Array)) throw new Error("Invalid levels configured.");
 
 	// build our levels array.
-	this[$LEVELS] = Lodash.compact(configlevels.map((level)=>{
+	this[$LEVELS] = AwesomeUtils.Array.compact(configlevels.map((level)=>{
 		if (!level) return null;
 		if (level instanceof LogLevel) return level;
 		if (typeof level==="string") return new LogLevel(level);
@@ -367,7 +369,7 @@ const initWriters = function initWriters() {
 	if (!(configwriters instanceof Array)) throw new Error("Invalid writers configured.");
 
 	// start new writers.
-	this[$WRITERS] = Lodash.compact(configwriters.map((writer)=>{
+	this[$WRITERS] = AwesomeUtils.Array.compact(configwriters.map((writer)=>{
 		if (!writer) return null;
 
 		let name = writer.name || null;

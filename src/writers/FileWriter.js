@@ -5,10 +5,7 @@
 const Path = require("path");
 const FS = require("fs");
 
-const Lodash = require("lodash");
 const Moment = require("moment");
-const Mkdirp = require("mkdirp");
-const Glob = require("glob");
 
 const AwesomeUtils  = require("AwesomeUtils");
 
@@ -20,14 +17,16 @@ const $ROOT = Symbol("root");
 
 class FileWriter extends LogWriter {
 	constructor(parent,name,levels,formatter,options) {
-		options = Lodash.extend({
+		options = AwesomeUtils.Object.extend({
 			filename: "logs/AwesomeLog.{YYYYMMDD}.log",
 			housekeeping: false
 		},options);
 
 		super(parent,"File",name,levels,formatter,options);
 
-		this[$ROOT] = Path.resolve(process.cwd()).replace(/\\|\\\\/g,"/");
+		this[$ROOT] = Path.dirname(Path.resolve(process.cwd(),options.filename)).replace(/\\|\\\\/g,"/");
+		while (this[$ROOT].match(/\{[^}]+\}/g)) this[$ROOT] = Path.dirname(this[$ROOT]);
+
 		this[$FILE] = null;
 		this[$FILENAME] = null;
 
@@ -79,7 +78,7 @@ const openLogFile = function openLogFile(filename) {
 	this[$FILENAME] = filename;
 
 	let dir = Path.dirname(this[$FILENAME]);
-	if (!AwesomeUtils.FS.existsSync(dir)) Mkdirp.sync(dir);
+	if (!AwesomeUtils.FS.existsSync(dir)) AwesomeUtils.FS.recursiveMkdirSync(dir);
 
 	this[$FILE] = FS.openSync(this[$FILENAME],"a");
 };
@@ -120,10 +119,9 @@ const housekeeping = function housekeeping() {
 	filename = filename.join("(.+?)");
 	let matcher = new RegExp("^"+filename+"$");
 
-	let files = Glob.sync(dir+"/**");
+	let files = AwesomeUtils.FS.recursiveListSync(dir);
 	files.forEach((file)=>{
-		let full = Path.resolve(dir,file);
-		if (full===this[$FILENAME]) return;
+		if (file===this[$FILENAME]) return;
 
 		let match = matcher.exec(file);
 		if (!match) return;
@@ -143,8 +141,7 @@ const housekeeping = function housekeeping() {
 
 		if (old) {
 			try {
-				// console.log("remove "+file);
-				FS.unlinkSync(full);
+				FS.unlinkSync(file);
 			}
 			catch (ex) {
 				if (!ex.message.startsWith("ENOENT")) throw ex;
