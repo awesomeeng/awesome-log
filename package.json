@@ -13,7 +13,6 @@
     },
     "main": "./src/Log.js",
     "dependencies": {
-        "colors": "^1.3.0",
         "moment": "^2.22.2"
     },
     "devDependencies": {},

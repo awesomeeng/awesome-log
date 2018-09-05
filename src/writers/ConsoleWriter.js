@@ -2,7 +2,6 @@
 
 "use strict";
 
-const Colors = require("colors");
 const AwesomeUtils = require("AwesomeUtils");
 
 const LogWriter = require("../LogWriter");
@@ -18,7 +17,7 @@ class ConsoleWriter extends LogWriter {
 				ACCESS: "green",
 				ERROR: "red",
 				WARN: "yellow",
-				INFO: "white",
+				INFO: "magenta",
 				DEBUG: "cyan",
 			}
 		},options);
@@ -38,12 +37,11 @@ class ConsoleWriter extends LogWriter {
 	}
 
 	write(message,logentry) {
-		/*eslint no-console: off */
 		if (this.options.colorize) {
-			if (this.options.colorStyle==="level") process.stdout.write(message.replace(logentry.level.name,Colors.stylize(logentry.level.name,this[$THEME][logentry.level.name]))+"\n");
-			else process.stdout.write(Colors.stylize(message,this[$THEME][logentry.level.name])+"\n");
+			if (this.options.colorStyle==="level") process.stdout.write(message.replace(logentry.level.name,AwesomeUtils.ANSI.stylize(this[$THEME][logentry.level.name],(logentry.level.name)))+"\n");
+			else process.stdout.write(AwesomeUtils.ANSI.stylize(this[$THEME][logentry.level.name],message)+"\n");
 		}
-		else console.log(message);
+		else process.stdout.write(message+"\n");
 	}
 
 	flush() {
