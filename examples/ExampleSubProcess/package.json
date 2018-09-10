@@ -1,0 +1,13 @@
+{
+    "name": "AwesomeLog/Examples/ExampleSubProcess",
+    "version": "1.0.0",
+    "author": "the awesome engineering company",
+    "license": "(c) 2018, The Awesome Engineering Company, inc",
+    "main": "./ExampleSubProcess.js",
+    "engines": {
+        "node": ">=10.5.0"
+    },
+    "dependencies": {
+        "@AwesomeEng/AwesomeLog": "*"
+    }
+}
