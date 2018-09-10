@@ -13,7 +13,7 @@ let id = 0;
 const next = ()=>{
 	id += 1;
 	let level = Log.levels[(Math.random()*Log.levels.length)|0];
-	Log.log(level,"ChildProcess","This is log message "+id);
+	Log.log(level,null,"This is log message "+id);
 	setTimeout(next,(Math.random()*FREQ)|0);
 };
 
