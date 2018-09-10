@@ -153,21 +153,24 @@ class Log extends Events {
 	init(config) {
 		if (this.initialized && this.running) throw new Error("Cannot initialize while running. stop() first.");
 
+		let disableSP = config && config.disableSubProcesses || false;
 		this[$CONFIG] = AwesomeUtils.Object.extend({
 			history: true,
 			historySizeLimit: 100,
 			historyFormatter: "default",
 			levels: "access,error,warn,info,debug",
-			disableLoggingNotices: isSubProcess() ? true : false,
+			disableLoggingNotices: !disableSP && isSubProcess() ? true : false,
 			loggingNoticesLevel: "info",
 			writers: [],
-			backlogSizeLimit: 1000
+			backlogSizeLimit: 1000,
+			disableSubProcesses: false
 		},config||{});
+		disableSP = this[$CONFIG].disableSubProcesses;
 		if (this[$CONFIG].writers.length<1) this[$CONFIG].writers.push({
 			name: "console",
-			type:  isSubProcess() ? "subprocess" : "default",
+			type:  !disableSP && isSubProcess() ? "subprocess" : "default",
 			levels: "*",
-			formatter: isSubProcess() ? "subprocess" : "default",
+			formatter: !disableSP && isSubProcess() ? "subprocess" : "default",
 			options: {}
 		});
 
