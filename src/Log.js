@@ -295,7 +295,9 @@ class Log extends Events {
 		if (!(level instanceof LogLevel)) throw new Error("Invalid level argument.");
 		if (logentry) logentry.level = level;
 
-		if (!system) throw new Error("Missing system argument.");
+		if (!system) {
+			system = AwesomeUtils.Module.source(1).split(/\\\\|\\|\//g).slice(-1)[0];
+		}
 		if (typeof system!=="string") throw new Error("Invalid system argument.");
 		system = system.replace(/[^\w\d_\-.]/g,""); // strip out any non-alpha characters. _ - and . are also allowed.
 		if (logentry) logentry.system = system;
@@ -372,11 +374,18 @@ const initLevels = function initLevels(levels) {
 	if (!(configlevels instanceof Array)) throw new Error("Invalid levels configured.");
 
 	// build our levels array.
-	this[$LEVELS] = AwesomeUtils.Array.compact(configlevels.map((level)=>{
+	configlevels = AwesomeUtils.Array.compact(configlevels.map((level)=>{
 		if (!level) return null;
 		if (level instanceof LogLevel) return level;
 		if (typeof level==="string") return new LogLevel(level);
 	}));
+	// make sure not reserved.
+	configlevels.forEach((level)=>{
+		if (this[level.name.toLowerCase()] || this[level.name.toUpperCase()] ||
+		this[level.name.slice(0,1).toUpperCase()+level.name.slice(1).toLowerCase()]) throw new Error("Invalid log level: '"+level.name+"' is a reserved word.");
+	});
+
+	this[$LEVELS] = configlevels;
 
 	// add our level functions
 	this[$LEVELS].forEach((level)=>{
