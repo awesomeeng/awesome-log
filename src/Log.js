@@ -280,22 +280,28 @@ class Log extends Events {
 	}
 
 	log(level,system,message,...args) {
+		let logentry = null;
+
 		if (!system && level && typeof level==="object" && !(level instanceof LogLevel) && level.level && level.system && level.message && level.args) {
-			system = level.system;
-			message = level.message;
-			args = level.args;
-			level = level.level;
+			logentry = level;
+			system = logentry.system;
+			message = logentry.message;
+			args = logentry.args;
+			level = logentry.level;
 		}
 
 		level = this.getLevel(level);
 		if (!level) throw new Error("Missing level argument.");
 		if (!(level instanceof LogLevel)) throw new Error("Invalid level argument.");
+		if (logentry) logentry.level = level;
 
 		if (!system) throw new Error("Missing system argument.");
 		if (typeof system!=="string") throw new Error("Invalid system argument.");
 		system = system.replace(/[^\w\d_\-.]/g,""); // strip out any non-alpha characters. _ - and . are also allowed.
+		if (logentry) logentry.system = system;
 
 		args = [].concat(args); // has to come before message check
+		if (logentry) logentry.args = args;
 
 		if (!message) throw new Error("Missing message argument.");
 		if (message instanceof Error) {
@@ -304,15 +310,13 @@ class Log extends Events {
 		}
 		if (typeof message!=="string") throw new Error("Invalid message argument.");
 
-
-		let logentry = Object.assign(this[$BASE],{
+		logentry = Object.assign(this[$BASE],{
 			level,
 			system,
 			message,
 			args,
-			timestamp: Date.now(),
-			pid: process.pid
-		});
+			timestamp: Date.now()
+		},logentry||{});
 
 		if (this[$BACKLOG]) {
 			this[$BACKLOG].push(logentry);
