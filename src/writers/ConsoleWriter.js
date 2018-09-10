@@ -37,6 +37,7 @@ class ConsoleWriter extends LogWriter {
 	}
 
 	write(message,logentry) {
+		message = ""+message;
 		if (this.options.colorize) {
 			if (this.options.colorStyle==="level") process.stdout.write(message.replace(logentry.level.name,AwesomeUtils.ANSI.stylize(this[$THEME][logentry.level.name],(logentry.level.name)))+"\n");
 			else process.stdout.write(AwesomeUtils.ANSI.stylize(this[$THEME][logentry.level.name],message)+"\n");

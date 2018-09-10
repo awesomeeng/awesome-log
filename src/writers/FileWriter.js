@@ -34,6 +34,7 @@ class FileWriter extends LogWriter {
 	}
 
 	write(message/*,logentry*/) {
+		message = ""+message;
 		let filename = computeFilename.call(this,this.options.filename);
 
 		if (!this[$FILE] || !this[$FILENAME]) openLogFile.call(this,filename);
