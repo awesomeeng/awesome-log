@@ -2,6 +2,7 @@
 
 "use strict";
 
+const OS = require("os");
 const Events = require("events");
 const Process = require("process");
 
@@ -29,10 +30,37 @@ const $LEVELS = Symbol("levels");
 const $WRITERS = Symbol("writers");
 const $RUNNING = Symbol("running");
 const $SUBPROCESSES = Symbol("subprocesshandler");
+const $BASE = Symbol("base");
 
 class Log extends Events {
 	constructor() {
 		super();
+
+		const hostname = OS.hostname();
+		const domain = hostname.split(".").slice(-2).join(".");
+		const servername = hostname.split(".").slice(0,1);
+		let bits = 32;
+		let arch = OS.arch();
+		if (arch==="arm64" || arch==="mipsel" || arch==="ppc64" || arch==="s390x" || arch==="x64") bits = 64;
+
+		this[$BASE] = {
+			hostname,
+			domain,
+			servername,
+			pid: process.pid,
+			ppid: process.ppid,
+			main: process.mainModule.filename,
+			arch: OS.arch(),
+			platform: OS.platform(),
+			bits,
+			cpus: OS.cpus().length,
+			argv: process.argv.slice(2).join(" "),
+			execPath: process.execPath,
+			startingDirectory: process.cwd(),
+			homedir: OS.homedir(),
+			username: OS.userInfo().username,
+			version: process.version
+		};
 
 		this[$CONFIG] = null;
 		this[$DEFINED_WRITERS] = {};
@@ -277,14 +305,14 @@ class Log extends Events {
 		if (typeof message!=="string") throw new Error("Invalid message argument.");
 
 
-		let logentry = {
+		let logentry = Object.assign(this[$BASE],{
 			level,
 			system,
 			message,
 			args,
 			timestamp: Date.now(),
 			pid: process.pid
-		};
+		});
 
 		if (this[$BACKLOG]) {
 			this[$BACKLOG].push(logentry);
