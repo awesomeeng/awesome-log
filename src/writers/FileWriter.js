@@ -106,7 +106,7 @@ const housekeeping = function housekeeping() {
 	if (!this.options.housekeeping) return;
 	if (!this.options.filename.match(/\{[\w\d-._]+\}/)) return;
 
-	let duration = AwesomeUtils.Date.duration(this.options.housekeeping);
+	let duration = Math.max(100,Math.min(9999999999,this.options.housekeeping||60000));
 
 	let dir = this[$ROOT];
 	if (!AwesomeUtils.FS.existsSync(dir)) return;
