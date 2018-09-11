@@ -12,9 +12,7 @@
         "node": ">=10.5.0"
     },
     "main": "./src/Log.js",
-    "dependencies": {
-        "moment": "^2.22.2"
-    },
+    "dependencies": {},
     "devDependencies": {},
     "optionalDependencies": {}
 }

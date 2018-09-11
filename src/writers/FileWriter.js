@@ -5,8 +5,6 @@
 const Path = require("path");
 const FS = require("fs");
 
-const Moment = require("moment");
-
 const AwesomeUtils  = require("AwesomeUtils");
 
 const LogWriter = require("../LogWriter");
@@ -64,7 +62,7 @@ const computeFilename = function computeFilename(s) {
 			let start = match.index;
 			let end = match.index+match[0].length;
 			let format = match[1];
-			let replacement = Moment(Date.now()).utc().format(format);
+			let replacement = AwesomeUtils.Date.format(Date.now(),format);
 			s = s.slice(0,start)+replacement+s.slice(end);
 		}
 	}
@@ -136,7 +134,7 @@ const housekeeping = function housekeeping() {
 			if (!date) return;
 			date = date.getTime();
 
-			let passed = Moment().utc().subtract(date).millisecond();
+			let passed = Date.now()-date;
 			return (passed>duration);
 		});
 
