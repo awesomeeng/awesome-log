@@ -33,29 +33,17 @@ const $SUBPROCESSES = Symbol("subprocesshandler");
 const $BASE = Symbol("base");
 
 /**
- * AwesomeLog class: An instance of this class is returned when you `require("AwesomeLog")`.
+ * AwesomeLog is a singleton class that will always return a single AwesomeLog
+ * instance each time it is required.
  *
- * To use AwesomeLog requires you to first initialize and start AwesomeLog,
- * preferably as early in your application as possible.
- *
- * ```
- * const Log = require("AwesomeLog");
- * Log.init();
- * Log.start();
- * ```
- *
- * You may pass an overall optional configuration to the `init()` method, as needed.
- *
- * Every time your `require("AwesomeLog") you get the same instance. Prior to starting
- * AwesomeLog via `Log.start()`, any log message you send are held in the backlog until
- * AwesomeLog is started. Once started the backlog is written and any future log message
- * will be written.
+ * @see {@link ../README.md AwesomeLog README} for usage details.
  *
  * @extends Events
  */
 class AwesomeLog extends Events {
 	/**
-	 * Construct a new AwesomeLog instance. This is only ever called once per application.
+	 * Construct a new AwesomeLog instance. This is only ever called once per application and
+	 * never directly by the user.
 	 */
 	constructor() {
 		super();
@@ -101,82 +89,195 @@ class AwesomeLog extends Events {
 	}
 
 	/**
-	 * Returns the AbstractLogWriter abstract class.
+	 * Returns the AbstractLogWriter class for use in creating custom Log Writers.
+	 *
+	 * @return {Class<AbstractLogWriter>}
 	 */
 	get AbstractLogWriter() {
 		return AbstractLogWriter;
 	}
 
+	/**
+	 * Returns the AbstractLogFormatter class for use in creating custom Log Formatters.
+	 *
+	 * @return {Class<AbstractLogFormatter>}
+	 */
 	get AbstractLogFormatter() {
 		return AbstractLogFormatter;
 	}
 
+	/**
+	 * Returns true if `Log.init()` has been called.
+	 *
+	 * @return {boolean}
+	 */
 	get initialized() {
 		return this[$CONFIG]!==null;
 	}
 
+	/**
+	 * Returns true if `Log.start()` has been called.
+	 *
+	 * @return {boolean}
+	 */
 	get running() {
 		return this[$RUNNING];
 	}
 
+	/**
+	 * Returns the configuration used by `init()`. This is a merge of the default configuration
+	 * and the configuration passed into `init()`.
+	 *
+	 * @return {Object}
+	 */
 	get config() {
 		return AwesomeUtils.Object.extend({},this[$CONFIG]);
 	}
 
+	/**
+	 * Returns an array of the last N (defined by `historySizeLimit`) log messages.
+	 *
+	 * @return {Array}
+	 */
 	get history() {
 		return (this[$HISTORY]||[]).slice();
 	}
 
+	/**
+	 * Returns the maximum number of `history` entries. This is set via `init()`.
+	 *
+	 * @return {number}
+	 */
 	get historySizeLimit() {
 		return this[$CONFIG].historySizeLimit;
 	}
 
+	/**
+	 * Returns an array of LogLevel objects for the currently configured levels. Levels
+	 * are configured via `init()`.
+	 *
+	 * @return {Array<LogLevel>}
+	 */
 	get levels() {
 		return this[$LEVELS];
 	}
 
+	/**
+	 * Returns an array of strings containing the level names, as taken from the LogLevel
+	 * objects. Levels are configured via `init()`.
+	 *
+	 * @return {Array<string>}
+	 */
 	get levelNames() {
 		return this[$LEVELS].map((level)=>{
 			return level.name;
 		});
 	}
 
+	/**
+	 * Returns an array of strings containing the defined Log Writer names that can be used.
+	 *
+	 * @return {Array<string>}
+	 */
 	get definedWriters() {
 		return AwesomeUtils.Object.extend(this[$DEFINED_WRITERS]);
 	}
 
+	/**
+	 * Returns an array of strings containing the defined Log Formatter names that can be used.
+	 *
+	 * @return {Array<string>}
+	 */
 	get definedFormatters() {
 		return AwesomeUtils.Object.extend(this[$DEFINED_FORMATTERS]);
 	}
 
-	defineFormatter(name,konstructor) {
+	/**
+	 * Map a new Log Formatter to a specific name, for usage in configuring AwesomeLog.
+	 *
+	 * @param  {string} name
+	 * @param  {Class<AbstractLogFormatter>} logFormatter
+	 * @return {void}
+	 */
+	defineFormatter(name,logFormatter) {
 		if (!name) throw new Error("Missing formatter name.");
 		name = name.toLowerCase();
 
-		if (!konstructor) throw new Error("Missing formatter constructor");
-		if (!AbstractLogFormatter.isPrototypeOf(konstructor)) throw new Error("Invalid formatter constructor. Must inherit from AbstractLogFormatter.");
+		if (!logFormatter) throw new Error("Missing formatter constructor");
+		if (!AbstractLogFormatter.isPrototypeOf(logFormatter)) throw new Error("Invalid formatter constructor. Must inherit from AbstractLogFormatter.");
 
 		if (this[$DEFINED_FORMATTERS][name]) throw new Error("Formatter already defined.");
 
-		this[$DEFINED_FORMATTERS][name] = new konstructor(this);
+		this[$DEFINED_FORMATTERS][name] = new logFormatter(this);
 
 		this.emit("formatter_added",name);
 	}
 
-	defineWriter(name,konstructor) {
+	/**
+	 * Map a new Log Writer to a specific name, for usage in configuring AwesomeLog.
+	 *
+	 * @param  {string} name
+	 * @param  {Class<AbstractLogWriter>} logWriter
+	 * @return {void}
+	 */
+	defineWriter(name,logWriter) {
 		if (!name) throw new Error("Missing writer name.");
 		name = name.toLowerCase();
 
-		if (!konstructor) throw new Error("Missing writer constructor");
-		if (!AbstractLogWriter.isPrototypeOf(konstructor)) throw new Error("Invalid writer constructor. Must inherit from AbstractLogWriter.");
+		if (!logWriter) throw new Error("Missing writer constructor");
+		if (!AbstractLogWriter.isPrototypeOf(logWriter)) throw new Error("Invalid writer constructor. Must inherit from AbstractLogWriter.");
 
 		if (this[$DEFINED_WRITERS][name]) throw new Error("Writer already defined.");
 
-		this[$DEFINED_WRITERS][name] = konstructor;
+		this[$DEFINED_WRITERS][name] = logWriter;
 
 		this.emit("writer_added",name);
 	}
 
+	/**
+	 * Initializes AwesomeLog for usage. This should be called very early in your application,
+	 * in the entry point if possible.
+	 *
+	 * You may only initialize if AwesomeLog is not running, which is done by calling
+	 * `start()`.
+	 *
+	 * This method takes an optional configuration object. This configuration object is merged
+	 * with the default configuration to produce the overall configuration.  Below is the
+	 * default configuration values:
+	 *
+	 * ```
+	 * config = {
+	 *   history: true,
+	 *   historySizeLimit: 100,
+	 *   historyFormatter: "default",
+	 *   levels: "access,error,warn,info,debug",
+	 *   disableLoggingNotices: false, // true if this is a child process
+	 *   loggingNoticesLevel: "info",
+	 *   writers: [],
+	 *   backlogSizeLimit: 1000,
+	 *   disableSubProcesses: false
+	 * }
+	 * ```
+	 *
+	 * If no writers are provided, a default Console Writer is added to the configuration.
+	 *
+	 * ```
+	 * config.writes = [{
+	 *  name: "console",
+	 *  type:  "default", // "subprocess" if this is a child process
+	 *  levels: "*",
+	 *  formatter: default", // "subprocess" if this is a child process
+	 *  options: {}
+	 * }];
+	 * ```
+	 *
+	 * Initialization is responsible for taking the `config.levels` parameters,
+	 * transforming it into LogLevel objects, and ensuring that the log shortcut
+	 * methods are created. See also @see ./docs/LogLevels.md
+	 *
+	 * @param  {Object|null} config
+	 * @return {void}
+	 */
 	init(config) {
 		if (this.initialized && this.running) throw new Error("Cannot initialize while running. stop() first.");
 
@@ -213,6 +314,17 @@ class AwesomeLog extends Events {
 		return this;
 	}
 
+	/**
+	 * Starts AwesomeLog running and outputting log messages. This should be called
+	 * very early in your application, in the entry point if possible.
+	 *
+	 * `startt()` is responsible for initializing the writers.
+	 *
+	 * If any backlog messages exist when `start()` is called, they will be written
+	 * via the writers after they are started.
+	 *
+	 * @return {void}
+	 */
 	start() {
 		if (this.running) return;
 
@@ -241,6 +353,12 @@ class AwesomeLog extends Events {
 		return this;
 	}
 
+	/**
+	 * Stops AwesomeLog running. Once stopped AwesomeLog can be reconfigured via another
+	 * `init()` call.
+	 *
+	 * @return {void}
+	 */
 	stop() {
 		if (!this.running) return;
 		this[$BACKLOG] = this[$BACKLOG] || [];
@@ -262,6 +380,13 @@ class AwesomeLog extends Events {
 		return this;
 	}
 
+	/**
+	 * Puts AwesomeLog into a paused state which prevents any log messages from being
+	 * written by the writers.  Log messages received while paused are stored in the
+	 * backlog and will be written when AwesomeLog is resumed.
+	 *
+	 * @return {void}
+	 */
 	pause() {
 		if (!this.running) return;
 		this[$BACKLOG] = this[$BACKLOG] || [];
@@ -272,6 +397,11 @@ class AwesomeLog extends Events {
 		return this;
 	}
 
+	/**
+	 * Exits the paused state and writes out any backlog messages.
+	 *
+	 * @return {void}
+	 */
 	resume() {
 		if (!this.running) return;
 
@@ -288,12 +418,23 @@ class AwesomeLog extends Events {
 		return this;
 	}
 
+	/**
+	 * Clears the stored `history` contents.
+	 *
+	 * @return {AwesomeLog}
+	 */
 	clearHistory() {
 		this[$HISTORY] = [];
 
 		return this;
 	}
 
+	/**
+	 * For any given level string, return the associated LogLevel object.
+	 *
+	 * @param  {string|LogLevel} level
+	 * @return {LogLevel}
+	 */
 	getLevel(level) {
 		if (!level) throw new Error("Missing level argument.");
 		if (level instanceof LogLevel) return level;
@@ -309,6 +450,17 @@ class AwesomeLog extends Events {
 		throw new Error("Invalid level argument.");
 	}
 
+	/**
+	 * Log a single messages.
+	 *
+	 * `log()` is called by all other shortcut log methods.
+	 *
+	 * @param  {string|LogLevel} level
+	 * @param  {string|null} system
+	 * @param  {string} message
+	 * @param  {*} args
+	 * @return {AwesomeLog}
+	 */
 	log(level,system,message,...args) {
 		let logentry = null;
 
@@ -361,6 +513,15 @@ class AwesomeLog extends Events {
 		return this;
 	}
 
+	/**
+	 * Used when you create a new child process/cluster/worker thread if you intend AwesomeLog
+	 * to be used in the process/cluster/worker and want the log information consolidated
+	 * into a single AwesomeLog stream.
+	 * @see ./docs/ChildProcess.md
+	 *
+	 * @param  {ChildProcess.ChildProcess|Cluster.Worker|WorkerThread.Worker} subprocess
+	 * @return {AwesomeLog}
+	 */
 	captureSubProcess(subprocess) {
 		if (!subprocess) return;
 		if (!subprocess.on) return;
@@ -372,6 +533,13 @@ class AwesomeLog extends Events {
 		return this;
 	}
 
+	/**
+	 * Stops capturing a process/cluster/worker log messages.
+	 * @see ./docs/ChildProcess.md
+	 *
+	 * @param  {ChildProcess.ChildProcess|Cluster.Worker|WorkerThread.Worker} subprocess
+	 * @return {AwesomeLog}
+	 */
 	releaseSubProcess(subprocess) {
 		if (!subprocess) return;
 		if (!subprocess.off) return;
@@ -518,5 +686,5 @@ instance.defineFormatter("js",require("./formatters/JSObjectFormatter"));
 instance.defineFormatter("jsobject",require("./formatters/JSObjectFormatter"));
 instance.defineFormatter("csv",require("./formatters/CSVFormatter"));
 
-// export the instance.
+// export our singleton instance.
 module.exports = instance;
