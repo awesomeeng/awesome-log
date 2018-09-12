@@ -119,7 +119,7 @@ Log.funny(...);
 Log.bad(...);
 ```
 
-You may have as many Log Levels as you desire, but each must have a unique name.  Also, there are a handful of reserved words (anything that is already in the AwesomeLog class) and you cannot use them. These include: `LogWriter, LogFormatter, initialized, running, config, history, historySizeLimit, levels, levelNames, definedWriters, definedFormatters, defineWriter, defineFormatter, init, start, stop, pause, resume, clearHistory, getLevel, log, cpatureSubProcess, releaseSubProcess.`
+You may have as many Log Levels as you desire, but each must have a unique name.  Also, there are a handful of reserved words (anything that is already in the AwesomeLog class) and you cannot use them. These include: `AbstractLogWriter, AbstractLogFormatter, initialized, running, config, history, historySizeLimit, levels, levelNames, definedWriters, definedFormatters, defineWriter, defineFormatter, init, start, stop, pause, resume, clearHistory, getLevel, log, cpatureSubProcess, releaseSubProcess.`
 
 In addition to the log level methods, you also use the `Log.log()` method which takes the level as the first argument, so you can programmatically set the level if needed.
 ```
@@ -224,7 +224,7 @@ AwesomeLog ships with a set of examples for your reference.
  - [ExampleCustomWriter](./examples/ExampleCustomWriter): Illustrates how to build your own custom writer, should you need to do that.
 
  - [ExampleCustomFormatter](./examples/ExampleCustomFormatter): Provides a very basic example of building your own custom formatter.
- 
+
  - [ExampleSubProcess](./examples/ExampleSubProcess): An example of using AwesomeLog with Child Processes.
 
 ## The Awesome Engineering Company

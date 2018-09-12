@@ -60,7 +60,7 @@ Log.Funny(...);
 Log.Bad(...);
 ```
 
-You may have as many Log Levels as you desire, but each must have a unique name.  Also, there are a handful of reserved words (anything that is already in the AwesomeLog class) and you cannot use them. These include: `LogWriter, LogFormatter, initialized, running, config, history, historySizeLimit, levels, levelNames, definedWriters, definedFormatters, defineWriter, defineFormatter, init, start, stop, pause, resume, clearHistory, getLevel, log, cpatureSubProcess, releaseSubProcess.`
+You may have as many Log Levels as you desire, but each must have a unique name.  Also, there are a handful of reserved words (anything that is already in the AwesomeLog class) and you cannot use them. These include: `AbstractLogWriter, AbstractLogFormatter, initialized, running, config, history, historySizeLimit, levels, levelNames, definedWriters, definedFormatters, defineWriter, defineFormatter, init, start, stop, pause, resume, clearHistory, getLevel, log, cpatureSubProcess, releaseSubProcess.`
 
 ## Other Impacts
 

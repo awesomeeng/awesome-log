@@ -11,8 +11,14 @@
     "engines": {
         "node": ">=10.5.0"
     },
-    "main": "./src/Log.js",
+    "main": "./src/AwesomeLog.js",
     "dependencies": {},
-    "devDependencies": {},
-    "optionalDependencies": {}
+	"devDependencies": {
+        "jsdoc-to-markdown": "*",
+        "mocha": "*"
+    },
+    "optionalDependencies": {},
+    "scripts": {
+        "docs": "jsdoc2md src/** --separators > docs/API.md"
+    }
 }

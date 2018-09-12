@@ -63,9 +63,9 @@ A custom formatter has the following shape, taken from our example [ExampleCusto
 "use strict";
 
 const Log = require("AwesomeLog");
-const LogFormatter = Log.LogFormatter;
+const AbstractLogFormatter = Log.AbstractLogFormatter;
 
-class MyExampleFormatter extends LogFormatter {
+class MyExampleFormatter extends AbstractLogFormatter {
 	constructor(parent) {
 		super(parent);
 	}
@@ -90,9 +90,9 @@ class MyExampleFormatter extends LogFormatter {
 Log.defineFormatter("my-example-formatter",MyExampleFormatter)
 ```
 
-First, we require `AwesomeLog` and `AwesomeLog.LogFormatter`.
+First, we require `AwesomeLog` and `AwesomeLog.AbstractLogFormatter`.
 
-Next, we create our `MyExampleLogFormatter` class by extending `LogFormatter`.
+Next, we create our `MyExampleLogFormatter` class by extending `AbstractLogFormatter`.
 
 In our class we are required to implement two methods:
 
@@ -100,7 +100,7 @@ In our class we are required to implement two methods:
 
  - **`format(logentry)`**: The `format(logentry)` gets a `logentry` object that has a number of [different keys](#log-entry-keys) about the log message.  It returns a string (or otherwise) formatted message, like in our example.
 
- Finally, once our new LogFormatter class is set, we call `defineFormatter(typeName,logWriter)` to tell AwesomeLog about it.  `defineFormatter(formatterName,logFormatter)` take two arguments, the first the `formatterName` is the string value to be used to reference the formatter in the `formatter` setting, and second the `logFormatter` is the formatter class we just defined (not an instance of the class) to call when the formatter is used.
+ Finally, once our new LogFormatter class is set, we call `defineFormatter(typeName,logFormatter)` to tell AwesomeLog about it.  `defineFormatter(formatterName,logFormatter)` take two arguments, the first the `formatterName` is the string value to be used to reference the formatter in the `formatter` setting, and second the `logFormatter` is the formatter class we just defined (not an instance of the class) to call when the formatter is used.
 
  After `defineWriter` is called, one can use the writer in `Log.init()`.
 

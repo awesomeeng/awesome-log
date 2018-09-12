@@ -87,11 +87,11 @@ A custom writer has the following shape, taken from our example [ExampleCustomWr
 "use strict";
 
 const Log = require("AwesomeLog");
-const LogWriter = Log.LogWriter;
+const AbstractLogWriter = Log.AbstractLogWriter;
 
 let counter = 0;
 
-class MyExampleWriter extends LogWriter {
+class MyExampleWriter extends AbstractLogWriter {
 	constructor(parent,name,levels,formatter,options) {
 		super(parent,"MyExampleWriter",name,levels,formatter,options);
 	}
@@ -112,11 +112,11 @@ class MyExampleWriter extends LogWriter {
 Log.defineWriter("my-example-writer",MyExampleWriter);
 ```
 
-It begins by requiring `AwesomeLog` and `AwesomeLog.LogWriter`.
+It begins by requiring `AwesomeLog` and `AwesomeLog.AbstractLogWriter`.
 
-Next, we create a class that extends `AwesomeLog.LogWriter`.
+Next, we create a class that extends `AwesomeLog.AbstractLogWriter`.
 
-When you subclass LogWriter you are required to implement four specific methods...
+When you subclass AbstractLogWriter you are required to implement four specific methods...
 
  - `constructor(parent,type,name,levels,formatter,options)`: Called when a new instance of the writer is created. New instances are created during the `Log.start()` call and you need not do it yourself.  You would place any initialization of your writing device here. THe arguments to the constructor are all supplied by AwesomeLog and the configuration passed to `Log.init()`.  `options` specifically is the writer options and can be used during initialization.
 
@@ -126,6 +126,6 @@ When you subclass LogWriter you are required to implement four specific methods.
 
  - `close()`: Close is called following `flush()` during shutdown. It is here where you would do any cleanup of your device that is needed.  Not all devices require this, but it still must be included.
 
-Finally, once our new LogWriter class is set, we call `defineWriter(typeName,logWriter)` to tell AwesomeLog about it.  `defineWriter(typeName,logWriter)` take two arguments, the first the `typeName` is the string value to be used to reference the writer in the `type` setting, and second the `logWriter` is the writer class we just defined (not an instance of the class) to call when the writer is started.
+Finally, once our new Writer class is set, we call `defineWriter(typeName,logWriter)` to tell AwesomeLog about it.  `defineWriter(typeName,logWriter)` take two arguments, the first the `typeName` is the string value to be used to reference the writer in the `type` setting, and second the `logWriter` is the writer class we just defined (not an instance of the class) to call when the writer is started.
 
 After `defineWriter` is called, one can use the writer in `Log.init()`.
