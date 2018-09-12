@@ -13,7 +13,47 @@ const $FILE = Symbol("file");
 const $FILENAME = Symbol("filename");
 const $ROOT = Symbol("root");
 
+/**
+ * A writer for outputing to a specific file or file pattern.
+ *
+ * If you give a simple filename, the log will be written to that filename
+ * indefinately, appending each time. This is fine for simple systems.
+ *
+ * For more complex systems you will want to provide a filename pattern
+ * which looks something like this `logs/NyLog.{YYYYMMDD}.log` which will change
+ * the file written to based on the current date, in this case the Year Month Day
+ * pattern.
+ *
+ * @see Our {@link ./docs/FileWriterConfiguration.md File Writer Configuration}
+ * documentation for more details.
+ *
+ * @extends AbstractLogWriter
+ */
 class FileWriter extends AbstractLogWriter {
+	/**
+	 * Creates a new File Writer. Never called directly, but AwesomeLog
+	 * will call this when `AwesomeLog.start()` is issued.
+	 *
+	 * The options parameters can be used to configure this Console Writer.
+	 * Here are the default configuration values:
+	 *
+	 * ```
+	 * options = {
+	 *   filename: "logs/AwesomeLog.{YYYYMMDD}.log",
+	 *   housekeeping: false
+	 * }
+	 * ```
+	 *
+	 * Housekeeping can be `false` or a number representing a number of
+	 * milliseconds after which a file is considered old.  Old files are
+	 * deleted by the system.
+	 *
+	 * @param {AwesomeLog} parent
+	 * @param {string} name
+	 * @param {string} levels
+	 * @param {AbstractLogFormatter} formatter
+	 * @param {Object} options
+	 */
 	constructor(parent,name,levels,formatter,options) {
 		options = AwesomeUtils.Object.extend({
 			filename: "logs/AwesomeLog.{YYYYMMDD}.log",
@@ -31,6 +71,13 @@ class FileWriter extends AbstractLogWriter {
 		housekeeping.call(this);
 	}
 
+	/**
+	 * Write a log message to the log file.
+	 *
+	 * @param {*} message
+	 * @param {Object} logentry
+	 * @return {void}
+	 */
 	write(message/*,logentry*/) {
 		message = ""+message;
 		let filename = computeFilename.call(this,this.options.filename);
@@ -44,10 +91,20 @@ class FileWriter extends AbstractLogWriter {
 		writeLogFile.call(this,message);
 	}
 
+	/**
+	 * Flush the pending writes. This has not effect in this case.
+	 *
+	 * @return {void}
+	 */
 	flush() {
 		// intentionally blank
 	}
 
+	/**
+	 * Close the file.
+	 *
+	 * @return {void}
+	 */
 	close() {
 		closeLogFile.call(this);
 	}

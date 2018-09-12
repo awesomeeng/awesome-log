@@ -13,7 +13,7 @@
     },
     "main": "./src/AwesomeLog.js",
     "dependencies": {},
-	"devDependencies": {
+    "devDependencies": {
         "jsdoc-to-markdown": "*",
         "mocha": "*"
     },

@@ -5,11 +5,23 @@
 const AbstractLogWriter = require("../AbstractLogWriter");
 
 /**
- * AbstractLogWriter to /dev/null
+ * A writer for outputing to /dev/null, thus outputting to nowhere.
  *
  * @extends AbstractLogWriter
  */
 class NullWriter extends AbstractLogWriter {
+	/**
+	 * Creates a new Null Writer. Never called directly, but AwesomeLog
+	 * will call this when `AwesomeLog.start()` is issued.
+	 *
+	 * NullWriter has no options.
+	 *
+	 * @param {AwesomeLog} parent
+	 * @param {string} name
+	 * @param {string} levels
+	 * @param {AbstractLogFormatter} formatter
+	 * @param {Object} options
+	 */
 	constructor(parent,name,levels,formatter,options) {
 		super(parent,"Null",name,levels,formatter,options);
 	}
