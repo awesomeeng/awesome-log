@@ -4,11 +4,11 @@
 
 const AwesomeUtils = require("AwesomeUtils");
 
-const LogWriter = require("../LogWriter");
+const AbstractLogWriter = require("../AbstractLogWriter");
 
 const $THEME = Symbol("theme");
 
-class ConsoleWriter extends LogWriter {
+class ConsoleWriter extends AbstractLogWriter {
 	constructor(parent,name,levels,formatter,options) {
 		options = AwesomeUtils.Object.extend({
 			colorize: true,

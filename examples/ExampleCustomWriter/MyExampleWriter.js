@@ -1,5 +1,5 @@
 /*
-	An example LogWriter.
+	An example Writer.
 
 	For this example, we are just going to prepend a one up number to
 	each log message.  Other custom writers could do just about anything
@@ -12,17 +12,17 @@
 // First we need to import AwesomeLog.
 const Log = require("AwesomeLog");
 
-// Next we need to expose the AwesomeLog.LogWriter class which we
+// Next we need to expose the AwesomeLog.AbstractLogWriter class which we
 // will subclass in just a second.
-const LogWriter = Log.LogWriter;
+const AbstractLogWriter = Log.AbstractLogWriter;
 
 // Here's our one up counter.
 let counter = 0;
 
 // So here we create our new writer class by subclassing
-// AwesomeLog.LogWriter.
+// AwesomeLog.AbstractLogWriter.
 //
-// When you subclass LogWriter you are required to implement
+// When you subclass AbstractLogWriter you are required to implement
 // four specific methods...
 //
 //		constructor(parent,type,name,levels,formatter,options)
@@ -36,7 +36,7 @@ let counter = 0;
 // 	Some implementations may not require flush() or close() but you
 // 	ar still required to implement them, as done in this example.
 //
-class MyExampleWriter extends LogWriter {
+class MyExampleWriter extends AbstractLogWriter {
 	// Gotta have the constructor. Make sure to pass the type name
 	// for your writer as the second argument. All the other
 	// arguments are passed when the writer is constructed during

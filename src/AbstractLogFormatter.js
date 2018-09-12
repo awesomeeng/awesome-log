@@ -4,7 +4,7 @@
 
 const $PARENT = Symbol("parent");
 
-class LogFormatter {
+class AbstractLogFormatter {
 	constructor(parent) {
 		if (!parent) throw new Error("Missing parent argument.");
 		this[$PARENT] = parent;
@@ -19,4 +19,4 @@ class LogFormatter {
 	}
 }
 
-module.exports = LogFormatter;
+module.exports = AbstractLogFormatter;

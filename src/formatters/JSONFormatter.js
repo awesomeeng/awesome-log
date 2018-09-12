@@ -2,9 +2,9 @@
 
 "use strict";
 
-const LogFormatter = require("../LogFormatter");
+const AbstractLogFormatter = require("../AbstractLogFormatter");
 
-class JSONFormatter extends LogFormatter {
+class JSONFormatter extends AbstractLogFormatter {
 	constructor(parent) {
 		super(parent);
 	}

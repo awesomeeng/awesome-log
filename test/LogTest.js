@@ -8,7 +8,7 @@
 
 const assert = require("assert");
 
-const Log = require("../src/Log");
+const Log = require("../src/AwesomeLog");
 
 describe("Log",()=>{
 	beforeEach(()=>{

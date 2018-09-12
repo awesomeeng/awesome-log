@@ -2,7 +2,7 @@
 
 "use strict";
 
-const LogWriter = require("../LogWriter");
+const AbstractLogWriter = require("../AbstractLogWriter");
 let Worker;
 try {
 	Worker = require('worker_threads');
@@ -11,7 +11,7 @@ catch (ex) {
 	Worker = null;
 }
 
-class SubProcessWriter extends LogWriter {
+class SubProcessWriter extends AbstractLogWriter {
 	constructor(parent,name,levels,formatter,options) {
 		super(parent,"SubProcess",name,levels,formatter,options);
 	}
@@ -19,7 +19,7 @@ class SubProcessWriter extends LogWriter {
 	write(message,logentry) {
 		logentry = Object.assign(logentry);
 		logentry.level = logentry.level && logentry.level.name || logentry.level;
-		
+
 		if (Worker && Worker.parentPort && Worker.parentPort.postMessage) {
 			Worker.parentPort.postMessage({
 				cmd: "AwesomeLog",

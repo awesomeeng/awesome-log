@@ -4,9 +4,9 @@
 
 const AwesomeUtils = require("AwesomeUtils");
 
-const LogFormatter = require("../LogFormatter");
+const AbstractLogFormatter = require("../AbstractLogFormatter");
 
-class DefaultFormatter extends LogFormatter {
+class DefaultFormatter extends AbstractLogFormatter {
 	constructor(parent) {
 		super(parent);
 	}

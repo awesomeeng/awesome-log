@@ -18,21 +18,21 @@
 // First we need to import AwesomeLog.
 const Log = require("AwesomeLog");
 
-// Next we need to expose the AwesomeLog.LogWriter class which we
+// Next we need to expose the AwesomeLog.AbstractLogFormatter class which we
 // will subclass in just a second.
-const LogFormatter = Log.LogFormatter;
+const AbstractLogFormatter = Log.AbstractLogFormatter;
 
 // So here we create our new writer class by subclassing
-// AwesomeLog.LogFormatter.
+// AwesomeLog.AbstractLogFormatter.
 //
-// When you subclass LogFormatter you are required to implement
+// When you subclass AbstractLogFormatter you are required to implement
 // two specific methods...
 //
 //		constructor(parent)
 //
 // 		format(logentry)
 //
-class MyExampleFormatter extends LogFormatter {
+class MyExampleFormatter extends AbstractLogFormatter {
 	// Implement the constructor by just calling super.
 	// In most cases for formatter, this is fine.
 	constructor(parent) {

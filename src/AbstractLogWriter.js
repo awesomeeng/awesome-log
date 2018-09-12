@@ -4,7 +4,7 @@
 
 const AwesomeUtils = require("AwesomeUtils");
 
-const LogFormatter = require("./LogFormatter");
+const AbstractLogFormatter = require("./AbstractLogFormatter");
 
 const $TYPE = Symbol("type");
 const $NAME = Symbol("name");
@@ -13,7 +13,7 @@ const $LEVELS = Symbol("levels");
 const $FORMATTER = Symbol("formatter");
 const $PARENT = Symbol("parent");
 
-class LogWriter {
+class AbstractLogWriter {
 	constructor(parent,type,name,levels,formatter,options) {
 		this[$PARENT] = parent;
 
@@ -25,7 +25,7 @@ class LogWriter {
 		if (typeof name!=="string") throw new Error("Invalid name argument");
 		this[$NAME] = name;
 
-		const Log = require("./Log");
+		const Log = require("./AwesomeLog");
 		if (!levels) levels = "*";
 		if (typeof levels==="string") {
 			if (levels==="*") levels = parent.levels;
@@ -37,7 +37,7 @@ class LogWriter {
 		});
 
 		if (!formatter) throw new Error("Missing formatter argument.");
-		if (!(formatter instanceof LogFormatter)) throw new Error("Invalid formatter argument");
+		if (!(formatter instanceof AbstractLogFormatter)) throw new Error("Invalid formatter argument");
 		this[$FORMATTER] = formatter;
 
 		if (!options) throw new Error("Missing options argument.");
@@ -92,4 +92,4 @@ class LogWriter {
 	}
 }
 
-module.exports = LogWriter;
+module.exports = AbstractLogWriter;

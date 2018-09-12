@@ -2,14 +2,14 @@
 
 "use strict";
 
-const LogWriter = require("../LogWriter");
+const AbstractLogWriter = require("../AbstractLogWriter");
 
 /**
- * LogWriter to /dev/null
- * 
- * @extends LogWriter
+ * AbstractLogWriter to /dev/null
+ *
+ * @extends AbstractLogWriter
  */
-class ConsoleWriter extends LogWriter {
+class NullWriter extends AbstractLogWriter {
 	constructor(parent,name,levels,formatter,options) {
 		super(parent,"Null",name,levels,formatter,options);
 	}
@@ -27,4 +27,4 @@ class ConsoleWriter extends LogWriter {
 	}
 }
 
-module.exports = ConsoleWriter;
+module.exports = NullWriter;

@@ -11,7 +11,7 @@ const FS = require("fs");
 const Path = require("path");
 
 const AwesomeUtils = require("AwesomeUtils");
-const Log = require("../src/Log");
+const Log = require("../src/AwesomeLog");
 
 describe("FileWriterTest",()=>{
 	let id,dir,testfile;

@@ -9,8 +9,8 @@ const Process = require("process");
 const AwesomeUtils = require("AwesomeUtils");
 
 const LogLevel = require("./LogLevel");
-const LogWriter = require("./LogWriter");
-const LogFormatter = require("./LogFormatter");
+const AbstractLogWriter = require("./AbstractLogWriter");
+const AbstractLogFormatter = require("./AbstractLogFormatter");
 
 let Worker;
 try {
@@ -32,7 +32,31 @@ const $RUNNING = Symbol("running");
 const $SUBPROCESSES = Symbol("subprocesshandler");
 const $BASE = Symbol("base");
 
-class Log extends Events {
+/**
+ * AwesomeLog class: An instance of this class is returned when you `require("AwesomeLog")`.
+ *
+ * To use AwesomeLog requires you to first initialize and start AwesomeLog,
+ * preferably as early in your application as possible.
+ *
+ * ```
+ * const Log = require("AwesomeLog");
+ * Log.init();
+ * Log.start();
+ * ```
+ *
+ * You may pass an overall optional configuration to the `init()` method, as needed.
+ *
+ * Every time your `require("AwesomeLog") you get the same instance. Prior to starting
+ * AwesomeLog via `Log.start()`, any log message you send are held in the backlog until
+ * AwesomeLog is started. Once started the backlog is written and any future log message
+ * will be written.
+ *
+ * @extends Events
+ */
+class AwesomeLog extends Events {
+	/**
+	 * Construct a new AwesomeLog instance. This is only ever called once per application.
+	 */
 	constructor() {
 		super();
 
@@ -76,12 +100,15 @@ class Log extends Events {
 		initLevels.call(this,"access,error,warn,info,debug");
 	}
 
-	get LogWriter() {
-		return LogWriter;
+	/**
+	 * Returns the AbstractLogWriter abstract class.
+	 */
+	get AbstractLogWriter() {
+		return AbstractLogWriter;
 	}
 
-	get LogFormatter() {
-		return LogFormatter;
+	get AbstractLogFormatter() {
+		return AbstractLogFormatter;
 	}
 
 	get initialized() {
@@ -127,7 +154,7 @@ class Log extends Events {
 		name = name.toLowerCase();
 
 		if (!konstructor) throw new Error("Missing formatter constructor");
-		if (!LogFormatter.isPrototypeOf(konstructor)) throw new Error("Invalid formatter constructor. Must inherit from LogFormatter.");
+		if (!AbstractLogFormatter.isPrototypeOf(konstructor)) throw new Error("Invalid formatter constructor. Must inherit from AbstractLogFormatter.");
 
 		if (this[$DEFINED_FORMATTERS][name]) throw new Error("Formatter already defined.");
 
@@ -141,7 +168,7 @@ class Log extends Events {
 		name = name.toLowerCase();
 
 		if (!konstructor) throw new Error("Missing writer constructor");
-		if (!LogWriter.isPrototypeOf(konstructor)) throw new Error("Invalid writer constructor. Must inherit from LogWriter.");
+		if (!AbstractLogWriter.isPrototypeOf(konstructor)) throw new Error("Invalid writer constructor. Must inherit from AbstractLogWriter.");
 
 		if (this[$DEFINED_WRITERS][name]) throw new Error("Writer already defined.");
 
@@ -180,7 +207,7 @@ class Log extends Events {
 		this[$CONFIG].historyFormatter = this[$DEFINED_FORMATTERS][this[$CONFIG].historyFormatter.toLowerCase()];
 		if (!this[$CONFIG].historyFormatter) throw new Error("Invalid history formatter.");
 
-		if (!this.config.disableLoggingNotices) this.log(this.config.loggingNoticesLevel,"AwesomeLog","Log initialized.");
+		if (!this.config.disableLoggingNotices) this.log(this.config.loggingNoticesLevel,"AwesomeLog","AwesomeLog initialized.");
 		this.emit("initialized",config);
 
 		return this;
@@ -208,7 +235,7 @@ class Log extends Events {
 		}
 		this[$BACKLOG] = null;
 
-		if (!this.config.disableLoggingNotices) this.log(this.config.loggingNoticesLevel,"AwesomeLog","Log started.");
+		if (!this.config.disableLoggingNotices) this.log(this.config.loggingNoticesLevel,"AwesomeLog","AwesomeLog started.");
 		this.emit("started");
 
 		return this;
@@ -229,7 +256,7 @@ class Log extends Events {
 			writer.close();
 		});
 
-		if (!this.config.disableLoggingNotices) this.log(this.config.loggingNoticesLevel,"AwesomeLog","Log stopped.");
+		if (!this.config.disableLoggingNotices) this.log(this.config.loggingNoticesLevel,"AwesomeLog","AwesomeLog stopped.");
 		this.emit("stopped");
 
 		return this;
@@ -239,7 +266,7 @@ class Log extends Events {
 		if (!this.running) return;
 		this[$BACKLOG] = this[$BACKLOG] || [];
 
-		if (!this.config.disableLoggingNotices) this.log(this.config.loggingNoticesLevel,"AwesomeLog","Log paused.");
+		if (!this.config.disableLoggingNotices) this.log(this.config.loggingNoticesLevel,"AwesomeLog","AwesomeLog paused.");
 		this.emit("paused");
 
 		return this;
@@ -255,7 +282,7 @@ class Log extends Events {
 		}
 		this[$BACKLOG] = null;
 
-		if (!this.config.disableLoggingNotices) this.log(this.config.loggingNoticesLevel,"AwesomeLog","Log resumed.");
+		if (!this.config.disableLoggingNotices) this.log(this.config.loggingNoticesLevel,"AwesomeLog","AwesomeLog resumed.");
 		this.emit("resumed");
 
 		return this;
@@ -431,7 +458,7 @@ const initWriters = function initWriters() {
 		let formatter = writer.formatter || "default";
 		if (typeof formatter==="string") formatter = this[$DEFINED_FORMATTERS][formatter.toLowerCase()];
 		if (!formatter) throw new Error("Missing writer formatter '"+writer.formatter+"'.");
-		if (!(formatter instanceof LogFormatter)) throw new Error("Invalid writer formatter '"+writer.formatter+"', must be of type LogFormatter.");
+		if (!(formatter instanceof AbstractLogFormatter)) throw new Error("Invalid writer formatter '"+writer.formatter+"', must be of type AbstractLogFormatter.");
 
 		let options = writer.options || {};
 
@@ -470,7 +497,7 @@ const subProcessHandler = function subProcessHandler(message) {
 };
 
 // create our singleton instance
-let instance = new Log();
+let instance = new AwesomeLog();
 
 // define built in writers
 instance.defineWriter("null",require("./writers/NullWriter"));

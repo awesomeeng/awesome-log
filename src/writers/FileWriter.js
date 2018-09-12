@@ -7,13 +7,13 @@ const FS = require("fs");
 
 const AwesomeUtils  = require("AwesomeUtils");
 
-const LogWriter = require("../LogWriter");
+const AbstractLogWriter = require("../AbstractLogWriter");
 
 const $FILE = Symbol("file");
 const $FILENAME = Symbol("filename");
 const $ROOT = Symbol("root");
 
-class FileWriter extends LogWriter {
+class FileWriter extends AbstractLogWriter {
 	constructor(parent,name,levels,formatter,options) {
 		options = AwesomeUtils.Object.extend({
 			filename: "logs/AwesomeLog.{YYYYMMDD}.log",

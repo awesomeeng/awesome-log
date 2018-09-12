@@ -2,7 +2,7 @@
 
 "use strict";
 
-const Log = require("../../src/Log.js");
+const Log = require("../../src/AwesomeLog.js");
 Log.init();
 Log.start();
 Log.debug("worker","test log from worker 1.");

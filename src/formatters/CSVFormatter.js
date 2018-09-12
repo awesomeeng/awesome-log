@@ -2,9 +2,9 @@
 
 "use strict";
 
-const LogFormatter = require("../LogFormatter");
+const AbstractLogFormatter = require("../AbstractLogFormatter");
 
-class JSONFormatter extends LogFormatter {
+class CSVFormatter extends AbstractLogFormatter {
 	constructor(parent) {
 		super(parent);
 	}
@@ -38,4 +38,4 @@ class JSONFormatter extends LogFormatter {
 	}
 }
 
-module.exports = JSONFormatter;
+module.exports = CSVFormatter;
