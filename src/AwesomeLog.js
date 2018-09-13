@@ -6,7 +6,7 @@ const OS = require("os");
 const Events = require("events");
 const Process = require("process");
 
-const AwesomeUtils = require("AwesomeUtils");
+const AwesomeUtils = require("@awesomeeng/awesome-utils");
 
 const LogLevel = require("./LogLevel");
 const AbstractLogWriter = require("./AbstractLogWriter");

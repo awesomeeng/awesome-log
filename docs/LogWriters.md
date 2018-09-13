@@ -86,7 +86,7 @@ A custom writer has the following shape, taken from our example [ExampleCustomWr
 ```
 "use strict";
 
-const Log = require("awesome-log");
+const Log = require("@awesomeeng/awesome-log");
 const AbstractLogWriter = Log.AbstractLogWriter;
 
 let counter = 0;

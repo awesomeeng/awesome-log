@@ -9,7 +9,7 @@ Using AwesomeLog across processes/threads require a couple of easy steps to setu
 First, initialize and start your log in your main application as per usual.
 
 ```
-const Log = require("awesome-log");
+const Log = require("@awesomeeng/awesome-log");
 Log.init();
 Log.start();
 ```
@@ -26,7 +26,7 @@ Log.captureSubProcess(child);
 Finally, in each of your child processes, you need to instantiate your own AwesomeLog instance, which is fortunately super easy:
 
 ```
-const Log = require("awesome-log");
+const Log = require("@awesomeeng/awesome-log");
 Log.init();
 Log.start();
 ```

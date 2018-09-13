@@ -3,7 +3,7 @@
 When you initialize AwesomeLog via `Log.init()` you may provide an optional configuration object as the first argument.  This tells AwesomeLog how to work.
 
 ```
-const Log = require("awesome-log");
+const Log = require("@awesomeeng/awesome-log");
 Log.init({
 	... your configuration goes here ...
 });

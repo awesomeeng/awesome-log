@@ -2,15 +2,44 @@
 
 "use strict";
 
-const AwesomeUtils = require("AwesomeUtils");
+const AwesomeUtils = require("@awesomeeng/awesome-utils");
 
 const AbstractLogFormatter = require("../AbstractLogFormatter");
 
+/**
+ * The default AwesomeLog formatter. This produces log message in the following form:
+ *
+ * ```
+ * ISO TIMESTAMP            : #PID   : LEVEL      : SYSTEM           : MESSAGE
+ * ```
+ *
+ * For example
+ *
+ * ```
+ * 2018-09-13T17:47:37.201Z : #12080 : INFO       : AwesomeLog       : AwesomeLog initialized.
+ * 2018-09-13T17:47:37.207Z : #12080 : INFO       : AwesomeLog       : AwesomeLog started.
+ * 2018-09-13T17:47:37.208Z : #12080 : INFO       : Example          : This is an example log message.
+ * ```
+ *
+ * @extends AbstractLogFormatter
+ */
 class DefaultFormatter extends AbstractLogFormatter {
+	/**
+	 * Constructor for this formatter. Never called directly, but called by AwesomeLog
+	 * when `Log.start()` is called.
+	 *
+	 * @param {AwesomeLog} parent
+	 */
 	constructor(parent) {
 		super(parent);
 	}
 
+	/**
+	 * Given the log entry object, format it tou our output string.
+	 *
+	 * @param  {Object} logentry
+	 * @return {*}
+	 */
 	format(logentry) {
 		let msg = "";
 

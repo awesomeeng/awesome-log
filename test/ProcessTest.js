@@ -11,7 +11,7 @@ const CP = require("child_process");
 const Path = require("path");
 const Cluster = require("cluster");
 
-const AwesomeUtils = require("AwesomeUtils");
+const AwesomeUtils = require("@awesomeeng/awesome-utils");
 
 const Log = require("../src/AwesomeLog");
 

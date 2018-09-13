@@ -5,6 +5,31 @@
 <dd><p>AwesomeLog is a singleton class that will always return a single AwesomeLog
 instance each time it is required.</p>
 </dd>
+<dt><a href="#CSVFormatter">CSVFormatter</a> ⇐ <code><a href="#AbstractLogFormatter">AbstractLogFormatter</a></code></dt>
+<dd><p>The CSV AwesomeLog formatter. This produces the following CSV data...</p>
+<pre><code>TIMESTAMP,&quot;LEVEL&quot;,PID,&quot;SYSTEM&quot;,&quot;MESSAGE&quot;,ARG0,ARG1,ARG2,ETC
+</code></pre><p>Note that this does not write a CSV header line.</p>
+</dd>
+<dt><a href="#DefaultFormatter">DefaultFormatter</a> ⇐ <code><a href="#AbstractLogFormatter">AbstractLogFormatter</a></code></dt>
+<dd><p>The default AwesomeLog formatter. This produces log message in the following form:</p>
+<pre><code>ISO TIMESTAMP            : #PID   : LEVEL      : SYSTEM           : MESSAGE
+</code></pre><p>For example</p>
+<pre><code>2018-09-13T17:47:37.201Z : #12080 : INFO       : AwesomeLog       : AwesomeLog initialized.
+2018-09-13T17:47:37.207Z : #12080 : INFO       : AwesomeLog       : AwesomeLog started.
+2018-09-13T17:47:37.208Z : #12080 : INFO       : Example          : This is an example log message.
+</code></pre></dd>
+<dt><a href="#JSObjectFormatter">JSObjectFormatter</a> ⇐ <code><a href="#AbstractLogFormatter">AbstractLogFormatter</a></code></dt>
+<dd><p>The JS Object AwesomeLog formatter. This simply forwards the log entry Object onward
+for usage programatically. It does not produce a readable string.</p>
+</dd>
+<dt><a href="#JSONFormatter">JSONFormatter</a> ⇐ <code><a href="#AbstractLogFormatter">AbstractLogFormatter</a></code></dt>
+<dd><p>The JSON AwesomeLog formatter. This produces log message in JSON form. This
+will include all of the details in a log entry Object.</p>
+</dd>
+<dt><a href="#SubProcessFormatter">SubProcessFormatter</a> ⇐ <code><a href="#AbstractLogFormatter">AbstractLogFormatter</a></code></dt>
+<dd><p>The SubProcess AwesomeLog formatter. This produces log message for usage with child
+processes and is only used internall by AwesomeLog.</p>
+</dd>
 <dt><a href="#LogLevel">LogLevel</a></dt>
 <dd><p>Class for holding LogLevel names and it associated needs.</p>
 </dd>
@@ -545,6 +570,271 @@ Stops capturing a process/cluster/worker log messages.
 | Param | Type |
 | --- | --- |
 | subprocess | <code>ChildProcess.ChildProcess</code> \| <code>Cluster.Worker</code> \| <code>WorkerThread.Worker</code> | 
+
+
+* * *
+
+<a name="CSVFormatter"></a>
+
+## CSVFormatter ⇐ [<code>AbstractLogFormatter</code>](#AbstractLogFormatter)
+The CSV AwesomeLog formatter. This produces the following CSV data...```TIMESTAMP,"LEVEL",PID,"SYSTEM","MESSAGE",ARG0,ARG1,ARG2,ETC```Note that this does not write a CSV header line.
+
+**Kind**: global class  
+**Extends**: [<code>AbstractLogFormatter</code>](#AbstractLogFormatter)  
+
+* [CSVFormatter](#CSVFormatter) ⇐ [<code>AbstractLogFormatter</code>](#AbstractLogFormatter)
+    * [new CSVFormatter(parent)](#new_CSVFormatter_new)
+    * [.parent](#AbstractLogFormatter+parent) ⇒ [<code>AwesomeLog</code>](#AwesomeLog)
+    * [.format(logentry)](#CSVFormatter+format) ⇒ <code>\*</code>
+
+
+* * *
+
+<a name="new_CSVFormatter_new"></a>
+
+### new CSVFormatter(parent)
+Constructor for this formatter. Never called directly, but called by AwesomeLogwhen `Log.start()` is called.
+
+
+| Param | Type |
+| --- | --- |
+| parent | [<code>AwesomeLog</code>](#AwesomeLog) | 
+
+
+* * *
+
+<a name="AbstractLogFormatter+parent"></a>
+
+### csvFormatter.parent ⇒ [<code>AwesomeLog</code>](#AwesomeLog)
+Returns the parent AwesomeLog instance.
+
+**Kind**: instance property of [<code>CSVFormatter</code>](#CSVFormatter)  
+
+* * *
+
+<a name="CSVFormatter+format"></a>
+
+### csvFormatter.format(logentry) ⇒ <code>\*</code>
+Given the log entry object, format it tou our output string.
+
+**Kind**: instance method of [<code>CSVFormatter</code>](#CSVFormatter)  
+**Overrides**: [<code>format</code>](#AbstractLogFormatter+format)  
+
+| Param | Type |
+| --- | --- |
+| logentry | <code>Object</code> | 
+
+
+* * *
+
+<a name="DefaultFormatter"></a>
+
+## DefaultFormatter ⇐ [<code>AbstractLogFormatter</code>](#AbstractLogFormatter)
+The default AwesomeLog formatter. This produces log message in the following form:```ISO TIMESTAMP            : #PID   : LEVEL      : SYSTEM           : MESSAGE```For example```2018-09-13T17:47:37.201Z : #12080 : INFO       : AwesomeLog       : AwesomeLog initialized.2018-09-13T17:47:37.207Z : #12080 : INFO       : AwesomeLog       : AwesomeLog started.2018-09-13T17:47:37.208Z : #12080 : INFO       : Example          : This is an example log message.```
+
+**Kind**: global class  
+**Extends**: [<code>AbstractLogFormatter</code>](#AbstractLogFormatter)  
+
+* [DefaultFormatter](#DefaultFormatter) ⇐ [<code>AbstractLogFormatter</code>](#AbstractLogFormatter)
+    * [new DefaultFormatter(parent)](#new_DefaultFormatter_new)
+    * [.parent](#AbstractLogFormatter+parent) ⇒ [<code>AwesomeLog</code>](#AwesomeLog)
+    * [.format(logentry)](#DefaultFormatter+format) ⇒ <code>\*</code>
+
+
+* * *
+
+<a name="new_DefaultFormatter_new"></a>
+
+### new DefaultFormatter(parent)
+Constructor for this formatter. Never called directly, but called by AwesomeLogwhen `Log.start()` is called.
+
+
+| Param | Type |
+| --- | --- |
+| parent | [<code>AwesomeLog</code>](#AwesomeLog) | 
+
+
+* * *
+
+<a name="AbstractLogFormatter+parent"></a>
+
+### defaultFormatter.parent ⇒ [<code>AwesomeLog</code>](#AwesomeLog)
+Returns the parent AwesomeLog instance.
+
+**Kind**: instance property of [<code>DefaultFormatter</code>](#DefaultFormatter)  
+
+* * *
+
+<a name="DefaultFormatter+format"></a>
+
+### defaultFormatter.format(logentry) ⇒ <code>\*</code>
+Given the log entry object, format it tou our output string.
+
+**Kind**: instance method of [<code>DefaultFormatter</code>](#DefaultFormatter)  
+**Overrides**: [<code>format</code>](#AbstractLogFormatter+format)  
+
+| Param | Type |
+| --- | --- |
+| logentry | <code>Object</code> | 
+
+
+* * *
+
+<a name="JSObjectFormatter"></a>
+
+## JSObjectFormatter ⇐ [<code>AbstractLogFormatter</code>](#AbstractLogFormatter)
+The JS Object AwesomeLog formatter. This simply forwards the log entry Object onwardfor usage programatically. It does not produce a readable string.
+
+**Kind**: global class  
+**Extends**: [<code>AbstractLogFormatter</code>](#AbstractLogFormatter)  
+
+* [JSObjectFormatter](#JSObjectFormatter) ⇐ [<code>AbstractLogFormatter</code>](#AbstractLogFormatter)
+    * [new JSObjectFormatter(parent)](#new_JSObjectFormatter_new)
+    * [.parent](#AbstractLogFormatter+parent) ⇒ [<code>AwesomeLog</code>](#AwesomeLog)
+    * [.format(logentry)](#JSObjectFormatter+format) ⇒ <code>\*</code>
+
+
+* * *
+
+<a name="new_JSObjectFormatter_new"></a>
+
+### new JSObjectFormatter(parent)
+Constructor for this formatter. Never called directly, but called by AwesomeLogwhen `Log.start()` is called.
+
+
+| Param | Type |
+| --- | --- |
+| parent | [<code>AwesomeLog</code>](#AwesomeLog) | 
+
+
+* * *
+
+<a name="AbstractLogFormatter+parent"></a>
+
+### jsObjectFormatter.parent ⇒ [<code>AwesomeLog</code>](#AwesomeLog)
+Returns the parent AwesomeLog instance.
+
+**Kind**: instance property of [<code>JSObjectFormatter</code>](#JSObjectFormatter)  
+
+* * *
+
+<a name="JSObjectFormatter+format"></a>
+
+### jsObjectFormatter.format(logentry) ⇒ <code>\*</code>
+Given the log entry object, format it tou our output string.
+
+**Kind**: instance method of [<code>JSObjectFormatter</code>](#JSObjectFormatter)  
+**Overrides**: [<code>format</code>](#AbstractLogFormatter+format)  
+
+| Param | Type |
+| --- | --- |
+| logentry | <code>Object</code> | 
+
+
+* * *
+
+<a name="JSONFormatter"></a>
+
+## JSONFormatter ⇐ [<code>AbstractLogFormatter</code>](#AbstractLogFormatter)
+The JSON AwesomeLog formatter. This produces log message in JSON form. Thiswill include all of the details in a log entry Object.
+
+**Kind**: global class  
+**Extends**: [<code>AbstractLogFormatter</code>](#AbstractLogFormatter)  
+
+* [JSONFormatter](#JSONFormatter) ⇐ [<code>AbstractLogFormatter</code>](#AbstractLogFormatter)
+    * [new JSONFormatter(parent)](#new_JSONFormatter_new)
+    * [.parent](#AbstractLogFormatter+parent) ⇒ [<code>AwesomeLog</code>](#AwesomeLog)
+    * [.format(logentry)](#JSONFormatter+format) ⇒ <code>\*</code>
+
+
+* * *
+
+<a name="new_JSONFormatter_new"></a>
+
+### new JSONFormatter(parent)
+Constructor for this formatter. Never called directly, but called by AwesomeLogwhen `Log.start()` is called.
+
+
+| Param | Type |
+| --- | --- |
+| parent | [<code>AwesomeLog</code>](#AwesomeLog) | 
+
+
+* * *
+
+<a name="AbstractLogFormatter+parent"></a>
+
+### jsonFormatter.parent ⇒ [<code>AwesomeLog</code>](#AwesomeLog)
+Returns the parent AwesomeLog instance.
+
+**Kind**: instance property of [<code>JSONFormatter</code>](#JSONFormatter)  
+
+* * *
+
+<a name="JSONFormatter+format"></a>
+
+### jsonFormatter.format(logentry) ⇒ <code>\*</code>
+Given the log entry object, format it tou our output string.
+
+**Kind**: instance method of [<code>JSONFormatter</code>](#JSONFormatter)  
+**Overrides**: [<code>format</code>](#AbstractLogFormatter+format)  
+
+| Param | Type |
+| --- | --- |
+| logentry | <code>Object</code> | 
+
+
+* * *
+
+<a name="SubProcessFormatter"></a>
+
+## SubProcessFormatter ⇐ [<code>AbstractLogFormatter</code>](#AbstractLogFormatter)
+The SubProcess AwesomeLog formatter. This produces log message for usage with childprocesses and is only used internall by AwesomeLog.
+
+**Kind**: global class  
+**Extends**: [<code>AbstractLogFormatter</code>](#AbstractLogFormatter)  
+
+* [SubProcessFormatter](#SubProcessFormatter) ⇐ [<code>AbstractLogFormatter</code>](#AbstractLogFormatter)
+    * [new SubProcessFormatter(parent)](#new_SubProcessFormatter_new)
+    * [.parent](#AbstractLogFormatter+parent) ⇒ [<code>AwesomeLog</code>](#AwesomeLog)
+    * [.format(logentry)](#SubProcessFormatter+format) ⇒ <code>\*</code>
+
+
+* * *
+
+<a name="new_SubProcessFormatter_new"></a>
+
+### new SubProcessFormatter(parent)
+Constructor for this formatter. Never called directly, but called by AwesomeLogwhen `Log.start()` is called.
+
+
+| Param | Type |
+| --- | --- |
+| parent | [<code>AwesomeLog</code>](#AwesomeLog) | 
+
+
+* * *
+
+<a name="AbstractLogFormatter+parent"></a>
+
+### subProcessFormatter.parent ⇒ [<code>AwesomeLog</code>](#AwesomeLog)
+Returns the parent AwesomeLog instance.
+
+**Kind**: instance property of [<code>SubProcessFormatter</code>](#SubProcessFormatter)  
+
+* * *
+
+<a name="SubProcessFormatter+format"></a>
+
+### subProcessFormatter.format(logentry) ⇒ <code>\*</code>
+Given the log entry object, format it tou our output string.
+
+**Kind**: instance method of [<code>SubProcessFormatter</code>](#SubProcessFormatter)  
+**Overrides**: [<code>format</code>](#AbstractLogFormatter+format)  
+
+| Param | Type |
+| --- | --- |
+| logentry | <code>Object</code> | 
 
 
 * * *

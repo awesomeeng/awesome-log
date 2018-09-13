@@ -62,7 +62,7 @@ A custom formatter has the following shape, taken from our example [ExampleCusto
 ```
 "use strict";
 
-const Log = require("awesome-log");
+const Log = require("@awesomeeng/awesome-log");
 const AbstractLogFormatter = Log.AbstractLogFormatter;
 
 class MyExampleFormatter extends AbstractLogFormatter {

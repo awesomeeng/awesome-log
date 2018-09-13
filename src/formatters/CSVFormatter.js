@@ -4,12 +4,36 @@
 
 const AbstractLogFormatter = require("../AbstractLogFormatter");
 
+/**
+ * The CSV AwesomeLog formatter. This produces the following CSV data...
+ *
+ * ```
+ * TIMESTAMP,"LEVEL",PID,"SYSTEM","MESSAGE",ARG0,ARG1,ARG2,ETC
+
+ * ```
+ *
+ * Note that this does not write a CSV header line.
+ *
+ * @extends AbstractLogFormatter
+ */
 class CSVFormatter extends AbstractLogFormatter {
+	/**
+	 * Constructor for this formatter. Never called directly, but called by AwesomeLog
+	 * when `Log.start()` is called.
+	 *
+	 * @param {AwesomeLog} parent
+	 */
 	constructor(parent) {
 		super(parent);
 	}
 
 	// timestamp,"level",pid,"system","message",arg0,arg1,arg2,etc
+	/**
+	 * Given the log entry object, format it tou our output string.
+	 *
+	 * @param  {Object} logentry
+	 * @return {*}
+	 */
 	format(logentry) {
 		let s = [];
 

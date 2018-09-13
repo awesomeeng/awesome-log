@@ -5,7 +5,7 @@
 const Path = require("path");
 const FS = require("fs");
 
-const AwesomeUtils  = require("AwesomeUtils");
+const AwesomeUtils  = require("@awesomeeng/awesome-utils");
 
 const AbstractLogWriter = require("../AbstractLogWriter");
 

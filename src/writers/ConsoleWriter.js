@@ -2,7 +2,7 @@
 
 "use strict";
 
-const AwesomeUtils = require("AwesomeUtils");
+const AwesomeUtils = require("@awesomeeng/awesome-utils");
 
 const AbstractLogWriter = require("../AbstractLogWriter");
 

@@ -10,7 +10,7 @@
 "use strict";
 
 // First we need to import AwesomeLog.
-const Log = require("awesome-log");
+const Log = require("@awesomeeng/awesome-log");
 
 // Next we need to expose the AwesomeLog.AbstractLogWriter class which we
 // will subclass in just a second.

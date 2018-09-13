@@ -10,7 +10,7 @@ const assert = require("assert");
 const FS = require("fs");
 const Path = require("path");
 
-const AwesomeUtils = require("AwesomeUtils");
+const AwesomeUtils = require("@awesomeeng/awesome-utils");
 const Log = require("../src/AwesomeLog");
 
 describe("FileWriterTest",()=>{

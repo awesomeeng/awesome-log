@@ -4,12 +4,29 @@
 
 const AbstractLogFormatter = require("../AbstractLogFormatter");
 
-class JSONFormatter extends AbstractLogFormatter {
+/**
+ * The SubProcess AwesomeLog formatter. This produces log message for usage with child
+ * processes and is only used internall by AwesomeLog.
+ *
+ * @extends AbstractLogFormatter
+ */
+class SubProcessFormatter extends AbstractLogFormatter {
+	/**
+	 * Constructor for this formatter. Never called directly, but called by AwesomeLog
+	 * when `Log.start()` is called.
+	 *
+	 * @param {AwesomeLog} parent
+	 */
 	constructor(parent) {
 		super(parent);
 	}
 
-	// @AWESOMELOG,timestamp,"level",pid,"system","message",arg0,arg1,arg2,etc
+	/**
+	 * Given the log entry object, format it tou our output string.
+	 *
+	 * @param  {Object} logentry
+	 * @return {*}
+	 */
 	format(logentry) {
 		let s = [];
 
@@ -39,4 +56,4 @@ class JSONFormatter extends AbstractLogFormatter {
 	}
 }
 
-module.exports = JSONFormatter;
+module.exports = SubProcessFormatter;
