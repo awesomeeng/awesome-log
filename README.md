@@ -39,7 +39,7 @@ AwesomeLog provides...
 
 Couldn't be easier.
 ```
-	npm install --save @awesomeeng/awesome-log
+npm install --save @awesomeeng/awesome-log
 ```
 
 ## Setup
@@ -50,23 +50,23 @@ Setup has three steps:
 
 1). Require AwesomeLog...
 ```
-	const Log = require("@awesomeeng/awesome-log");
+const Log = require("@awesomeeng/awesome-log");
 ```
 
 2). Configure AwesomeLog...
 ```
-	// for out of the box, zero configuration
-	Log.init();
+// for out of the box, zero configuration
+Log.init();
 
-	// or for more control
-	Log.init({
-		// configuration options go here
-	});
+// or for more control
+Log.init({
+	// configuration options go here
+});
 ```
 
 3). Start AwesomeLog...
 ```
-	Log.start();
+Log.start();
 ```
 
 That's it. AwesomeLog is running and you can now use in any part of your application:
@@ -79,12 +79,12 @@ To use AwesomeLog once it is configured and started is simple:
 1). You need to require AwesomeLog in any file/class that would reference it.
 
 ```
-	const Log = require("@awesomeeng/awesome-log");
+const Log = require("@awesomeeng/awesome-log");
 ```
 
 2). Then you just log stuff out.
 ```
-	Log.info(null,"message");
+Log.info(null,"message");
 ```
 
 Simple.
@@ -99,11 +99,11 @@ You'll notice that Log calls take two or more arguments:
 
 AwesomeLog starts with five basic Log Levels: Access, Error, Warn, Info, Debug by default). Each of these associated methods on the Log instance to allow you to easily use them.  So for the default levels you get
 ```
-	Log.access(...)
-	Log.error(...)
-	Log.warn(...)
-	Log.info(...)
-	Log.debug(...)
+Log.access(...)
+Log.error(...)
+Log.warn(...)
+Log.info(...)
+Log.debug(...)
 ```
 
 If you customize the log levels, AwesomeLog will remove the default log level methods (`Log.warn()` etc) and replace them with methods that have your log levels names:
@@ -123,7 +123,7 @@ You may have as many Log Levels as you desire, but each must have a unique name.
 
 In addition to the log level methods, you also use the `Log.log()` method which takes the level as the first argument, so you can programmatically set the level if needed.
 ```
-	Log.log("level","system","message");
+Log.log("level","system","message");
 ```
 
 ## Log Writers
@@ -237,4 +237,4 @@ To learn more about The Awesome Engineering Company and our suite of products, v
 
 ## License
 
-AwesomeLog is released under the MIT License. Please read the  [LICENSE](https://raw.githubusercontent.com/awesomeeng/AwesomeLog/master/LICENSE?token=ABA2_wogpYds4a1qC_4aeUZd8C1in6Qcks5bUiQFwA%3D%3D) file for details.
+AwesomeLog is released under the MIT License. Please read the  [LICENSE](./LICENSE) file for details.
