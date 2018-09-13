@@ -2,7 +2,7 @@
 
 "use strict";
 
-const Log = require("AwesomeLog");
+const Log = require("awesome-log");
 Log.init();
 Log.start();
 

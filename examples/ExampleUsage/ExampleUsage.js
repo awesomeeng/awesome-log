@@ -4,7 +4,7 @@
 
 "use strict";
 
-const Log = require("AwesomeLog");
+const Log = require("awesome-log");
 
 // First we initialize the log system.
 //

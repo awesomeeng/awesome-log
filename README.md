@@ -39,7 +39,7 @@ AwesomeLog provides...
 
 Couldn't be easier.
 ```
-	npm install @awesomeeng/AwesomeLog
+	npm install --save @awesomeeng/awesome-log
 ```
 
 ## Setup
@@ -50,7 +50,7 @@ Setup has three steps:
 
 1). Require AwesomeLog...
 ```
-	const Log = require("AwesomeLog");
+	const Log = require("awesome-log");
 ```
 
 2). Configure AwesomeLog...
@@ -79,7 +79,7 @@ To use AwesomeLog once it is configured and started is simple:
 1). You need to require AwesomeLog in any file/class that would reference it.
 
 ```
-	const Log = require("AwesomeLog");
+	const Log = require("awesome-log");
 ```
 
 2). Then you just log stuff out.

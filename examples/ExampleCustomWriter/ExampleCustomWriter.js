@@ -5,7 +5,7 @@
 "use strict";
 
 // First we require log.
-const Log = require("AwesomeLog");
+const Log = require("awesome-log");
 
 // Second, we require the writer we want to use.
 require("./MyExampleWriter");

@@ -1,24 +1,43 @@
 {
-    "name": "AwesomeLog",
-    "version": "1.0.0",
-    "author": "the awesome engineering company",
-    "license": "MIT",
-    "contributors": [
-        {
-            "name": "Glen R. Goodwin"
-        }
-    ],
-    "engines": {
-        "node": ">=10.5.0"
-    },
-    "main": "./src/AwesomeLog.js",
-    "dependencies": {},
-    "devDependencies": {
-        "jsdoc-to-markdown": "*",
-        "mocha": "*"
-    },
-    "optionalDependencies": {},
-    "scripts": {
-        "docs": "jsdoc2md src/** --separators > docs/API.md"
-    }
+  "name": "@awesomeeng/awesome-log",
+  "version": "1.0.0",
+  "author": "the awesome engineering company",
+  "license": "MIT",
+  "contributors": [
+    "Glen R. Goodwin"
+  ],
+  "main": "./src/AwesomeLog.js",
+  "engines": {
+    "node": ">=10.5.0"
+  },
+  "dependencies": {
+    "@awesomeeng/awesome-utils": "1.0.0"
+  },
+  "devDependencies": {
+    "jsdoc-to-markdown": "*",
+    "mocha": "*"
+  },
+  "optionalDependencies": {},
+  "scripts": {
+    "docs": "jsdoc2md src/** --separators > docs/API.md"
+  },
+  "description": "AwesomeLog is a Log System for enterprise ready nodejs applications. It provides a basic out of the box logging solution that is ready to go with zero configuration but also gives you a highly configurable logging solution that with the power to do your logging right.",
+  "directories": {
+    "doc": "docs",
+    "test": "test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/awesomeeng/awesome-log.git"
+  },
+  "keywords": [
+    "awesome",
+    "awesomeeng",
+    "awesome",
+    "engineering"
+  ],
+  "bugs": {
+    "url": "https://github.com/awesomeeng/awesome-log/issues"
+  },
+  "homepage": "https://github.com/awesomeeng/awesome-log#readme"
 }

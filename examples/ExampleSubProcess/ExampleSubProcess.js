@@ -7,7 +7,7 @@ const CP = require("child_process");
 
 const AwesomeUtils = require("AwesomeUtils");
 
-const Log = require("AwesomeLog");
+const Log = require("awesome-log");
 Log.init();
 Log.start();
 
