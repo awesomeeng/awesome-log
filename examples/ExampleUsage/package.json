@@ -8,6 +8,6 @@
         "node": ">=10.5.0"
     },
     "dependencies": {
-        "@AwesomeEng/AwesomeLog": "*"
+		"@awesomeeng/awesome-log": "*"
     }
 }
