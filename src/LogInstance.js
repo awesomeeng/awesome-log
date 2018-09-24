@@ -9,6 +9,7 @@ const Process = require("process");
 const AwesomeUtils = require("@awesomeeng/awesome-utils");
 
 const LogLevel = require("./LogLevel");
+const LogExtensions = require("./LogExtensions");
 const AbstractLogWriter = require("./AbstractLogWriter");
 const AbstractLogFormatter = require("./AbstractLogFormatter");
 
@@ -23,8 +24,6 @@ catch (ex) {
 const $ID = Symbol("id");
 const $PARENT = Symbol("parent");
 const $CONFIG = Symbol("config");
-const $DEFINED_WRITERS = Symbol("defined_writers");
-const $DEFINED_FORMATTERS = Symbol("defined_formatters");
 const $BACKLOG = Symbol("backlog");
 const $HISTORY = Symbol("history");
 const $FUNCTIONS = Symbol("functions");
@@ -80,8 +79,6 @@ class LogInstance extends Events {
 		this[$ID] = id;
 		this[$PARENT] = parent;
 		this[$CONFIG] = null;
-		this[$DEFINED_WRITERS] = {};
-		this[$DEFINED_FORMATTERS] = {};
 		this[$BACKLOG] = [];
 		this[$HISTORY] = [];
 		this[$FUNCTIONS] = {};
@@ -91,25 +88,6 @@ class LogInstance extends Events {
 		this[$SUBPROCESSES] = new Map();
 
 		initLevels.call(this,"access,error,warn,info,debug");
-
-		// define built in writers
-		this.defineWriter("null",require("./writers/NullWriter"));
-		this.defineWriter("nullwriter",require("./writers/NullWriter"));
-		this.defineWriter("subprocess",require("./writers/SubProcessWriter"));
-		this.defineWriter("default",require("./writers/ConsoleWriter"));
-		this.defineWriter("console",require("./writers/ConsoleWriter"));
-		this.defineWriter("consolewriter",require("./writers/ConsoleWriter"));
-		this.defineWriter("stdout",require("./writers/ConsoleWriter"));
-		this.defineWriter("file",require("./writers/FileWriter"));
-		this.defineWriter("filewriter",require("./writers/FileWriter"));
-
-		// define built in formatters
-		this.defineFormatter("default",require("./formatters/DefaultFormatter"));
-		this.defineFormatter("subprocess",require("./formatters/SubProcessFormatter"));
-		this.defineFormatter("json",require("./formatters/JSONFormatter"));
-		this.defineFormatter("js",require("./formatters/JSObjectFormatter"));
-		this.defineFormatter("jsobject",require("./formatters/JSObjectFormatter"));
-		this.defineFormatter("csv",require("./formatters/CSVFormatter"));
 	}
 
 	/**
@@ -208,66 +186,6 @@ class LogInstance extends Events {
 	}
 
 	/**
-	 * Returns an array of strings containing the defined Log Writer names that can be used.
-	 *
-	 * @return {Array<string>}
-	 */
-	get definedWriters() {
-		return AwesomeUtils.Object.extend(this[$DEFINED_WRITERS]);
-	}
-
-	/**
-	 * Returns an array of strings containing the defined Log Formatter names that can be used.
-	 *
-	 * @return {Array<string>}
-	 */
-	get definedFormatters() {
-		return AwesomeUtils.Object.extend(this[$DEFINED_FORMATTERS]);
-	}
-
-	/**
-	 * Map a new Log Formatter to a specific name, for usage in configuring AwesomeLog.
-	 *
-	 * @param  {string} name
-	 * @param  {Class<AbstractLogFormatter>} logFormatter
-	 * @return {void}
-	 */
-	defineFormatter(name,logFormatter) {
-		if (!name) throw new Error("Missing formatter name.");
-		name = name.toLowerCase();
-
-		if (!logFormatter) throw new Error("Missing formatter constructor");
-		if (!AbstractLogFormatter.isPrototypeOf(logFormatter)) throw new Error("Invalid formatter constructor. Must inherit from AbstractLogFormatter.");
-
-		if (this[$DEFINED_FORMATTERS][name]) throw new Error("Formatter already defined.");
-
-		this[$DEFINED_FORMATTERS][name] = new logFormatter(this);
-
-		this.emit("formatter_added",name);
-	}
-
-	/**
-	 * Map a new Log Writer to a specific name, for usage in configuring AwesomeLog.
-	 *
-	 * @param  {string} name
-	 * @param  {Class<AbstractLogWriter>} logWriter
-	 * @return {void}
-	 */
-	defineWriter(name,logWriter) {
-		if (!name) throw new Error("Missing writer name.");
-		name = name.toLowerCase();
-
-		if (!logWriter) throw new Error("Missing writer constructor");
-		if (!AbstractLogWriter.isPrototypeOf(logWriter)) throw new Error("Invalid writer constructor. Must inherit from AbstractLogWriter.");
-
-		if (this[$DEFINED_WRITERS][name]) throw new Error("Writer already defined.");
-
-		this[$DEFINED_WRITERS][name] = logWriter;
-
-		this.emit("writer_added",name);
-	}
-
-	/**
 	 * Initializes AwesomeLog for usage. This should be called very early in your application,
 	 * in the entry point if possible.
 	 *
@@ -288,7 +206,9 @@ class LogInstance extends Events {
 	 *   loggingNoticesLevel: "info",
 	 *   writers: [],
 	 *   backlogSizeLimit: 1000,
-	 *   disableSubProcesses: false
+	 *   disableSubProcesses: false,
+	 *   scopeMap: null,
+	 *   scopeCatchAll: "info"
 	 * }
 	 * ```
 	 *
@@ -341,7 +261,7 @@ class LogInstance extends Events {
 		initLevels.call(this,this.config.levels);
 		if (!this.getLevel(this.config.loggingNoticesLevel)) this[$CONFIG].loggingNoticesLevel = this.levels.slice(-1)[0] && this.levels.slice(-1)[0].name || null;
 
-		this[$CONFIG].historyFormatter = this[$DEFINED_FORMATTERS][this[$CONFIG].historyFormatter.toLowerCase()];
+		this[$CONFIG].historyFormatter = LogExtensions.getFormatter(this[$CONFIG].historyFormatter);
 		if (!this[$CONFIG].historyFormatter) throw new Error("Invalid history formatter.");
 
 		if (!this.config.disableLoggingNotices) this.log(this.config.loggingNoticesLevel,"AwesomeLog","AwesomeLog initialized.");
@@ -660,13 +580,13 @@ const initWriters = function initWriters() {
 		levels = levels.toLowerCase();
 
 		let formatter = writer.formatter || "default";
-		if (typeof formatter==="string") formatter = this[$DEFINED_FORMATTERS][formatter.toLowerCase()];
+		if (typeof formatter==="string") formatter = LogExtensions.getFormatter(formatter);
 		if (!formatter) throw new Error("Missing writer formatter '"+writer.formatter+"'.");
 		if (!(formatter instanceof AbstractLogFormatter)) throw new Error("Invalid writer formatter '"+writer.formatter+"', must be of type AbstractLogFormatter.");
 
 		let options = writer.options || {};
 
-		let konstructor = this[$DEFINED_WRITERS][type] || null;
+		let konstructor = LogExtensions.getWriter(type) || null;
 		if (!konstructor) throw new Error("Invalid writer type '"+type+"' does not exist.");
 
 		let instance = new konstructor(this,name,levels,formatter,options);

@@ -5,6 +5,7 @@
 const AwesomeUtils = require("@awesomeeng/awesome-utils");
 
 const LogInstance = require("./LogInstance");
+const LogExtensions = require("./LogExtensions");
 const AbstractLogWriter = require("./AbstractLogWriter");
 const AbstractLogFormatter = require("./AbstractLogFormatter");
 
@@ -57,6 +58,8 @@ class AwesomeLog {
 			else if (prop==="uninit") return uninit;
 			else if (prop==="AbstractLogWriter") return AbstractLogWriter;
 			else if (prop==="AbstractLogFormatter") return AbstractLogFormatter;
+			else if (prop==="defineWriter") return LogExtensions.defineWriter.bind(LogExtensions);
+			else if (prop==="defineFormatter") return LogExtensions.defineFormatter.bind(LogExtensions);
 
 			let instance = getInstance();
 			if (prop==="initialized") return !!instance;
