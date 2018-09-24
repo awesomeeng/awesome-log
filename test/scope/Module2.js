@@ -18,15 +18,15 @@ Log.init({
 Log.start();
 
 assert.equal(Log.history.length,0);
-Log.happy(null,"Module 2 is Happy.");
+Log.happy("Module 2 is Happy.");
 
 assert.equal(Log.history.length,1);
-Log.sad(null,"Module 2 is Sad.");
+Log.sad("Module 2 is Sad.");
 
 assert.equal(Log.history.length,2);
 
 assert.throws(()=>{
-	Log.debug(null,"Module 2 is Debug.");
+	Log.debug("Module 2 is Debug.");
 });
 assert.equal(Log.history.length,2);
 

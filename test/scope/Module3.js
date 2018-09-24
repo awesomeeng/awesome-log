@@ -4,5 +4,5 @@
 
 const Log = require("../../src/AwesomeLog.js");
 
-Log.happy(null,"Module 3 is Happy.");
-Log.sad(null,"Module 3 is Sad.");
+Log.happy("Module 3 is Happy.");
+Log.sad("Module 3 is Sad.");

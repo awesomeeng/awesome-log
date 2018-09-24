@@ -37,7 +37,7 @@ describe("Scope",function(){
 
 	it("nested module",function(){
 		Log.start();
-		Log.info(null,"Main 1");
+		Log.info("Main 1");
 		assert.equal(Log.history.length,1);
 
 		require("./scope/Module1.js");
@@ -46,7 +46,7 @@ describe("Scope",function(){
 
 	it("nested modules",function(){
 		Log.start();
-		Log.info(null,"Main 2");
+		Log.info("Main 2");
 		assert.equal(Log.history.length,1);
 
 		require("./scope/Module2.js");
@@ -55,7 +55,7 @@ describe("Scope",function(){
 
 	it("scope map",function(){
 		Log.start();
-		Log.info(null,"Main 3");
+		Log.info("Main 3");
 		require("./scope/Module1.js");
 		assert(Log.history[0].indexOf("INFO")>-1);
 		assert(Log.history[1].indexOf("ACCESS")>-1);

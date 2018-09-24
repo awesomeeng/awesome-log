@@ -85,15 +85,14 @@ const Log = require("@awesomeeng/awesome-log");
 
 2). Then you just log stuff out.
 ```
-Log.info(null,"message");
+Log.info("message",a,b,c);
 ```
 
 Simple.
 
 You'll notice that Log calls take two or more arguments:
 
- * The first is the system you are logging from; it lets you think about your code as a series of systems and control how that is displayed. If you set this argument to `null` AwesomeLog will inspect your call stack and use the filename of the code from which you are calling AwesomeLog.
- * The second argument is the log message you want to display.
+ * The first argument is the log message you want to display.
  * All of the remaining arguments are extra details.  Depending on the formatter you are using, these may displayed differently. For example, if you use the `default` formatter, AwesomeLog will attempt to display printable versions of the remaining arguments; Errors in particular are formatted for easier reading.
 
 ## Log Levels
@@ -124,7 +123,7 @@ You may have as many Log Levels as you desire, but each must have a unique name.
 
 In addition to the log level methods, you also use the `Log.log()` method which takes the level as the first argument, so you can programmatically set the level if needed.
 ```
-Log.log("level","system","message");
+Log.log("level","message");
 ```
 
 ## Log Writers
@@ -175,22 +174,22 @@ AwesomeLog ships with four built-in Log Formatters:
  - **Default**: The default formatter outputs log messages in AwesomeLog's own custom format.  This includes the timestamp, the process id, the log level, the log system name, the log message, and any additional arguments.
 
 	```
-	2018-09-10T15:46:27.714Z : #1234 : INFO       : AwesomeLog       : Log initialized.
-	2018-09-10T15:46:27.716Z : #1234 : INFO       : AwesomeLog       : Log started.
+	2018-09-10T15:46:27.714Z : #1234 : INFO       : AwesomeLog.js    : Log initialized.
+	2018-09-10T15:46:27.716Z : #1234 : INFO       : AwesomeLog.js    : Log started.
 	```
 
  - **JSON**: The JSON formatter writes the entire log message out as a json string. You'll notice that there is a lot more detail in this example when compared with the one for `default` from above. Formatters often reduce the amount of log information.
 
 	```
-	{"hostname":"blah.awesomeeng.com","domain":"awesomeeng.com","servername":"blah","pid":1234,"ppid":5678,"main":"/code/project","arch":"x64","platform":"linux","bits":64,"cpus":8,"argv":"","execPath":"node","startingDirectory":"/code/project","homedir":"/home/blah","username":"blah","version":"v10.9.0","level":"INFO","system":"AwesomeLog","message":"Log initialized.","args":[],"timestamp":1536594573580}
-	{"hostname":"blah.awesomeeng.com","domain":"awesomeeng.com","servername":"blah","pid":1234,"ppid":5678,"main":"/code/project","arch":"x64","platform":"linux","bits":64,"cpus":8,"argv":"","execPath":"node","startingDirectory":"/code/project","homedir":"/home/blah","username":"blah","version":"v10.9.0","level":"INFO","system":"AwesomeLog","message":"Log started.","args":[],"timestamp":1536594573582}
+	{"hostname":"blah.awesomeeng.com","domain":"awesomeeng.com","servername":"blah","pid":1234,"ppid":5678,"main":"/code/project","arch":"x64","platform":"linux","bits":64,"cpus":8,"argv":"","execPath":"node","startingDirectory":"/code/project","homedir":"/home/blah","username":"blah","version":"v10.9.0","level":"INFO","system":"AwesomeLog.js","message":"Log initialized.","args":[],"timestamp":1536594573580}
+	{"hostname":"blah.awesomeeng.com","domain":"awesomeeng.com","servername":"blah","pid":1234,"ppid":5678,"main":"/code/project","arch":"x64","platform":"linux","bits":64,"cpus":8,"argv":"","execPath":"node","startingDirectory":"/code/project","homedir":"/home/blah","username":"blah","version":"v10.9.0","level":"INFO","system":"AwesomeLog.js","message":"Log started.","args":[],"timestamp":1536594573582}
 	```
 
  - **CSV**: The CSV formatter outputs the log information in a CSV format friendly to spreadsheets. The CSV format is `timestamp(unix epoch),level,pid,system name,message,arg0,arg1,...arg9999`.
 
  	```
-	1536594995710,"INFO",19848,"AwesomeLog","Log initialized."
-	1536594995712,"INFO",19848,"AwesomeLog","Log started."
+	1536594995710,"INFO",19848,"AwesomeLog.js","Log initialized."
+	1536594995712,"INFO",19848,"AwesomeLog.js","Log started."
 	```
 
  - **JS**: The JS formatter outputs the log information as a JavaScript Object. It is more suited to programatic uses then to human readable usage.

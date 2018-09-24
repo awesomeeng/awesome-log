@@ -264,7 +264,7 @@ class LogInstance extends Events {
 		this[$CONFIG].historyFormatter = LogExtensions.getFormatter(this[$CONFIG].historyFormatter);
 		if (!this[$CONFIG].historyFormatter) throw new Error("Invalid history formatter.");
 
-		if (!this.config.disableLoggingNotices) this.log(this.config.loggingNoticesLevel,"AwesomeLog","AwesomeLog initialized for levels "+this.levelNames.join("|")+".");
+		if (!this.config.disableLoggingNotices) this.log(this.config.loggingNoticesLevel,"AwesomeLog initialized for levels "+this.levelNames.join("|")+".");
 
 		this.emit("initialized",config);
 
@@ -304,7 +304,7 @@ class LogInstance extends Events {
 		}
 		this[$BACKLOG] = null;
 
-		if (!this.config.disableLoggingNotices) this.log(this.config.loggingNoticesLevel,"AwesomeLog","AwesomeLog started.");
+		if (!this.config.disableLoggingNotices) this.log(this.config.loggingNoticesLevel,"AwesomeLog started.");
 		this.emit("started");
 
 		return this;
@@ -331,7 +331,7 @@ class LogInstance extends Events {
 			writer.close();
 		});
 
-		if (!this.config.disableLoggingNotices) this.log(this.config.loggingNoticesLevel,"AwesomeLog","AwesomeLog stopped.");
+		if (!this.config.disableLoggingNotices) this.log(this.config.loggingNoticesLevel,"AwesomeLog stopped.");
 		this.emit("stopped");
 
 		return this;
@@ -348,7 +348,7 @@ class LogInstance extends Events {
 		if (!this.running) return;
 		this[$BACKLOG] = this[$BACKLOG] || [];
 
-		if (!this.config.disableLoggingNotices) this.log(this.config.loggingNoticesLevel,"AwesomeLog","AwesomeLog paused.");
+		if (!this.config.disableLoggingNotices) this.log(this.config.loggingNoticesLevel,"AwesomeLog paused.");
 		this.emit("paused");
 
 		return this;
@@ -369,7 +369,7 @@ class LogInstance extends Events {
 		}
 		this[$BACKLOG] = null;
 
-		if (!this.config.disableLoggingNotices) this.log(this.config.loggingNoticesLevel,"AwesomeLog","AwesomeLog resumed.");
+		if (!this.config.disableLoggingNotices) this.log(this.config.loggingNoticesLevel,"AwesomeLog resumed.");
 		this.emit("resumed");
 
 		return this;
@@ -413,17 +413,15 @@ class LogInstance extends Events {
 	 * `log()` is called by all other shortcut log methods.
 	 *
 	 * @param  {string|LogLevel} level
-	 * @param  {string|null} system
 	 * @param  {string} message
 	 * @param  {*} args
 	 * @return {AwesomeLog}
 	 */
-	log(level,system,message,...args) {
+	log(level,message,...args) {
 		let logentry = null;
 
-		if (!system && level && typeof level==="object" && !(level instanceof LogLevel) && level.level && level.system && level.message && level.args) {
+		if (!message && level && typeof level==="object" && !(level instanceof LogLevel) && level.level && level.message && level.args) {
 			logentry = level;
-			system = logentry.system;
 			message = logentry.message;
 			args = logentry.args;
 			level = logentry.level;
@@ -433,13 +431,6 @@ class LogInstance extends Events {
 		if (!level) throw new Error("Missing level argument.");
 		if (!(level instanceof LogLevel)) throw new Error("Invalid level argument.");
 		if (logentry) logentry.level = level;
-
-		if (!system) {
-			system = AwesomeUtils.Module.source(3).split(/\\\\|\\|\//g).slice(-1)[0];
-		}
-		if (typeof system!=="string") throw new Error("Invalid system argument.");
-		system = system.replace(/[^\w\d_\-.]/g,""); // strip out any non-alpha characters. _ - and . are also allowed.
-		if (logentry) logentry.system = system;
 
 		args = [].concat(args); // has to come before message check
 		if (logentry) logentry.args = args;
@@ -453,7 +444,7 @@ class LogInstance extends Events {
 
 		logentry = Object.assign(this[$BASE],{
 			level,
-			system,
+			system: AwesomeUtils.Module.source(3).split(/\\\\|\\|\//g).slice(-1)[0].replace(/[^\w\d_\-.]/g,""),
 			message,
 			args,
 			timestamp: Date.now()
