@@ -31,6 +31,10 @@ The following configuration options are supported.
 
  - **disableSubProcess** [boolean] - If true this will prevent child processes that create their own instance of AwesomeLog from sending messages to the parent process.  Defaults to false. See our [Child Process](./docs/ChildProcess.md) documentation for more details.
 
+ - **scopeMap** [object] - Maps lower scope log levels to these log levels. Defaults to null. See our [Scope](./docs/Scope.md) documentation for more details.
+
+ - **scopeCatchAll** [string] - The log level to map anything to that didn't correctly map with `scopeMap`. Defaults to "info". See our [Scope](./docs/Scope.md) documentation for more details.
+
 Here is an example configuration using default values:
 
 ```
@@ -49,6 +53,9 @@ Log.init({
 	backlogSizeLimit: 1000,
 	disableLoggingNotices: false,
 	loggingNoticesLevel: "info"
+	disableSubProcess: false,
+	scopeMap: null,
+	scopeCatchAll: "info"
 });
 ```
 

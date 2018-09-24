@@ -88,6 +88,10 @@ colors: {
 }
 ```
 
+#### Scope Mapping and Catch All
+
+If you are taking advantage of Scope you should be aware of the need to provide `scopeMap` and `scopeCatchAll` settings. Please see our [Scope](./docs/Scope.md) documentation for more details.
+
 ## Child Processes
 
 If you are using the [AwesomeLog with Child Processes](./docs/ChildProcess.md), please be aware that the `levels` configuration property for the Child Process must match that of its parent process.

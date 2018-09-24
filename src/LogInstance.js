@@ -609,8 +609,7 @@ const write = function write(logentry) {
 		let catchall = this[$PARENT].config.scopeCatchAll;
 		if (catchall) {
 			let levelname = (logentry.level.name || ""+logentry.level).toLowerCase();
-			let level = this[$PARENT].getLevel(map && map[levelname] || catchall);
-			if (!level) throw new Error("Invalid log level '"+levelname+"'.");
+			let level = this[$PARENT].getLevel(levelname) || this[$PARENT].getLevel(map && map[levelname] || catchall);
 			logentry.level = level;
 
 			this[$PARENT].log(logentry);

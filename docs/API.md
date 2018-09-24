@@ -1,10 +1,8 @@
 ## Classes
 
 <dl>
-<dt><a href="#AwesomeLog">AwesomeLog</a> ⇐ <code>Events</code></dt>
-<dd><p>AwesomeLog is a singleton class that will always return a single AwesomeLog
-instance each time it is required.</p>
-</dd>
+<dt><a href="#AwesomeLog">AwesomeLog</a></dt>
+<dd></dd>
 <dt><a href="#CSVFormatter">CSVFormatter</a> ⇐ <code><a href="#AbstractLogFormatter">AbstractLogFormatter</a></code></dt>
 <dd><p>The CSV AwesomeLog formatter. This produces the following CSV data...</p>
 <pre><code>TIMESTAMP,&quot;LEVEL&quot;,PID,&quot;SYSTEM&quot;,&quot;MESSAGE&quot;,ARG0,ARG1,ARG2,ETC
@@ -29,6 +27,13 @@ will include all of the details in a log entry Object.</p>
 <dt><a href="#SubProcessFormatter">SubProcessFormatter</a> ⇐ <code><a href="#AbstractLogFormatter">AbstractLogFormatter</a></code></dt>
 <dd><p>The SubProcess AwesomeLog formatter. This produces log message for usage with child
 processes and is only used internall by AwesomeLog.</p>
+</dd>
+<dt><a href="#LogExtensions">LogExtensions</a></dt>
+<dd><p>Class for handling the extensions to AwesomeLog.</p>
+</dd>
+<dt><a href="#LogInstance">LogInstance</a> ⇐ <code>Events</code></dt>
+<dd><p>AwesomeLog is a singleton class that will always return a single AwesomeLog
+instance each time it is required.</p>
 </dd>
 <dt><a href="#LogLevel">LogLevel</a></dt>
 <dd><p>Class for holding LogLevel names and it associated needs.</p>
@@ -95,7 +100,26 @@ is instead called by AwesomeLog when the <code>start()</code> command is issued.
 <a name="AbstractLogFormatter"></a>
 
 ## AbstractLogFormatter
-Constructor for a Log Formatter.It is important to note that this constructor is never called by you, butis instead called by AwesomeLog when the `start()` command is issued.Your class must call this as shown here:```class MyFormatter extends AbstractLogFormatter {	 constructor(parent) {	   super(parent);	   ... your initialization code ...	 }}```Failure to not do the super constructor will result in errors.You should put any kind of initialization of your formatter in this constructor.
+Constructor for a Log Formatter.
+
+It is important to note that this constructor is never called by you, but
+is instead called by AwesomeLog when the `start()` command is issued.
+
+Your class must call this as shown here:
+
+```
+class MyFormatter extends AbstractLogFormatter {
+	 constructor(parent) {
+	   super(parent);
+
+	   ... your initialization code ...
+	 }
+}
+```
+
+Failure to not do the super constructor will result in errors.
+
+You should put any kind of initialization of your formatter in this constructor.
 
 **Kind**: global interface  
 **See**: [Log Writer](./docs/LogFormatters.md) documentation for more details.  
@@ -124,7 +148,8 @@ Returns the parent AwesomeLog instance.
 <a name="AbstractLogFormatter+format"></a>
 
 ### abstractLogFormatter.format() ⇒ <code>Object</code>
-Called when a logentry needs to be formatted.  The underlying writer will call this foreach log message it needs to write out.
+Called when a logentry needs to be formatted.  The underlying writer will call this for
+each log message it needs to write out.
 
 **Kind**: instance method of [<code>AbstractLogFormatter</code>](#AbstractLogFormatter)  
 
@@ -133,7 +158,26 @@ Called when a logentry needs to be formatted.  The underlying writer will call t
 <a name="AbstractLogWriter"></a>
 
 ## AbstractLogWriter
-Constructor for a Log Writer.It is important to note that this constructor is never called by you, butis instead called by AwesomeLog when the `start()` command is issued.Your class must call this as shown here:```class MyWriter extends AbstractLogWriter {	 constructor(parent,type,name,levels,formatter,options) {	   super(parent,type,name,levels,formatter,options);	   ... your initialization code ...	 }}```Failure to not do the super constructor will result in errors.You should put any kind of initialization of your writer in this constructor.
+Constructor for a Log Writer.
+
+It is important to note that this constructor is never called by you, but
+is instead called by AwesomeLog when the `start()` command is issued.
+
+Your class must call this as shown here:
+
+```
+class MyWriter extends AbstractLogWriter {
+	 constructor(parent,type,name,levels,formatter,options) {
+	   super(parent,type,name,levels,formatter,options);
+
+	   ... your initialization code ...
+	 }
+}
+```
+
+Failure to not do the super constructor will result in errors.
+
+You should put any kind of initialization of your writer in this constructor.
 
 **Kind**: global interface  
 **See**: [Log Writer](./docs/LogWriters.md) documentation for more details.  
@@ -194,7 +238,8 @@ Returns the friendly name for the instance of this writer.
 <a name="AbstractLogWriter+levels"></a>
 
 ### abstractLogWriter.levels ⇒ [<code>Array.&lt;LogLevel&gt;</code>](#LogLevel)
-Returns an array of LogLevel objects for the defined levels of this writer. Theseare the levels this writer is allowing through.
+Returns an array of LogLevel objects for the defined levels of this writer. These
+are the levels this writer is allowing through.
 
 **Kind**: instance property of [<code>AbstractLogWriter</code>](#AbstractLogWriter)  
 
@@ -249,7 +294,14 @@ Given some log entry object, format it as per the given formatter.
 <a name="AbstractLogWriter+write"></a>
 
 ### abstractLogWriter.write(message, logentry) ⇒ <code>void</code>
-Expected to be overloaded in the implementing sub-class, this is called when a log messageis to be written out by the writer. Log messages received at this point have already beenchecked as to if they are an allowed level and are already formatted as per the definedformatter.The message parameter is the formatted message, returned from calling `format(logentry)`.The logentry parameter is the unformated log details.
+Expected to be overloaded in the implementing sub-class, this is called when a log message
+is to be written out by the writer. Log messages received at this point have already been
+checked as to if they are an allowed level and are already formatted as per the defined
+formatter.
+
+The message parameter is the formatted message, returned from calling `format(logentry)`.
+
+The logentry parameter is the unformated log details.
 
 **Kind**: instance method of [<code>AbstractLogWriter</code>](#AbstractLogWriter)  
 
@@ -273,7 +325,8 @@ Called to ensure that the writer has written all message out.
 <a name="AbstractLogWriter+close"></a>
 
 ### abstractLogWriter.close() ⇒ <code>void</code>
-Called when the writer is closing and should be cleaned up. No Log messageswill be received after this call has been made.
+Called when the writer is closing and should be cleaned up. No Log messages
+will be received after this call has been made.
 
 **Kind**: instance method of [<code>AbstractLogWriter</code>](#AbstractLogWriter)  
 
@@ -281,303 +334,21 @@ Called when the writer is closing and should be cleaned up. No Log messageswill
 
 <a name="AwesomeLog"></a>
 
-## AwesomeLog ⇐ <code>Events</code>
-AwesomeLog is a singleton class that will always return a single AwesomeLoginstance each time it is required.
-
+## AwesomeLog
 **Kind**: global class  
-**Extends**: <code>Events</code>  
-**See**: [AwesomeLog README](../README.md) for usage details.  
-
-* [AwesomeLog](#AwesomeLog) ⇐ <code>Events</code>
-    * [new AwesomeLog()](#new_AwesomeLog_new)
-    * [.AbstractLogWriter](#AwesomeLog+AbstractLogWriter) ⇒ [<code>Class.&lt;AbstractLogWriter&gt;</code>](#AbstractLogWriter)
-    * [.AbstractLogFormatter](#AwesomeLog+AbstractLogFormatter) ⇒ [<code>Class.&lt;AbstractLogFormatter&gt;</code>](#AbstractLogFormatter)
-    * [.initialized](#AwesomeLog+initialized) ⇒ <code>boolean</code>
-    * [.running](#AwesomeLog+running) ⇒ <code>boolean</code>
-    * [.config](#AwesomeLog+config) ⇒ <code>Object</code>
-    * [.history](#AwesomeLog+history) ⇒ <code>Array</code>
-    * [.historySizeLimit](#AwesomeLog+historySizeLimit) ⇒ <code>number</code>
-    * [.levels](#AwesomeLog+levels) ⇒ [<code>Array.&lt;LogLevel&gt;</code>](#LogLevel)
-    * [.levelNames](#AwesomeLog+levelNames) ⇒ <code>Array.&lt;string&gt;</code>
-    * [.definedWriters](#AwesomeLog+definedWriters) ⇒ <code>Array.&lt;string&gt;</code>
-    * [.definedFormatters](#AwesomeLog+definedFormatters) ⇒ <code>Array.&lt;string&gt;</code>
-    * [.defineFormatter(name, logFormatter)](#AwesomeLog+defineFormatter) ⇒ <code>void</code>
-    * [.defineWriter(name, logWriter)](#AwesomeLog+defineWriter) ⇒ <code>void</code>
-    * [.init(config)](#AwesomeLog+init) ⇒ <code>void</code>
-    * [.start()](#AwesomeLog+start) ⇒ <code>void</code>
-    * [.stop()](#AwesomeLog+stop) ⇒ <code>void</code>
-    * [.pause()](#AwesomeLog+pause) ⇒ <code>void</code>
-    * [.resume()](#AwesomeLog+resume) ⇒ <code>void</code>
-    * [.clearHistory()](#AwesomeLog+clearHistory) ⇒ [<code>AwesomeLog</code>](#AwesomeLog)
-    * [.getLevel(level)](#AwesomeLog+getLevel) ⇒ [<code>LogLevel</code>](#LogLevel)
-    * [.log(level, system, message, ...args)](#AwesomeLog+log) ⇒ [<code>AwesomeLog</code>](#AwesomeLog)
-    * [.captureSubProcess(subprocess)](#AwesomeLog+captureSubProcess) ⇒ [<code>AwesomeLog</code>](#AwesomeLog)
-    * [.releaseSubProcess(subprocess)](#AwesomeLog+releaseSubProcess) ⇒ [<code>AwesomeLog</code>](#AwesomeLog)
-
-
-* * *
-
-<a name="new_AwesomeLog_new"></a>
-
-### new AwesomeLog()
-Construct a new AwesomeLog instance. This is only ever called once per application andnever directly by the user.
-
-
-* * *
-
-<a name="AwesomeLog+AbstractLogWriter"></a>
-
-### awesomeLog.AbstractLogWriter ⇒ [<code>Class.&lt;AbstractLogWriter&gt;</code>](#AbstractLogWriter)
-Returns the AbstractLogWriter class for use in creating custom Log Writers.
-
-**Kind**: instance property of [<code>AwesomeLog</code>](#AwesomeLog)  
-
-* * *
-
-<a name="AwesomeLog+AbstractLogFormatter"></a>
-
-### awesomeLog.AbstractLogFormatter ⇒ [<code>Class.&lt;AbstractLogFormatter&gt;</code>](#AbstractLogFormatter)
-Returns the AbstractLogFormatter class for use in creating custom Log Formatters.
-
-**Kind**: instance property of [<code>AwesomeLog</code>](#AwesomeLog)  
-
-* * *
-
-<a name="AwesomeLog+initialized"></a>
-
-### awesomeLog.initialized ⇒ <code>boolean</code>
-Returns true if `Log.init()` has been called.
-
-**Kind**: instance property of [<code>AwesomeLog</code>](#AwesomeLog)  
-
-* * *
-
-<a name="AwesomeLog+running"></a>
-
-### awesomeLog.running ⇒ <code>boolean</code>
-Returns true if `Log.start()` has been called.
-
-**Kind**: instance property of [<code>AwesomeLog</code>](#AwesomeLog)  
-
-* * *
-
-<a name="AwesomeLog+config"></a>
-
-### awesomeLog.config ⇒ <code>Object</code>
-Returns the configuration used by `init()`. This is a merge of the default configurationand the configuration passed into `init()`.
-
-**Kind**: instance property of [<code>AwesomeLog</code>](#AwesomeLog)  
-
-* * *
-
-<a name="AwesomeLog+history"></a>
-
-### awesomeLog.history ⇒ <code>Array</code>
-Returns an array of the last N (defined by `historySizeLimit`) log messages.
-
-**Kind**: instance property of [<code>AwesomeLog</code>](#AwesomeLog)  
-
-* * *
-
-<a name="AwesomeLog+historySizeLimit"></a>
-
-### awesomeLog.historySizeLimit ⇒ <code>number</code>
-Returns the maximum number of `history` entries. This is set via `init()`.
-
-**Kind**: instance property of [<code>AwesomeLog</code>](#AwesomeLog)  
-
-* * *
-
-<a name="AwesomeLog+levels"></a>
-
-### awesomeLog.levels ⇒ [<code>Array.&lt;LogLevel&gt;</code>](#LogLevel)
-Returns an array of LogLevel objects for the currently configured levels. Levelsare configured via `init()`.
-
-**Kind**: instance property of [<code>AwesomeLog</code>](#AwesomeLog)  
-
-* * *
-
-<a name="AwesomeLog+levelNames"></a>
-
-### awesomeLog.levelNames ⇒ <code>Array.&lt;string&gt;</code>
-Returns an array of strings containing the level names, as taken from the LogLevelobjects. Levels are configured via `init()`.
-
-**Kind**: instance property of [<code>AwesomeLog</code>](#AwesomeLog)  
-
-* * *
-
-<a name="AwesomeLog+definedWriters"></a>
-
-### awesomeLog.definedWriters ⇒ <code>Array.&lt;string&gt;</code>
-Returns an array of strings containing the defined Log Writer names that can be used.
-
-**Kind**: instance property of [<code>AwesomeLog</code>](#AwesomeLog)  
-
-* * *
-
-<a name="AwesomeLog+definedFormatters"></a>
-
-### awesomeLog.definedFormatters ⇒ <code>Array.&lt;string&gt;</code>
-Returns an array of strings containing the defined Log Formatter names that can be used.
-
-**Kind**: instance property of [<code>AwesomeLog</code>](#AwesomeLog)  
-
-* * *
-
-<a name="AwesomeLog+defineFormatter"></a>
-
-### awesomeLog.defineFormatter(name, logFormatter) ⇒ <code>void</code>
-Map a new Log Formatter to a specific name, for usage in configuring AwesomeLog.
-
-**Kind**: instance method of [<code>AwesomeLog</code>](#AwesomeLog)  
-
-| Param | Type |
-| --- | --- |
-| name | <code>string</code> | 
-| logFormatter | [<code>Class.&lt;AbstractLogFormatter&gt;</code>](#AbstractLogFormatter) | 
-
-
-* * *
-
-<a name="AwesomeLog+defineWriter"></a>
-
-### awesomeLog.defineWriter(name, logWriter) ⇒ <code>void</code>
-Map a new Log Writer to a specific name, for usage in configuring AwesomeLog.
-
-**Kind**: instance method of [<code>AwesomeLog</code>](#AwesomeLog)  
-
-| Param | Type |
-| --- | --- |
-| name | <code>string</code> | 
-| logWriter | [<code>Class.&lt;AbstractLogWriter&gt;</code>](#AbstractLogWriter) | 
-
-
-* * *
-
-<a name="AwesomeLog+init"></a>
-
-### awesomeLog.init(config) ⇒ <code>void</code>
-Initializes AwesomeLog for usage. This should be called very early in your application,in the entry point if possible.You may only initialize if AwesomeLog is not running, which is done by calling`start()`.This method takes an optional configuration object. This configuration object is mergedwith the default configuration to produce the overall configuration.  Below is thedefault configuration values:```config = {  history: true,  historySizeLimit: 100,  historyFormatter: "default",  levels: "access,error,warn,info,debug",  disableLoggingNotices: false, // true if this is a child process  loggingNoticesLevel: "info",  writers: [],  backlogSizeLimit: 1000,  disableSubProcesses: false}```If no writers are provided, a default Console Writer is added to the configuration.```config.writes = [{ name: "console", type:  "default", // "subprocess" if this is a child process levels: "*", formatter: default", // "subprocess" if this is a child process options: {}}];```Initialization is responsible for taking the `config.levels` parameters,transforming it into LogLevel objects, and ensuring that the log shortcutmethods are created. See also @see ./docs/LogLevels.md
-
-**Kind**: instance method of [<code>AwesomeLog</code>](#AwesomeLog)  
-
-| Param | Type |
-| --- | --- |
-| config | <code>Object</code> \| <code>null</code> | 
-
-
-* * *
-
-<a name="AwesomeLog+start"></a>
-
-### awesomeLog.start() ⇒ <code>void</code>
-Starts AwesomeLog running and outputting log messages. This should be calledvery early in your application, in the entry point if possible.`startt()` is responsible for initializing the writers.If any backlog messages exist when `start()` is called, they will be writtenvia the writers after they are started.
-
-**Kind**: instance method of [<code>AwesomeLog</code>](#AwesomeLog)  
-
-* * *
-
-<a name="AwesomeLog+stop"></a>
-
-### awesomeLog.stop() ⇒ <code>void</code>
-Stops AwesomeLog running. Once stopped AwesomeLog can be reconfigured via another`init()` call.
-
-**Kind**: instance method of [<code>AwesomeLog</code>](#AwesomeLog)  
-
-* * *
-
-<a name="AwesomeLog+pause"></a>
-
-### awesomeLog.pause() ⇒ <code>void</code>
-Puts AwesomeLog into a paused state which prevents any log messages from beingwritten by the writers.  Log messages received while paused are stored in thebacklog and will be written when AwesomeLog is resumed.
-
-**Kind**: instance method of [<code>AwesomeLog</code>](#AwesomeLog)  
-
-* * *
-
-<a name="AwesomeLog+resume"></a>
-
-### awesomeLog.resume() ⇒ <code>void</code>
-Exits the paused state and writes out any backlog messages.
-
-**Kind**: instance method of [<code>AwesomeLog</code>](#AwesomeLog)  
-
-* * *
-
-<a name="AwesomeLog+clearHistory"></a>
-
-### awesomeLog.clearHistory() ⇒ [<code>AwesomeLog</code>](#AwesomeLog)
-Clears the stored `history` contents.
-
-**Kind**: instance method of [<code>AwesomeLog</code>](#AwesomeLog)  
-
-* * *
-
-<a name="AwesomeLog+getLevel"></a>
-
-### awesomeLog.getLevel(level) ⇒ [<code>LogLevel</code>](#LogLevel)
-For any given level string, return the associated LogLevel object.
-
-**Kind**: instance method of [<code>AwesomeLog</code>](#AwesomeLog)  
-
-| Param | Type |
-| --- | --- |
-| level | <code>string</code> \| [<code>LogLevel</code>](#LogLevel) | 
-
-
-* * *
-
-<a name="AwesomeLog+log"></a>
-
-### awesomeLog.log(level, system, message, ...args) ⇒ [<code>AwesomeLog</code>](#AwesomeLog)
-Log a single messages.`log()` is called by all other shortcut log methods.
-
-**Kind**: instance method of [<code>AwesomeLog</code>](#AwesomeLog)  
-
-| Param | Type |
-| --- | --- |
-| level | <code>string</code> \| [<code>LogLevel</code>](#LogLevel) | 
-| system | <code>string</code> \| <code>null</code> | 
-| message | <code>string</code> | 
-| ...args | <code>\*</code> | 
-
-
-* * *
-
-<a name="AwesomeLog+captureSubProcess"></a>
-
-### awesomeLog.captureSubProcess(subprocess) ⇒ [<code>AwesomeLog</code>](#AwesomeLog)
-Used when you create a new child process/cluster/worker thread if you intend AwesomeLogto be used in the process/cluster/worker and want the log information consolidatedinto a single AwesomeLog stream.
-
-**Kind**: instance method of [<code>AwesomeLog</code>](#AwesomeLog)  
-**See**: ./docs/ChildProcess.md  
-
-| Param | Type |
-| --- | --- |
-| subprocess | <code>ChildProcess.ChildProcess</code> \| <code>Cluster.Worker</code> \| <code>WorkerThread.Worker</code> | 
-
-
-* * *
-
-<a name="AwesomeLog+releaseSubProcess"></a>
-
-### awesomeLog.releaseSubProcess(subprocess) ⇒ [<code>AwesomeLog</code>](#AwesomeLog)
-Stops capturing a process/cluster/worker log messages.
-
-**Kind**: instance method of [<code>AwesomeLog</code>](#AwesomeLog)  
-**See**: ./docs/ChildProcess.md  
-
-| Param | Type |
-| --- | --- |
-| subprocess | <code>ChildProcess.ChildProcess</code> \| <code>Cluster.Worker</code> \| <code>WorkerThread.Worker</code> | 
-
 
 * * *
 
 <a name="CSVFormatter"></a>
 
 ## CSVFormatter ⇐ [<code>AbstractLogFormatter</code>](#AbstractLogFormatter)
-The CSV AwesomeLog formatter. This produces the following CSV data...```TIMESTAMP,"LEVEL",PID,"SYSTEM","MESSAGE",ARG0,ARG1,ARG2,ETC```Note that this does not write a CSV header line.
+The CSV AwesomeLog formatter. This produces the following CSV data...
+
+```
+TIMESTAMP,"LEVEL",PID,"SYSTEM","MESSAGE",ARG0,ARG1,ARG2,ETC
+```
+
+Note that this does not write a CSV header line.
 
 **Kind**: global class  
 **Extends**: [<code>AbstractLogFormatter</code>](#AbstractLogFormatter)  
@@ -593,7 +364,8 @@ The CSV AwesomeLog formatter. This produces the following CSV data...```TIMES
 <a name="new_CSVFormatter_new"></a>
 
 ### new CSVFormatter(parent)
-Constructor for this formatter. Never called directly, but called by AwesomeLogwhen `Log.start()` is called.
+Constructor for this formatter. Never called directly, but called by AwesomeLog
+when `Log.start()` is called.
 
 
 | Param | Type |
@@ -630,7 +402,19 @@ Given the log entry object, format it tou our output string.
 <a name="DefaultFormatter"></a>
 
 ## DefaultFormatter ⇐ [<code>AbstractLogFormatter</code>](#AbstractLogFormatter)
-The default AwesomeLog formatter. This produces log message in the following form:```ISO TIMESTAMP            : #PID   : LEVEL      : SYSTEM           : MESSAGE```For example```2018-09-13T17:47:37.201Z : #12080 : INFO       : AwesomeLog       : AwesomeLog initialized.2018-09-13T17:47:37.207Z : #12080 : INFO       : AwesomeLog       : AwesomeLog started.2018-09-13T17:47:37.208Z : #12080 : INFO       : Example          : This is an example log message.```
+The default AwesomeLog formatter. This produces log message in the following form:
+
+```
+ISO TIMESTAMP            : #PID   : LEVEL      : SYSTEM           : MESSAGE
+```
+
+For example
+
+```
+2018-09-13T17:47:37.201Z : #12080 : INFO       : AwesomeLog       : AwesomeLog initialized.
+2018-09-13T17:47:37.207Z : #12080 : INFO       : AwesomeLog       : AwesomeLog started.
+2018-09-13T17:47:37.208Z : #12080 : INFO       : Example          : This is an example log message.
+```
 
 **Kind**: global class  
 **Extends**: [<code>AbstractLogFormatter</code>](#AbstractLogFormatter)  
@@ -646,7 +430,8 @@ The default AwesomeLog formatter. This produces log message in the following for
 <a name="new_DefaultFormatter_new"></a>
 
 ### new DefaultFormatter(parent)
-Constructor for this formatter. Never called directly, but called by AwesomeLogwhen `Log.start()` is called.
+Constructor for this formatter. Never called directly, but called by AwesomeLog
+when `Log.start()` is called.
 
 
 | Param | Type |
@@ -683,7 +468,8 @@ Given the log entry object, format it tou our output string.
 <a name="JSObjectFormatter"></a>
 
 ## JSObjectFormatter ⇐ [<code>AbstractLogFormatter</code>](#AbstractLogFormatter)
-The JS Object AwesomeLog formatter. This simply forwards the log entry Object onwardfor usage programatically. It does not produce a readable string.
+The JS Object AwesomeLog formatter. This simply forwards the log entry Object onward
+for usage programatically. It does not produce a readable string.
 
 **Kind**: global class  
 **Extends**: [<code>AbstractLogFormatter</code>](#AbstractLogFormatter)  
@@ -699,7 +485,8 @@ The JS Object AwesomeLog formatter. This simply forwards the log entry Object on
 <a name="new_JSObjectFormatter_new"></a>
 
 ### new JSObjectFormatter(parent)
-Constructor for this formatter. Never called directly, but called by AwesomeLogwhen `Log.start()` is called.
+Constructor for this formatter. Never called directly, but called by AwesomeLog
+when `Log.start()` is called.
 
 
 | Param | Type |
@@ -736,7 +523,8 @@ Given the log entry object, format it tou our output string.
 <a name="JSONFormatter"></a>
 
 ## JSONFormatter ⇐ [<code>AbstractLogFormatter</code>](#AbstractLogFormatter)
-The JSON AwesomeLog formatter. This produces log message in JSON form. Thiswill include all of the details in a log entry Object.
+The JSON AwesomeLog formatter. This produces log message in JSON form. This
+will include all of the details in a log entry Object.
 
 **Kind**: global class  
 **Extends**: [<code>AbstractLogFormatter</code>](#AbstractLogFormatter)  
@@ -752,7 +540,8 @@ The JSON AwesomeLog formatter. This produces log message in JSON form. Thiswill
 <a name="new_JSONFormatter_new"></a>
 
 ### new JSONFormatter(parent)
-Constructor for this formatter. Never called directly, but called by AwesomeLogwhen `Log.start()` is called.
+Constructor for this formatter. Never called directly, but called by AwesomeLog
+when `Log.start()` is called.
 
 
 | Param | Type |
@@ -789,7 +578,8 @@ Given the log entry object, format it tou our output string.
 <a name="SubProcessFormatter"></a>
 
 ## SubProcessFormatter ⇐ [<code>AbstractLogFormatter</code>](#AbstractLogFormatter)
-The SubProcess AwesomeLog formatter. This produces log message for usage with childprocesses and is only used internall by AwesomeLog.
+The SubProcess AwesomeLog formatter. This produces log message for usage with child
+processes and is only used internall by AwesomeLog.
 
 **Kind**: global class  
 **Extends**: [<code>AbstractLogFormatter</code>](#AbstractLogFormatter)  
@@ -805,7 +595,8 @@ The SubProcess AwesomeLog formatter. This produces log message for usage with ch
 <a name="new_SubProcessFormatter_new"></a>
 
 ### new SubProcessFormatter(parent)
-Constructor for this formatter. Never called directly, but called by AwesomeLogwhen `Log.start()` is called.
+Constructor for this formatter. Never called directly, but called by AwesomeLog
+when `Log.start()` is called.
 
 
 | Param | Type |
@@ -835,6 +626,413 @@ Given the log entry object, format it tou our output string.
 | Param | Type |
 | --- | --- |
 | logentry | <code>Object</code> | 
+
+
+* * *
+
+<a name="LogExtensions"></a>
+
+## LogExtensions
+Class for handling the extensions to AwesomeLog.
+
+**Kind**: global class  
+
+* [LogExtensions](#LogExtensions)
+    * [.writers](#LogExtensions+writers) ⇒ <code>Array.&lt;string&gt;</code>
+    * [.formatters](#LogExtensions+formatters) ⇒ <code>Array.&lt;string&gt;</code>
+    * [.getWriter(name)](#LogExtensions+getWriter) ⇒ [<code>AbstractLogWriter</code>](#AbstractLogWriter)
+    * [.getFormatter(name)](#LogExtensions+getFormatter) ⇒ [<code>AbstractLogFormatter</code>](#AbstractLogFormatter)
+    * [.defineWriter(name, logWriter)](#LogExtensions+defineWriter) ⇒ <code>void</code>
+    * [.defineFormatter(name, logFormatter)](#LogExtensions+defineFormatter) ⇒ <code>void</code>
+
+
+* * *
+
+<a name="LogExtensions+writers"></a>
+
+### logExtensions.writers ⇒ <code>Array.&lt;string&gt;</code>
+Returns an array of strings containing the defined Log Writer names that can be used.
+
+**Kind**: instance property of [<code>LogExtensions</code>](#LogExtensions)  
+
+* * *
+
+<a name="LogExtensions+formatters"></a>
+
+### logExtensions.formatters ⇒ <code>Array.&lt;string&gt;</code>
+Returns an array of strings containing the defined Log Formatter names that can be used.
+
+**Kind**: instance property of [<code>LogExtensions</code>](#LogExtensions)  
+
+* * *
+
+<a name="LogExtensions+getWriter"></a>
+
+### logExtensions.getWriter(name) ⇒ [<code>AbstractLogWriter</code>](#AbstractLogWriter)
+Returns an AbstractLogWriter implementation for the given name, or undefined.
+
+**Kind**: instance method of [<code>LogExtensions</code>](#LogExtensions)  
+**Returns**: [<code>AbstractLogWriter</code>](#AbstractLogWriter) - [description]  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| name | <code>string</code> | [description] |
+
+
+* * *
+
+<a name="LogExtensions+getFormatter"></a>
+
+### logExtensions.getFormatter(name) ⇒ [<code>AbstractLogFormatter</code>](#AbstractLogFormatter)
+Returns an AbstractLogFormatter implementation for the given name, or undefined.
+
+**Kind**: instance method of [<code>LogExtensions</code>](#LogExtensions)  
+**Returns**: [<code>AbstractLogFormatter</code>](#AbstractLogFormatter) - [description]  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| name | <code>string</code> | [description] |
+
+
+* * *
+
+<a name="LogExtensions+defineWriter"></a>
+
+### logExtensions.defineWriter(name, logWriter) ⇒ <code>void</code>
+Map a new Log Writer to a specific name, for usage in configuring AwesomeLog.
+
+**Kind**: instance method of [<code>LogExtensions</code>](#LogExtensions)  
+
+| Param | Type |
+| --- | --- |
+| name | <code>string</code> | 
+| logWriter | [<code>Class.&lt;AbstractLogWriter&gt;</code>](#AbstractLogWriter) | 
+
+
+* * *
+
+<a name="LogExtensions+defineFormatter"></a>
+
+### logExtensions.defineFormatter(name, logFormatter) ⇒ <code>void</code>
+Map a new Log Formatter to a specific name, for usage in configuring AwesomeLog.
+
+**Kind**: instance method of [<code>LogExtensions</code>](#LogExtensions)  
+
+| Param | Type |
+| --- | --- |
+| name | <code>string</code> | 
+| logFormatter | [<code>Class.&lt;AbstractLogFormatter&gt;</code>](#AbstractLogFormatter) | 
+
+
+* * *
+
+<a name="LogInstance"></a>
+
+## LogInstance ⇐ <code>Events</code>
+AwesomeLog is a singleton class that will always return a single AwesomeLog
+instance each time it is required.
+
+**Kind**: global class  
+**Extends**: <code>Events</code>  
+**See**: [AwesomeLog README](../README.md) for usage details.  
+
+* [LogInstance](#LogInstance) ⇐ <code>Events</code>
+    * [new LogInstance()](#new_LogInstance_new)
+    * [.AbstractLogWriter](#LogInstance+AbstractLogWriter) ⇒ [<code>Class.&lt;AbstractLogWriter&gt;</code>](#AbstractLogWriter)
+    * [.AbstractLogFormatter](#LogInstance+AbstractLogFormatter) ⇒ [<code>Class.&lt;AbstractLogFormatter&gt;</code>](#AbstractLogFormatter)
+    * [.id](#LogInstance+id) ⇒ <code>string</code>
+    * [.initialized](#LogInstance+initialized) ⇒ <code>boolean</code>
+    * [.running](#LogInstance+running) ⇒ <code>boolean</code>
+    * [.config](#LogInstance+config) ⇒ <code>Object</code>
+    * [.history](#LogInstance+history) ⇒ <code>Array</code>
+    * [.historySizeLimit](#LogInstance+historySizeLimit) ⇒ <code>number</code>
+    * [.levels](#LogInstance+levels) ⇒ [<code>Array.&lt;LogLevel&gt;</code>](#LogLevel)
+    * [.levelNames](#LogInstance+levelNames) ⇒ <code>Array.&lt;string&gt;</code>
+    * [.init(config)](#LogInstance+init) ⇒ <code>void</code>
+    * [.start()](#LogInstance+start) ⇒ <code>void</code>
+    * [.stop()](#LogInstance+stop) ⇒ <code>void</code>
+    * [.pause()](#LogInstance+pause) ⇒ <code>void</code>
+    * [.resume()](#LogInstance+resume) ⇒ <code>void</code>
+    * [.clearHistory()](#LogInstance+clearHistory) ⇒ [<code>AwesomeLog</code>](#AwesomeLog)
+    * [.getLevel(level)](#LogInstance+getLevel) ⇒ [<code>LogLevel</code>](#LogLevel)
+    * [.log(level, system, message, ...args)](#LogInstance+log) ⇒ [<code>AwesomeLog</code>](#AwesomeLog)
+    * [.captureSubProcess(subprocess)](#LogInstance+captureSubProcess) ⇒ [<code>AwesomeLog</code>](#AwesomeLog)
+    * [.releaseSubProcess(subprocess)](#LogInstance+releaseSubProcess) ⇒ [<code>AwesomeLog</code>](#AwesomeLog)
+
+
+* * *
+
+<a name="new_LogInstance_new"></a>
+
+### new LogInstance()
+Construct a new AwesomeLog instance. This is only ever called once per application and
+never directly by the user.
+
+
+* * *
+
+<a name="LogInstance+AbstractLogWriter"></a>
+
+### logInstance.AbstractLogWriter ⇒ [<code>Class.&lt;AbstractLogWriter&gt;</code>](#AbstractLogWriter)
+Returns the AbstractLogWriter class for use in creating custom Log Writers.
+
+**Kind**: instance property of [<code>LogInstance</code>](#LogInstance)  
+
+* * *
+
+<a name="LogInstance+AbstractLogFormatter"></a>
+
+### logInstance.AbstractLogFormatter ⇒ [<code>Class.&lt;AbstractLogFormatter&gt;</code>](#AbstractLogFormatter)
+Returns the AbstractLogFormatter class for use in creating custom Log Formatters.
+
+**Kind**: instance property of [<code>LogInstance</code>](#LogInstance)  
+
+* * *
+
+<a name="LogInstance+id"></a>
+
+### logInstance.id ⇒ <code>string</code>
+Returns the AwesomeLogId.
+
+**Kind**: instance property of [<code>LogInstance</code>](#LogInstance)  
+
+* * *
+
+<a name="LogInstance+initialized"></a>
+
+### logInstance.initialized ⇒ <code>boolean</code>
+Returns true if `Log.init()` has been called.
+
+**Kind**: instance property of [<code>LogInstance</code>](#LogInstance)  
+
+* * *
+
+<a name="LogInstance+running"></a>
+
+### logInstance.running ⇒ <code>boolean</code>
+Returns true if `Log.start()` has been called.
+
+**Kind**: instance property of [<code>LogInstance</code>](#LogInstance)  
+
+* * *
+
+<a name="LogInstance+config"></a>
+
+### logInstance.config ⇒ <code>Object</code>
+Returns the configuration used by `init()`. This is a merge of the default configuration
+and the configuration passed into `init()`.
+
+**Kind**: instance property of [<code>LogInstance</code>](#LogInstance)  
+
+* * *
+
+<a name="LogInstance+history"></a>
+
+### logInstance.history ⇒ <code>Array</code>
+Returns an array of the last N (defined by `historySizeLimit`) log messages.
+
+**Kind**: instance property of [<code>LogInstance</code>](#LogInstance)  
+
+* * *
+
+<a name="LogInstance+historySizeLimit"></a>
+
+### logInstance.historySizeLimit ⇒ <code>number</code>
+Returns the maximum number of `history` entries. This is set via `init()`.
+
+**Kind**: instance property of [<code>LogInstance</code>](#LogInstance)  
+
+* * *
+
+<a name="LogInstance+levels"></a>
+
+### logInstance.levels ⇒ [<code>Array.&lt;LogLevel&gt;</code>](#LogLevel)
+Returns an array of LogLevel objects for the currently configured levels. Levels
+are configured via `init()`.
+
+**Kind**: instance property of [<code>LogInstance</code>](#LogInstance)  
+
+* * *
+
+<a name="LogInstance+levelNames"></a>
+
+### logInstance.levelNames ⇒ <code>Array.&lt;string&gt;</code>
+Returns an array of strings containing the level names, as taken from the LogLevel
+objects. Levels are configured via `init()`.
+
+**Kind**: instance property of [<code>LogInstance</code>](#LogInstance)  
+
+* * *
+
+<a name="LogInstance+init"></a>
+
+### logInstance.init(config) ⇒ <code>void</code>
+Initializes AwesomeLog for usage. This should be called very early in your application,
+in the entry point if possible.
+
+You may only initialize if AwesomeLog is not running, which is done by calling
+`start()`.
+
+This method takes an optional configuration object. This configuration object is merged
+with the default configuration to produce the overall configuration.  Below is the
+default configuration values:
+
+```
+config = {
+  history: true,
+  historySizeLimit: 100,
+  historyFormatter: "default",
+  levels: "access,error,warn,info,debug",
+  disableLoggingNotices: false, // true if this is a child process
+  loggingNoticesLevel: "info",
+  writers: [],
+  backlogSizeLimit: 1000,
+  disableSubProcesses: false,
+  scopeMap: null,
+  scopeCatchAll: "info"
+}
+```
+
+If no writers are provided, a default Console Writer is added to the configuration.
+
+```
+config.writes = [{
+ name: "console",
+ type:  "default", // "subprocess" if this is a child process
+ levels: "*",
+ formatter: default", // "subprocess" if this is a child process
+ options: {}
+}];
+```
+
+Initialization is responsible for taking the `config.levels` parameters,
+transforming it into LogLevel objects, and ensuring that the log shortcut
+methods are created. See also @see ./docs/LogLevels.md
+
+**Kind**: instance method of [<code>LogInstance</code>](#LogInstance)  
+
+| Param | Type |
+| --- | --- |
+| config | <code>Object</code> \| <code>null</code> | 
+
+
+* * *
+
+<a name="LogInstance+start"></a>
+
+### logInstance.start() ⇒ <code>void</code>
+Starts AwesomeLog running and outputting log messages. This should be called
+very early in your application, in the entry point if possible.
+
+`startt()` is responsible for initializing the writers.
+
+If any backlog messages exist when `start()` is called, they will be written
+via the writers after they are started.
+
+**Kind**: instance method of [<code>LogInstance</code>](#LogInstance)  
+
+* * *
+
+<a name="LogInstance+stop"></a>
+
+### logInstance.stop() ⇒ <code>void</code>
+Stops AwesomeLog running. Once stopped AwesomeLog can be reconfigured via another
+`init()` call.
+
+**Kind**: instance method of [<code>LogInstance</code>](#LogInstance)  
+
+* * *
+
+<a name="LogInstance+pause"></a>
+
+### logInstance.pause() ⇒ <code>void</code>
+Puts AwesomeLog into a paused state which prevents any log messages from being
+written by the writers.  Log messages received while paused are stored in the
+backlog and will be written when AwesomeLog is resumed.
+
+**Kind**: instance method of [<code>LogInstance</code>](#LogInstance)  
+
+* * *
+
+<a name="LogInstance+resume"></a>
+
+### logInstance.resume() ⇒ <code>void</code>
+Exits the paused state and writes out any backlog messages.
+
+**Kind**: instance method of [<code>LogInstance</code>](#LogInstance)  
+
+* * *
+
+<a name="LogInstance+clearHistory"></a>
+
+### logInstance.clearHistory() ⇒ [<code>AwesomeLog</code>](#AwesomeLog)
+Clears the stored `history` contents.
+
+**Kind**: instance method of [<code>LogInstance</code>](#LogInstance)  
+
+* * *
+
+<a name="LogInstance+getLevel"></a>
+
+### logInstance.getLevel(level) ⇒ [<code>LogLevel</code>](#LogLevel)
+For any given level string, return the associated LogLevel object.
+
+**Kind**: instance method of [<code>LogInstance</code>](#LogInstance)  
+
+| Param | Type |
+| --- | --- |
+| level | <code>string</code> \| [<code>LogLevel</code>](#LogLevel) | 
+
+
+* * *
+
+<a name="LogInstance+log"></a>
+
+### logInstance.log(level, system, message, ...args) ⇒ [<code>AwesomeLog</code>](#AwesomeLog)
+Log a single messages.
+
+`log()` is called by all other shortcut log methods.
+
+**Kind**: instance method of [<code>LogInstance</code>](#LogInstance)  
+
+| Param | Type |
+| --- | --- |
+| level | <code>string</code> \| [<code>LogLevel</code>](#LogLevel) | 
+| system | <code>string</code> \| <code>null</code> | 
+| message | <code>string</code> | 
+| ...args | <code>\*</code> | 
+
+
+* * *
+
+<a name="LogInstance+captureSubProcess"></a>
+
+### logInstance.captureSubProcess(subprocess) ⇒ [<code>AwesomeLog</code>](#AwesomeLog)
+Used when you create a new child process/cluster/worker thread if you intend AwesomeLog
+to be used in the process/cluster/worker and want the log information consolidated
+into a single AwesomeLog stream.
+
+**Kind**: instance method of [<code>LogInstance</code>](#LogInstance)  
+**See**: ./docs/ChildProcess.md  
+
+| Param | Type |
+| --- | --- |
+| subprocess | <code>ChildProcess.ChildProcess</code> \| <code>Cluster.Worker</code> \| <code>WorkerThread.Worker</code> | 
+
+
+* * *
+
+<a name="LogInstance+releaseSubProcess"></a>
+
+### logInstance.releaseSubProcess(subprocess) ⇒ [<code>AwesomeLog</code>](#AwesomeLog)
+Stops capturing a process/cluster/worker log messages.
+
+**Kind**: instance method of [<code>LogInstance</code>](#LogInstance)  
+**See**: ./docs/ChildProcess.md  
+
+| Param | Type |
+| --- | --- |
+| subprocess | <code>ChildProcess.ChildProcess</code> \| <code>Cluster.Worker</code> \| <code>WorkerThread.Worker</code> | 
 
 
 * * *
@@ -886,11 +1084,16 @@ Returns the LogLevel object as JSON string, which is just the name.
 <a name="ConsoleWriter"></a>
 
 ## ConsoleWriter ⇐ [<code>AbstractLogWriter</code>](#AbstractLogWriter)
-A writer for outputing to STDOUT. This is the default writer used ifno writers are provided to `AwesomeLog.init()`.Supports writing to STDOUT only.  Allows for optional ANSI colorescape sequences to be included.
+A writer for outputing to STDOUT. This is the default writer used if
+no writers are provided to `AwesomeLog.init()`.
+
+Supports writing to STDOUT only.  Allows for optional ANSI color
+escape sequences to be included.
 
 **Kind**: global class  
 **Extends**: [<code>AbstractLogWriter</code>](#AbstractLogWriter)  
-**See**: Our [Console Writer Configuration](./docs/ConsoleWriterConfiguration.md)documentation for more details.  
+**See**: Our [Console Writer Configuration](./docs/ConsoleWriterConfiguration.md)
+documentation for more details.  
 
 * [ConsoleWriter](#ConsoleWriter) ⇐ [<code>AbstractLogWriter</code>](#AbstractLogWriter)
     * [new ConsoleWriter(parent, name, levels, formatter, options)](#new_ConsoleWriter_new)
@@ -912,7 +1115,25 @@ A writer for outputing to STDOUT. This is the default writer used ifno writers 
 <a name="new_ConsoleWriter_new"></a>
 
 ### new ConsoleWriter(parent, name, levels, formatter, options)
-Creates a new Console Writer. Never called directly, but AwesomeLogwill call this when `AwesomeLog.start()` is issued.The options parameters can be used to configure this Console Writer.Here are the default configuration values:```options = {  colorize: true,  colorStyle: "level", // "line" or "level"  colors: {	   ACCESS: "green",	   ERROR: "red",	   WARN: "yellow",	   INFO: "magenta",	   DEBUG: "cyan",  }}```
+Creates a new Console Writer. Never called directly, but AwesomeLog
+will call this when `AwesomeLog.start()` is issued.
+
+The options parameters can be used to configure this Console Writer.
+Here are the default configuration values:
+
+```
+options = {
+  colorize: true,
+  colorStyle: "level", // "line" or "level"
+  colors: {
+	   ACCESS: "green",
+	   ERROR: "red",
+	   WARN: "yellow",
+	   INFO: "magenta",
+	   DEBUG: "cyan",
+  }
+}
+```
 
 
 | Param | Type |
@@ -956,7 +1177,8 @@ Returns the friendly name for the instance of this writer.
 <a name="AbstractLogWriter+levels"></a>
 
 ### consoleWriter.levels ⇒ [<code>Array.&lt;LogLevel&gt;</code>](#LogLevel)
-Returns an array of LogLevel objects for the defined levels of this writer. Theseare the levels this writer is allowing through.
+Returns an array of LogLevel objects for the defined levels of this writer. These
+are the levels this writer is allowing through.
 
 **Kind**: instance property of [<code>ConsoleWriter</code>](#ConsoleWriter)  
 
@@ -1047,11 +1269,20 @@ Given some log entry object, format it as per the given formatter.
 <a name="FileWriter"></a>
 
 ## FileWriter ⇐ [<code>AbstractLogWriter</code>](#AbstractLogWriter)
-A writer for outputing to a specific file or file pattern.If you give a simple filename, the log will be written to that filenameindefinately, appending each time. This is fine for simple systems.For more complex systems you will want to provide a filename patternwhich looks something like this `logs/NyLog.{YYYYMMDD}.log` which will changethe file written to based on the current date, in this case the Year Month Daypattern.
+A writer for outputing to a specific file or file pattern.
+
+If you give a simple filename, the log will be written to that filename
+indefinately, appending each time. This is fine for simple systems.
+
+For more complex systems you will want to provide a filename pattern
+which looks something like this `logs/NyLog.{YYYYMMDD}.log` which will change
+the file written to based on the current date, in this case the Year Month Day
+pattern.
 
 **Kind**: global class  
 **Extends**: [<code>AbstractLogWriter</code>](#AbstractLogWriter)  
-**See**: Our [File Writer Configuration](./docs/FileWriterConfiguration.md)documentation for more details.  
+**See**: Our [File Writer Configuration](./docs/FileWriterConfiguration.md)
+documentation for more details.  
 
 * [FileWriter](#FileWriter) ⇐ [<code>AbstractLogWriter</code>](#AbstractLogWriter)
     * [new FileWriter(parent, name, levels, formatter, options)](#new_FileWriter_new)
@@ -1073,7 +1304,22 @@ A writer for outputing to a specific file or file pattern.If you give a simple
 <a name="new_FileWriter_new"></a>
 
 ### new FileWriter(parent, name, levels, formatter, options)
-Creates a new File Writer. Never called directly, but AwesomeLogwill call this when `AwesomeLog.start()` is issued.The options parameters can be used to configure this Console Writer.Here are the default configuration values:```options = {  filename: "logs/AwesomeLog.{YYYYMMDD}.log",  housekeeping: false}```Housekeeping can be `false` or a number representing a number ofmilliseconds after which a file is considered old.  Old files aredeleted by the system.
+Creates a new File Writer. Never called directly, but AwesomeLog
+will call this when `AwesomeLog.start()` is issued.
+
+The options parameters can be used to configure this Console Writer.
+Here are the default configuration values:
+
+```
+options = {
+  filename: "logs/AwesomeLog.{YYYYMMDD}.log",
+  housekeeping: false
+}
+```
+
+Housekeeping can be `false` or a number representing a number of
+milliseconds after which a file is considered old.  Old files are
+deleted by the system.
 
 
 | Param | Type |
@@ -1117,7 +1363,8 @@ Returns the friendly name for the instance of this writer.
 <a name="AbstractLogWriter+levels"></a>
 
 ### fileWriter.levels ⇒ [<code>Array.&lt;LogLevel&gt;</code>](#LogLevel)
-Returns an array of LogLevel objects for the defined levels of this writer. Theseare the levels this writer is allowing through.
+Returns an array of LogLevel objects for the defined levels of this writer. These
+are the levels this writer is allowing through.
 
 **Kind**: instance property of [<code>FileWriter</code>](#FileWriter)  
 
@@ -1233,7 +1480,10 @@ A writer for outputing to /dev/null, thus outputting to nowhere.
 <a name="new_NullWriter_new"></a>
 
 ### new NullWriter(parent, name, levels, formatter, options)
-Creates a new Null Writer. Never called directly, but AwesomeLogwill call this when `AwesomeLog.start()` is issued.NullWriter has no options.
+Creates a new Null Writer. Never called directly, but AwesomeLog
+will call this when `AwesomeLog.start()` is issued.
+
+NullWriter has no options.
 
 
 | Param | Type |
@@ -1277,7 +1527,8 @@ Returns the friendly name for the instance of this writer.
 <a name="AbstractLogWriter+levels"></a>
 
 ### nullWriter.levels ⇒ [<code>Array.&lt;LogLevel&gt;</code>](#LogLevel)
-Returns an array of LogLevel objects for the defined levels of this writer. Theseare the levels this writer is allowing through.
+Returns an array of LogLevel objects for the defined levels of this writer. These
+are the levels this writer is allowing through.
 
 **Kind**: instance property of [<code>NullWriter</code>](#NullWriter)  
 
@@ -1332,7 +1583,14 @@ Given some log entry object, format it as per the given formatter.
 <a name="AbstractLogWriter+write"></a>
 
 ### nullWriter.write(message, logentry) ⇒ <code>void</code>
-Expected to be overloaded in the implementing sub-class, this is called when a log messageis to be written out by the writer. Log messages received at this point have already beenchecked as to if they are an allowed level and are already formatted as per the definedformatter.The message parameter is the formatted message, returned from calling `format(logentry)`.The logentry parameter is the unformated log details.
+Expected to be overloaded in the implementing sub-class, this is called when a log message
+is to be written out by the writer. Log messages received at this point have already been
+checked as to if they are an allowed level and are already formatted as per the defined
+formatter.
+
+The message parameter is the formatted message, returned from calling `format(logentry)`.
+
+The logentry parameter is the unformated log details.
 
 **Kind**: instance method of [<code>NullWriter</code>](#NullWriter)  
 **Overrides**: [<code>write</code>](#AbstractLogWriter+write)  
@@ -1358,7 +1616,8 @@ Called to ensure that the writer has written all message out.
 <a name="AbstractLogWriter+close"></a>
 
 ### nullWriter.close() ⇒ <code>void</code>
-Called when the writer is closing and should be cleaned up. No Log messageswill be received after this call has been made.
+Called when the writer is closing and should be cleaned up. No Log messages
+will be received after this call has been made.
 
 **Kind**: instance method of [<code>NullWriter</code>](#NullWriter)  
 **Overrides**: [<code>close</code>](#AbstractLogWriter+close)  
@@ -1368,7 +1627,8 @@ Called when the writer is closing and should be cleaned up. No Log messageswill
 <a name="SubProcessWriter"></a>
 
 ## SubProcessWriter ⇐ [<code>AbstractLogWriter</code>](#AbstractLogWriter)
-A writer for usage by child process / cluster / worker threads. This isused internally by AwesomeLog with child processes.
+A writer for usage by child process / cluster / worker threads. This is
+used internally by AwesomeLog with child processes.
 
 **Kind**: global class  
 **Extends**: [<code>AbstractLogWriter</code>](#AbstractLogWriter)  
@@ -1393,7 +1653,9 @@ A writer for usage by child process / cluster / worker threads. This isused int
 <a name="new_SubProcessWriter_new"></a>
 
 ### new SubProcessWriter(parent, name, levels, formatter, options)
-Creates a new SubProcess Writer.SubProcessWriter takes no additional options.
+Creates a new SubProcess Writer.
+
+SubProcessWriter takes no additional options.
 
 
 | Param | Type |
@@ -1437,7 +1699,8 @@ Returns the friendly name for the instance of this writer.
 <a name="AbstractLogWriter+levels"></a>
 
 ### subProcessWriter.levels ⇒ [<code>Array.&lt;LogLevel&gt;</code>](#LogLevel)
-Returns an array of LogLevel objects for the defined levels of this writer. Theseare the levels this writer is allowing through.
+Returns an array of LogLevel objects for the defined levels of this writer. These
+are the levels this writer is allowing through.
 
 **Kind**: instance property of [<code>SubProcessWriter</code>](#SubProcessWriter)  
 

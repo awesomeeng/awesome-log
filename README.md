@@ -11,6 +11,7 @@ AwesomeLog is similar to Winston, Log, Log4js, etc. and those are all good produ
 AwesomeLog provides...
  - Ready to go with zero initial configuration;
  - Configure and Start once, Use Everywhere;
+ - Scope handling for different modules;
  - Extremely flexible;
  - Customizable Log Levels;
  - Built-In Formatters: Default, JSON, JS, or CSV;
@@ -207,6 +208,7 @@ You can read more about how to write your own [Custom Log Formatter](./docs/LogF
  - [Advanced Configuration](./docs/Configuration.md)
  - [Console Writer Configuration](./docs/ConsoleWriterConfiguration.md)
  - [File Writer Configuration](./docs/FileWriterConfiguration.md)
+ - [Scope](./docs/Scope.md)
  - [Custom Log Levels](./docs/LogLevels.md)
  - [Custom Log Writers](./docs/LogWriters.md)
  - [Custom Log Formatters](./docs/LogFormatters.md)
