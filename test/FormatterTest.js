@@ -12,7 +12,6 @@ const Log = require("../src/AwesomeLog");
 
 describe("AbstractLogFormatter",()=>{
 	beforeEach(()=>{
-		Log.stop();
 		Log.init({
 			writers: [{
 				name: "null",
@@ -24,7 +23,6 @@ describe("AbstractLogFormatter",()=>{
 	});
 
 	afterEach(()=>{
-		Log.stop();
 	});
 
 	it("default formatter",function(){
@@ -41,6 +39,8 @@ describe("AbstractLogFormatter",()=>{
 
 		Log.info("Test","Testing formatting...");
 		assert(Log.history[0].match(/20\d\d-\d\d-\d\dT\d\d:\d\d:\d\d.\d\d\dZ\s:\s#\d{1,5}\s+:\sINFO\s+:\sTest\s+:\sTesting\sformatting\.\.\./));
+
+		Log.stop();
 	});
 
 	it("default formatter arguments",function(){
@@ -83,6 +83,8 @@ describe("AbstractLogFormatter",()=>{
 
 		Log.info("Test","Testing argument formatting...",new Error("test error."));
 		Log.clearHistory();
+
+		Log.stop();
 	});
 
 	it("js formatter",function(){
@@ -106,6 +108,8 @@ describe("AbstractLogFormatter",()=>{
 		assert.equal(Log.history[0].system,"Test");
 		assert.equal(Log.history[0].message,"Testing formatting...");
 		assert.deepStrictEqual(Log.history[0].args,[]);
+
+		Log.stop();
 	});
 
 	it("json formatter",function(){
@@ -132,6 +136,8 @@ describe("AbstractLogFormatter",()=>{
 		assert.equal(entry.system,"Test");
 		assert.equal(entry.message,"Testing formatting...");
 		assert.deepStrictEqual(entry.args,[]);
+
+		Log.stop();
 	});
 
 	it("csv formatter",function(){
@@ -155,5 +161,7 @@ describe("AbstractLogFormatter",()=>{
 		assert(Log.history[1].match(/^\d+,"INFO",\d+,"Test","Testing formatting...",123$/));
 		assert(Log.history[2].match(/^\d+,"INFO",\d+,"Test","Testing formatting...",123,"abc"$/));
 		assert(Log.history[3].match(/^\d+,"INFO",\d+,"Test","Testing formatting...",123,"abc","\[456,\\"def\\"\]"$/));
+
+		Log.stop();
 	});
 });

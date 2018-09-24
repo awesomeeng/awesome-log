@@ -37,7 +37,7 @@ class AbstractLogFormatter {
 	*
 	* You should put any kind of initialization of your formatter in this constructor.
 	*
-	 * @param {AwesomeLog} parent 
+	 * @param {AwesomeLog} parent
 	 */
 	constructor(parent) {
 		if (!parent) throw new Error("Missing parent argument.");

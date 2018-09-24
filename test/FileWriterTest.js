@@ -17,16 +17,12 @@ describe("FileWriterTest",()=>{
 	let id,dir,testfile;
 
 	beforeEach(()=>{
-		Log.stop();
-
 		id = AwesomeUtils.Random.string(16);
 		testfile = Path.resolve(process.cwd(),"./temp."+id+".tmp");
 		dir = Path.resolve(process.cwd(),"./temp."+AwesomeUtils.Random.string(16));
 	});
 
 	afterEach(()=>{
-		Log.stop();
-
 		if (AwesomeUtils.FS.existsSync(testfile)) FS.unlinkSync(testfile);
 		if (AwesomeUtils.FS.existsSync(dir)) AwesomeUtils.FS.recursiveRmdirSync(dir);
 	});
@@ -52,7 +48,7 @@ describe("FileWriterTest",()=>{
 		assert(AwesomeUtils.FS.existsSync(testfile));
 
 		Log.stop();
-
+		Log.uninit();
 	});
 
 	it("write",function(){
@@ -75,12 +71,15 @@ describe("FileWriterTest",()=>{
 			Log.info("Test","Testing file writer "+i+"...");
 		});
 
+		let historical = Log.history.join("\n")+"\n";
+
 		Log.stop();
+		Log.uninit();
 
 		assert(AwesomeUtils.FS.existsSync(testfile));
 		let content = FS.readFileSync(testfile);
 
-		assert.deepStrictEqual(content.toString("utf-8"),Log.history.join("\n")+"\n");
+		assert.deepStrictEqual(content.toString("utf-8"),historical);
 	});
 
 	it("rotate",async function(){
@@ -118,6 +117,7 @@ describe("FileWriterTest",()=>{
 		await AwesomeUtils.Promise.sleep(30);
 
 		Log.stop();
+		Log.uninit();
 
 		let files = FS.readdirSync(dir);
 		let found = files.some((file)=>{
@@ -160,6 +160,7 @@ describe("FileWriterTest",()=>{
 		await AwesomeUtils.Promise.sleep(30);
 
 		Log.stop();
+		Log.uninit();
 
 		let files = FS.readdirSync(dir);
 		let found = files.some((file)=>{
