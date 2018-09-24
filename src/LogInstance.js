@@ -607,12 +607,14 @@ const write = function write(logentry) {
 	if (this[$PARENT]) {
 		let map = this[$PARENT].config.scopeMap;
 		let catchall = this[$PARENT].config.scopeCatchAll;
-		let levelname = (logentry.level.name || ""+logentry.level).toLowerCase();
-		let level = this[$PARENT].getLevel(map && map[levelname] || catchall);
-		if (!level) throw new Error("Invalid log level '"+levelname+"'.");
-		logentry.level = level;
+		if (catchall) {
+			let levelname = (logentry.level.name || ""+logentry.level).toLowerCase();
+			let level = this[$PARENT].getLevel(map && map[levelname] || catchall);
+			if (!level) throw new Error("Invalid log level '"+levelname+"'.");
+			logentry.level = level;
 
-		this[$PARENT].log(logentry);
+			this[$PARENT].log(logentry);
+		}
 	}
 	else {
 		this[$WRITERS].forEach((writer)=>{
