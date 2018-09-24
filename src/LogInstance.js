@@ -264,7 +264,8 @@ class LogInstance extends Events {
 		this[$CONFIG].historyFormatter = LogExtensions.getFormatter(this[$CONFIG].historyFormatter);
 		if (!this[$CONFIG].historyFormatter) throw new Error("Invalid history formatter.");
 
-		if (!this.config.disableLoggingNotices) this.log(this.config.loggingNoticesLevel,"AwesomeLog","AwesomeLog initialized.");
+		if (!this.config.disableLoggingNotices) this.log(this.config.loggingNoticesLevel,"AwesomeLog","AwesomeLog initialized for levels "+this.levelNames.join("|")+".");
+
 		this.emit("initialized",config);
 
 		return this;
