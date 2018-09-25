@@ -52,7 +52,7 @@ class AwesomeLog {
 		 * @private
 		 */
 		const init = function init(config) {
-			let parent = getInstance(true);
+			let parent = getInstance();
 
 			let id = AwesomeUtils.Module.source(3);
 			let instance = new LogInstance(id,parent);
@@ -77,7 +77,7 @@ class AwesomeLog {
 		/**
 		 * @private
 		 */
-		const getInstance = function getInstance(quiet=false) {
+		const getInstance = function getInstance() {
 			let stack = AwesomeUtils.Module.stack(2);
 
 			let instance = null;
@@ -95,8 +95,7 @@ class AwesomeLog {
 
 			if (instance) return instance;
 
-			if (quiet) return null;
-			throw new Error("AwesomeLog has not been initialized.");
+			return null;
 		};
 
 		/**
@@ -114,7 +113,6 @@ class AwesomeLog {
 			if (prop==="initialized") return !!instance;
 			if (!instance) throw new Error("AwesomeLog has not been initialized.");
 
-
 			// functions need to be bound or this fails.
 			if (instance[prop] instanceof Function) return instance[prop].bind(instance);
 
@@ -126,7 +124,7 @@ class AwesomeLog {
 		 */
 		const has = function has(target,prop) {
 			let instance = getInstance();
-			if (!instance) throw new Error("AwesomeLog has not been initialized.");
+			if (!instance) return false;
 
 			return instance[prop]!==undefined;
 		};
