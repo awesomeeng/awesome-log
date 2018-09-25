@@ -113,7 +113,6 @@ class AwesomeLog {
 			if (prop==="initialized") return !!instance;
 			if (!instance) throw new Error("AwesomeLog has not been initialized.");
 
-
 			// functions need to be bound or this fails.
 			if (instance[prop] instanceof Function) return instance[prop].bind(instance);
 
