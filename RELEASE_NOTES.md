@@ -4,7 +4,7 @@
 
  - Initial release.
 
-#### **Version 1.1.0**
+#### **Version 2.0.0**
 
  - Adds scope for handling sub-module usage better. See our [Scope](./docs/Scope.md) for more details.
 
