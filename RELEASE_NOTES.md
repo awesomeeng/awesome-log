@@ -17,3 +17,11 @@
  - Removes the `writer_added` event.
 
  - Removes `system` as the first argument in log message. This is now computed dynamically.
+
+#### **Version 2.0.1**
+
+ - Minor bug fix to how AwesomeLog returns if it has a function or not.
+
+#### **Version 2.0.2**
+
+ - Fixes version mismatch in awesome-utils

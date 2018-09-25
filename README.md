@@ -90,7 +90,7 @@ Log.info("message",a,b,c);
 
 Simple.
 
-You'll notice that Log calls take two or more arguments:
+You'll notice that Log calls take one or more arguments:
 
  * The first argument is the log message you want to display.
  * All of the remaining arguments are extra details.  Depending on the formatter you are using, these may displayed differently. For example, if you use the `default` formatter, AwesomeLog will attempt to display printable versions of the remaining arguments; Errors in particular are formatted for easier reading.
