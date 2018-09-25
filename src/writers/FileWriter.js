@@ -16,6 +16,16 @@ const $ROOT = Symbol("root");
 /**
  * A writer for outputing to a specific file or file pattern.
  *
+ * The following options can be used to configure this Console Writer.
+ * Here are the default configuration values:
+ *
+ * ```
+ * options = {
+ *   filename: "logs/AwesomeLog.{YYYYMMDD}.log",
+ *   housekeeping: false
+ * }
+ * ```
+ *
  * If you give a simple filename, the log will be written to that filename
  * indefinately, appending each time. This is fine for simple systems.
  *
@@ -24,29 +34,21 @@ const $ROOT = Symbol("root");
  * the file written to based on the current date, in this case the Year Month Day
  * pattern.
  *
- * @see Our {@link ./docs/FileWriterConfiguration.md File Writer Configuration}
+ * Housekeeping can be `false` or a number representing a number of
+ * milliseconds after which a file is considered old.  Old files are
+ * deleted by the system.
+ *
+ * See Our {@link ./docs/FileWriterConfiguration.md File Writer Configuration}
  * documentation for more details.
  *
  * @extends AbstractLogWriter
  */
 class FileWriter extends AbstractLogWriter {
 	/**
+	 * @private
+	 *
 	 * Creates a new File Writer. Never called directly, but AwesomeLog
 	 * will call this when `AwesomeLog.start()` is issued.
-	 *
-	 * The options parameters can be used to configure this Console Writer.
-	 * Here are the default configuration values:
-	 *
-	 * ```
-	 * options = {
-	 *   filename: "logs/AwesomeLog.{YYYYMMDD}.log",
-	 *   housekeeping: false
-	 * }
-	 * ```
-	 *
-	 * Housekeeping can be `false` or a number representing a number of
-	 * milliseconds after which a file is considered old.  Old files are
-	 * deleted by the system.
 	 *
 	 * @param {AwesomeLog} parent
 	 * @param {string} name
@@ -72,6 +74,8 @@ class FileWriter extends AbstractLogWriter {
 	}
 
 	/**
+	 * @private
+	 *
 	 * Write a log message to the log file.
 	 *
 	 * @param {*} message
@@ -92,6 +96,8 @@ class FileWriter extends AbstractLogWriter {
 	}
 
 	/**
+	 * @private
+	 *
 	 * Flush the pending writes. This has not effect in this case.
 	 *
 	 * @return {void}
@@ -101,6 +107,8 @@ class FileWriter extends AbstractLogWriter {
 	}
 
 	/**
+	 * @private
+	 *
 	 * Close the file.
 	 *
 	 * @return {void}

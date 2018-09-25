@@ -11,9 +11,16 @@ const $WRITERS = Symbol("defined_writers");
 const $FORMATTERS = Symbol("defined_formatters");
 
 /**
- * Class for handling the extensions to AwesomeLog.
+ * @private
+ *
+ * LogExtensions manages the formatters and writers defined for AwesomeLog.
+ * It is exposed only through `defineWriter` and `defineFormatter` in the
+ * AwesomeLog class.
  */
 class LogExtensions {
+	/**
+	 * @private
+	 */
 	constructor() {
 		this[$WRITERS] = {};
 		this[$FORMATTERS] = {};
@@ -35,10 +42,12 @@ class LogExtensions {
 		this.defineFormatter("json",require("./formatters/JSONFormatter"));
 		this.defineFormatter("js",require("./formatters/JSObjectFormatter"));
 		this.defineFormatter("jsobject",require("./formatters/JSObjectFormatter"));
-		this.defineFormatter("csv",require("./formatters/CSVFormatter"));		
+		this.defineFormatter("csv",require("./formatters/CSVFormatter"));
 	}
 
 	/**
+	 * @private
+	 *
 	 * Returns an array of strings containing the defined Log Writer names that can be used.
 	 *
 	 * @return {Array<string>}
@@ -48,6 +57,8 @@ class LogExtensions {
 	}
 
 	/**
+	 * @private
+	 *
 	 * Returns an array of strings containing the defined Log Formatter names that can be used.
 	 *
 	 * @return {Array<string>}
@@ -57,6 +68,8 @@ class LogExtensions {
 	}
 
 	/**
+	 * @private
+	 *
 	 * Returns an AbstractLogWriter implementation for the given name, or undefined.
 	 *
 	 * @param  {string} name [description]
@@ -70,6 +83,8 @@ class LogExtensions {
 	}
 
 	/**
+	 * @private
+	 *
 	 * Returns an AbstractLogFormatter implementation for the given name, or undefined.
 	 *
 	 * @param  {string} name [description]

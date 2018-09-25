@@ -9,13 +9,48 @@ const LogExtensions = require("./LogExtensions");
 const AbstractLogWriter = require("./AbstractLogWriter");
 const AbstractLogFormatter = require("./AbstractLogFormatter");
 
+/**
+ * AwesomeLog is a singleton class that propagates all calls against
+ * it to a specific instance of LogInstance based on the scope. (See
+ * [Scope](./docs/Scope.md) for details about Scopes).
+ *
+ * @borrows LogExtensions#defineWriter as defineWriter
+ * @borrows LogExtensions#defineFormatter as defineFormatter
+ *
+ * @borrows LogInstance#AbstractLogWriter as AbstractLogWriter
+ * @borrows LogInstance#AbstractLogFormatter as AbstractLogFormatter
+ * @borrows LogInstance#id as id
+ * @borrows LogInstance#initialized as initialized
+ * @borrows LogInstance#running as running
+ * @borrows LogInstance#config as config
+ * @borrows LogInstance#history as history
+ * @borrows LogInstance#historySizeLimit as historySizeLimit
+ * @borrows LogInstance#levels as levels
+ * @borrows LogInstance#levelNames as levelNames
+ * @borrows LogInstance#init as init
+ * @borrows LogInstance#start as start
+ * @borrows LogInstance#stop as stop
+ * @borrows LogInstance#pause as pause
+ * @borrows LogInstance#resume as resume
+ * @borrows LogInstance#clearHistory as clearHistory
+ * @borrows LogInstance#getLevel as getLevel
+ * @borrows LogInstance#log as log
+ * @borrows LogInstance#captureSubProcess as captureSubProcess
+ * @borrows LogInstance#releaseSubProcess as releaseSubProcess
+ *
+ * @borrows AwesomeLog#uninit as uninit
+ */
 class AwesomeLog {
 	/**
+	 * @private
 	 * @constructor
 	 */
 	constructor() {
 		let instances = {};
 
+		/**
+		 * @private
+		 */
 		const init = function init(config) {
 			let parent = getInstance(true);
 
@@ -26,11 +61,22 @@ class AwesomeLog {
 			instance.init(config);
 		};
 
+		/**
+		 * Removes a scoped instance of AwesomeLog. This function should
+		 * generally not be need and can have odd side effects, so use
+		 * with discretion.
+		 *
+		 * @param  {string} id
+		 * @return {void}
+		 */
 		const uninit = function uninit(id) {
 			id = id || AwesomeUtils.Module.source(3);
 			delete instances[id];
 		};
 
+		/**
+		 * @private
+		 */
 		const getInstance = function getInstance(quiet=false) {
 			let stack = AwesomeUtils.Module.stack(2);
 
@@ -53,6 +99,9 @@ class AwesomeLog {
 			throw new Error("AwesomeLog has not been initialized.");
 		};
 
+		/**
+		 * @private
+		 */
 		const get = function get(target,prop) {
 			if (prop==="init") return init;
 			else if (prop==="uninit") return uninit;
@@ -72,6 +121,9 @@ class AwesomeLog {
 			return instance[prop];
 		};
 
+		/**
+		 * @private
+		 */
 		const has = function has(target,prop) {
 			let instance = getInstance();
 			if (!instance) throw new Error("AwesomeLog has not been initialized.");
@@ -79,10 +131,10 @@ class AwesomeLog {
 			return instance[prop]!==undefined;
 		};
 
+		/**
+		 * @private
+		 */
 		const getOwnPropertyDescriptor = function getOwnPropertyDescriptor(target,prop) {
-			// this resolve an error with ownKeys requiring a 'prototype' member.
-			// if (prop==="prototype") return {value: null, writable: false, enumerable: false, configurable: false};
-
 			let instance = getInstance();
 			if (!instance) throw new Error("AwesomeLog has not been initialized.");
 
@@ -90,10 +142,7 @@ class AwesomeLog {
 		};
 
 		const ownKeys = function ownKeys() {
-			// we need to include ["prototype"] or we get wierd proxy errors.
-			//
 			let instance = getInstance();
-			// if (!instance) return ["prototype"];
 
 			return [].concat(Object.getOwnPropertyNames(instance),Object.getOwnPropertySymbols(instance));
 		};
@@ -109,8 +158,5 @@ class AwesomeLog {
 		});
 	}
 }
-
-
-
 
 module.exports = new AwesomeLog();

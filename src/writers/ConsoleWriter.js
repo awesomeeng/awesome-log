@@ -15,32 +15,34 @@ const $THEME = Symbol("theme");
  * Supports writing to STDOUT only.  Allows for optional ANSI color
  * escape sequences to be included.
  *
- * @see Our {@link ./docs/ConsoleWriterConfiguration.md Console Writer Configuration}
+ * The following options can be used to configure this Console Writer.
+ * Here are the default configuration values:
+ *
+ * ```
+ * options = {
+ *   colorize: true,
+ *   colorStyle: "level", // "line" or "level"
+ *   colors: {
+ * 	   ACCESS: "green",
+ * 	   ERROR: "red",
+ * 	   WARN: "yellow",
+ * 	   INFO: "magenta",
+ * 	   DEBUG: "cyan",
+ *   }
+ * }
+ * ```
+ *
+ * See Our {@link ./docs/ConsoleWriterConfiguration.md Console Writer Configuration}
  * documentation for more details.
  *
  * @extends AbstractLogWriter
  */
 class ConsoleWriter extends AbstractLogWriter {
 	/**
+	 * @private
+	 *
 	 * Creates a new Console Writer. Never called directly, but AwesomeLog
 	 * will call this when `AwesomeLog.start()` is issued.
-	 *
-	 * The options parameters can be used to configure this Console Writer.
-	 * Here are the default configuration values:
-	 *
-	 * ```
-	 * options = {
-	 *   colorize: true,
-	 *   colorStyle: "level", // "line" or "level"
-	 *   colors: {
-	 * 	   ACCESS: "green",
-	 * 	   ERROR: "red",
-	 * 	   WARN: "yellow",
-	 * 	   INFO: "magenta",
-	 * 	   DEBUG: "cyan",
-	 *   }
-	 * }
-	 * ```
 	 *
 	 * @param {AwesomeLog} parent
 	 * @param {string} name
@@ -76,6 +78,8 @@ class ConsoleWriter extends AbstractLogWriter {
 	}
 
 	/**
+	 * @private
+	 *
 	 * Write a log message to STDOUT.
 	 *
 	 * @param {*} message
@@ -92,6 +96,8 @@ class ConsoleWriter extends AbstractLogWriter {
 	}
 
 	/**
+	 * @private
+	 *
 	 * Flush the pending writes. This has not effect in this case.
 	 *
 	 * @return {void}
@@ -101,6 +107,8 @@ class ConsoleWriter extends AbstractLogWriter {
 	}
 
 	/**
+	 * @private
+	 *
 	 * Close the writer. This has not effect in this case.
 	 *
 	 * @return {void}

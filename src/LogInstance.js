@@ -34,18 +34,9 @@ const $SUBPROCESSES = Symbol("subprocesshandler");
 const $BASE = Symbol("base");
 
 /**
- * AwesomeLog is a singleton class that will always return a single AwesomeLog
- * instance each time it is required.
- *
- * @see {@link ../README.md AwesomeLog README} for usage details.
- *
- * @extends Events
+ * @private
  */
 class LogInstance extends Events {
-	/**
-	 * Construct a new AwesomeLog instance. This is only ever called once per application and
-	 * never directly by the user.
-	 */
 	constructor(id,parent) {
 		super();
 
