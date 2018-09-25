@@ -13,18 +13,20 @@ const AbstractLogFormatter = require("../AbstractLogFormatter");
  * ISO TIMESTAMP            : #PID   : LEVEL      : SYSTEM           : MESSAGE
  * ```
  *
- * For example
+ * For example...
  *
  * ```
- * 2018-09-13T17:47:37.201Z : #12080 : INFO       : AwesomeLog       : AwesomeLog initialized.
- * 2018-09-13T17:47:37.207Z : #12080 : INFO       : AwesomeLog       : AwesomeLog started.
- * 2018-09-13T17:47:37.208Z : #12080 : INFO       : Example          : This is an example log message.
+ * 2018-09-13T17:47:37.201Z : #12080 : INFO       : AwesomeLog.js    : AwesomeLog initialized.
+ * 2018-09-13T17:47:37.207Z : #12080 : INFO       : AwesomeLog.js    : AwesomeLog started.
+ * 2018-09-13T17:47:37.208Z : #12080 : INFO       : Example.js       : This is an example log message.
  * ```
  *
  * @extends AbstractLogFormatter
  */
 class DefaultFormatter extends AbstractLogFormatter {
 	/**
+	 * @private
+	 *
 	 * Constructor for this formatter. Never called directly, but called by AwesomeLog
 	 * when `Log.start()` is called.
 	 *
@@ -35,6 +37,8 @@ class DefaultFormatter extends AbstractLogFormatter {
 	}
 
 	/**
+	 * @private
+	 *
 	 * Given the log entry object, format it tou our output string.
 	 *
 	 * @param  {Object} logentry

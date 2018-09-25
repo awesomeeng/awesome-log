@@ -5,12 +5,14 @@
 const $NAME = Symbol("name");
 
 /**
- * Class for holding LogLevel names and it associated needs.
+ * Class for holding LogLevel names and their associated needs.
+ *
+ * See our [Log Levels]{@link ./docs/LogLevels.md} documentation for more detials.
  */
 class LogLevel {
 	/**
 	 * @constructor
-	 * @param {string} name 
+	 * @param {string} name
 	 */
 	constructor(name) {
 		if (!name) throw new Error("Missing name argument.");
@@ -24,7 +26,7 @@ class LogLevel {
 	/**
 	 * Return the LogLevel name, as a string. All upper case.
 	 *
-	 * @return {string} 
+	 * @return {string}
 	 */
 	get name() {
 		return this[$NAME];
@@ -33,7 +35,7 @@ class LogLevel {
 	/**
 	 * Returns the LogLevel object as JSON string, which is just the name.
 	 *
-	 * @return {string} 
+	 * @return {string}
 	 */
 	toJSON() {
 		return this.name;

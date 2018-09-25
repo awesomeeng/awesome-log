@@ -15,13 +15,15 @@ catch (ex) {
  * A writer for usage by child process / cluster / worker threads. This is
  * used internally by AwesomeLog with child processes.
  *
+ * SubProcessWriter takes no additional options.
+ *
  * @extends AbstractLogWriter
  */
 class SubProcessWriter extends AbstractLogWriter {
 	/**
-	 * Creates a new SubProcess Writer.
+	 * @private
 	 *
-	 * SubProcessWriter takes no additional options.
+	 * Creates a new SubProcess Writer.
 	 *
 	 * @param {AwesomeLog} parent
 	 * @param {string} name
@@ -34,6 +36,8 @@ class SubProcessWriter extends AbstractLogWriter {
 	}
 
 	/**
+	 * @private
+	 *
 	 * Write a log message to a parent process.
 	 *
 	 * @param {*} message
@@ -59,6 +63,8 @@ class SubProcessWriter extends AbstractLogWriter {
 	}
 
 	/**
+	 * @private
+	 *
 	 * Flush the pending writes. This has not effect in this case.
 	 *
 	 * @return {void}
@@ -68,6 +74,8 @@ class SubProcessWriter extends AbstractLogWriter {
 	}
 
 	/**
+	 * @private
+	 *
 	 * Close the writer. This has not effect in this case.
 	 *
 	 * @return {void}
