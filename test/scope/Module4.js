@@ -2,10 +2,10 @@
 
 "use strict";
 
-const assert = require("assert");
-
 const AwesomeLog = require("../../src/AwesomeLog.js");
 const Log = new AwesomeLog();
+
+const Module5 = require("./Module5");
 
 Log.init({
 	// writers: [{
@@ -17,18 +17,18 @@ Log.init({
 	historyFormatter: "default"
 });
 Log.start();
+Log.happy("Module 4 Global.");
 
-assert.equal(Log.history.length,0);
-Log.happy("Module 1 is Happy.");
+class Module4 {
+	constructor() {
+		Log.happy("Module 4 Constructor.");
+		this.module5 = new Module5();
+	}
 
-assert.equal(Log.history.length,1);
-Log.sad("Module 1 is Sad.");
+	someFunction() {
+		Log.happy("Module 4 Function.");
+		this.module5.someFunction();
+	}
+}
 
-assert.equal(Log.history.length,2);
-
-assert.throws(()=>{
-	Log.debug("Module 1 is Debug.");
-});
-assert.equal(Log.history.length,2);
-
-Log.stop();
+module.exports = Module4;

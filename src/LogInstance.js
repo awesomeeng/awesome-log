@@ -435,7 +435,7 @@ class LogInstance extends Events {
 
 		logentry = Object.assign(this[$BASE],{
 			level,
-			system: AwesomeUtils.Module.source(3).split(/\\\\|\\|\//g).slice(-1)[0].replace(/[^\w\d_\-.]/g,""),
+			system: AwesomeUtils.VM.executionSource(3).split(/\\\\|\\|\//g).slice(-1)[0].replace(/[^\w\d_\-.]/g,""),
 			message,
 			args,
 			timestamp: Date.now()

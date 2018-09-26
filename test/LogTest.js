@@ -8,29 +8,29 @@
 
 const assert = require("assert");
 
-const Log = require("../src/AwesomeLog");
+const AwesomeLog = require("../src/AwesomeLog");
+const Log = new AwesomeLog();
 
-describe("Log",()=>{
-	beforeEach(()=>{
+describe("AwesomeLog",()=>{
+	it("initialize",()=>{
 		Log.init({
 			writers: [{
 				name: "null",
 				type: "null"
 			}],
 			disableLoggingNotices: true,
-			historyFormatter: "default"
 		});
-	});
-
-	afterEach(()=>{
-	});
-
-	it("initialize",()=>{
-		Log.init();
 		assert(Log.initialized);
 	});
 
 	it("start",()=>{
+		Log.init({
+			writers: [{
+				name: "null",
+				type: "null"
+			}],
+			disableLoggingNotices: true,
+		});
 		assert(!Log.running);
 		Log.start();
 		assert(Log.running);
@@ -38,6 +38,13 @@ describe("Log",()=>{
 	});
 
 	it("stop",()=>{
+		Log.init({
+			writers: [{
+				name: "null",
+				type: "null"
+			}],
+			disableLoggingNotices: true,
+		});
 		assert(!Log.running);
 		Log.start();
 		assert(Log.running);
@@ -46,8 +53,6 @@ describe("Log",()=>{
 	});
 
 	it("log",()=>{
-		Log.start();
-		Log.stop();
 		Log.init({
 			writers: [{
 				name: "null",

@@ -2,7 +2,8 @@
 
 "use strict";
 
-const Log = require("../../src/AwesomeLog.js");
+const AwesomeLog = require("../../src/AwesomeLog.js");
+const Log = new AwesomeLog();
 
 Log.happy("Module 3 is Happy.");
 Log.sad("Module 3 is Sad.");

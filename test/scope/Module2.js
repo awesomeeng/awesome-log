@@ -4,7 +4,8 @@
 
 const assert = require("assert");
 
-const Log = require("../../src/AwesomeLog.js");
+const AwesomeLog = require("../../src/AwesomeLog.js");
+const Log = new AwesomeLog();
 
 Log.init({
 	// writers: [{
@@ -33,4 +34,3 @@ assert.equal(Log.history.length,2);
 require("./Module3");
 
 Log.stop();
-Log.uninit();

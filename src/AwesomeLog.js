@@ -40,62 +40,28 @@ const AbstractLogFormatter = require("./AbstractLogFormatter");
  *
  * @borrows AwesomeLog#uninit as uninit
  */
+
+const instances = {};
+let root = null;
+
 class AwesomeLog {
 	/**
 	 * @private
 	 * @constructor
 	 */
 	constructor() {
-		let instances = {};
-
+		let id = AwesomeUtils.VM.executionSource(3);
+		let instance = instances[id];
+		console.log("new",id,!!instance);
+		console.log("stack",AwesomeUtils.VM.executionStack());
 		/**
 		 * @private
 		 */
 		const init = function init(config) {
-			let parent = getInstance();
-
-			let id = AwesomeUtils.Module.source(3);
-			let instance = new LogInstance(id,parent);
-
+			instance = new LogInstance(id,root);
+			if (!root) root = instance;
 			instances[id] = instance;
 			instance.init(config);
-		};
-
-		/**
-		 * Removes a scoped instance of AwesomeLog. This function should
-		 * generally not be need and can have odd side effects, so use
-		 * with discretion.
-		 *
-		 * @param  {string} id
-		 * @return {void}
-		 */
-		const uninit = function uninit(id) {
-			id = id || AwesomeUtils.Module.source(3);
-			delete instances[id];
-		};
-
-		/**
-		 * @private
-		 */
-		const getInstance = function getInstance() {
-			let stack = AwesomeUtils.Module.stack(2);
-
-			let instance = null;
-
-			while (true) {
-				let entry = stack.shift();
-				if (!entry) break;
-
-				let id = entry.source;
-				instance = instances[id];
-				if (instance) break;
-
-				instance = null;
-			}
-
-			if (instance) return instance;
-
-			return null;
 		};
 
 		/**
@@ -103,19 +69,17 @@ class AwesomeLog {
 		 */
 		const get = function get(target,prop) {
 			if (prop==="init") return init;
-			else if (prop==="uninit") return uninit;
 			else if (prop==="AbstractLogWriter") return AbstractLogWriter;
 			else if (prop==="AbstractLogFormatter") return AbstractLogFormatter;
 			else if (prop==="defineWriter") return LogExtensions.defineWriter.bind(LogExtensions);
 			else if (prop==="defineFormatter") return LogExtensions.defineFormatter.bind(LogExtensions);
+			else if (prop==="initialized") return !!instance;
 
-			let instance = getInstance();
-			if (prop==="initialized") return !!instance;
 			if (!instance) throw new Error("AwesomeLog has not been initialized.");
 
 			// functions need to be bound or this fails.
 			if (instance[prop] instanceof Function) return instance[prop].bind(instance);
-
+			// otherwise
 			return instance[prop];
 		};
 
@@ -123,9 +87,7 @@ class AwesomeLog {
 		 * @private
 		 */
 		const has = function has(target,prop) {
-			let instance = getInstance();
 			if (!instance) return false;
-
 			return instance[prop]!==undefined;
 		};
 
@@ -133,22 +95,15 @@ class AwesomeLog {
 		 * @private
 		 */
 		const getOwnPropertyDescriptor = function getOwnPropertyDescriptor(target,prop) {
-			let instance = getInstance();
 			if (!instance) throw new Error("AwesomeLog has not been initialized.");
-
 			return Object.getOwnPropertyDescriptor(instance,prop);
 		};
 
 		const ownKeys = function ownKeys() {
-			let instance = getInstance();
-
 			return [].concat(Object.getOwnPropertyNames(instance),Object.getOwnPropertySymbols(instance));
 		};
 
-		const apply = {
-		};
-
-		return new Proxy(apply,{
+		return new Proxy({},{
 			get,
 			has,
 			getOwnPropertyDescriptor,
@@ -157,4 +112,4 @@ class AwesomeLog {
 	}
 }
 
-module.exports = new AwesomeLog();
+module.exports = AwesomeLog;

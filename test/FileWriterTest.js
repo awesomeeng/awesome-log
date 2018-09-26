@@ -11,7 +11,8 @@ const FS = require("fs");
 const Path = require("path");
 
 const AwesomeUtils = require("@awesomeeng/awesome-utils");
-const Log = require("../src/AwesomeLog");
+const AwesomeLog = require("../src/AwesomeLog");
+const Log = new AwesomeLog();
 
 describe("FileWriterTest",()=>{
 	let id,dir,testfile;
@@ -48,7 +49,6 @@ describe("FileWriterTest",()=>{
 		assert(AwesomeUtils.FS.existsSync(testfile));
 
 		Log.stop();
-		Log.uninit();
 	});
 
 	it("write",function(){
@@ -74,7 +74,6 @@ describe("FileWriterTest",()=>{
 		let historical = Log.history.join("\n")+"\n";
 
 		Log.stop();
-		Log.uninit();
 
 		assert(AwesomeUtils.FS.existsSync(testfile));
 		let content = FS.readFileSync(testfile);
@@ -117,7 +116,6 @@ describe("FileWriterTest",()=>{
 		await AwesomeUtils.Promise.sleep(30);
 
 		Log.stop();
-		Log.uninit();
 
 		let files = FS.readdirSync(dir);
 		let found = files.some((file)=>{
@@ -160,7 +158,6 @@ describe("FileWriterTest",()=>{
 		await AwesomeUtils.Promise.sleep(30);
 
 		Log.stop();
-		Log.uninit();
 
 		let files = FS.readdirSync(dir);
 		let found = files.some((file)=>{

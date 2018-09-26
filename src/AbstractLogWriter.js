@@ -64,7 +64,6 @@ class AbstractLogWriter {
 		if (typeof name!=="string") throw new Error("Invalid name argument");
 		this[$NAME] = name;
 
-		const Log = require("./AwesomeLog");
 		if (!levels) levels = "*";
 		if (typeof levels==="string") {
 			if (levels==="*") levels = parent.levels;
@@ -72,7 +71,7 @@ class AbstractLogWriter {
 		}
 		if (!(levels instanceof Array)) throw new Error("Invalid levels argument");
 		this[$LEVELS] = levels.map((level)=>{
-			return Log.getLevel(level);
+			return parent.getLevel(level);
 		});
 
 		if (!formatter) throw new Error("Missing formatter argument.");

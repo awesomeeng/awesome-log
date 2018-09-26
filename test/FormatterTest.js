@@ -8,26 +8,11 @@
 
 const assert = require("assert");
 
-const Log = require("../src/AwesomeLog");
+const AwesomeLog = require("../src/AwesomeLog");
+const Log = new AwesomeLog();
 
 describe("AbstractLogFormatter",()=>{
-	beforeEach(()=>{
-		Log.init({
-			writers: [{
-				name: "null",
-				type: "null"
-			}],
-			disableLoggingNotices: true,
-			historyFormatter: "default"
-		});
-	});
-
-	afterEach(()=>{
-	});
-
 	it("default formatter",function(){
-		Log.start();
-		Log.stop();
 		Log.init({
 			writers: [{
 				name: "null",
@@ -44,8 +29,6 @@ describe("AbstractLogFormatter",()=>{
 	});
 
 	it("default formatter arguments",function(){
-		Log.start();
-		Log.stop();
 		Log.init({
 			writers: [{
 				name: "null",
@@ -88,8 +71,6 @@ describe("AbstractLogFormatter",()=>{
 	});
 
 	it("js formatter",function(){
-		Log.start();
-		Log.stop();
 		Log.init({
 			writers: [{
 				name: "null",
@@ -113,8 +94,6 @@ describe("AbstractLogFormatter",()=>{
 	});
 
 	it("json formatter",function(){
-		Log.start();
-		Log.stop();
 		Log.init({
 			writers: [{
 				name: "null",
@@ -141,8 +120,6 @@ describe("AbstractLogFormatter",()=>{
 	});
 
 	it("csv formatter",function(){
-		Log.start();
-		Log.stop();
 		Log.init({
 			writers: [{
 				name: "null",
