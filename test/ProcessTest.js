@@ -13,8 +13,7 @@ const Cluster = require("cluster");
 
 const AwesomeUtils = require("@awesomeeng/awesome-utils");
 
-const AwesomeLog = require("../src/AwesomeLog");
-const Log = new AwesomeLog();
+const Log = require("../src/AwesomeLog");
 
 describe("Process",function(){
 	let Worker;
