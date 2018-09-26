@@ -24,6 +24,14 @@ describe("Process",function(){
 		Worker = null;
 	}
 
+	beforeEach(()=>{
+		AwesomeUtils.Module.unrequire(AwesomeUtils.Module.resolve(module,"../src/AwesomeLog"));
+	});
+
+	afterEach(()=>{
+		AwesomeUtils.Module.unrequire(AwesomeUtils.Module.resolve(module,"../src/AwesomeLog"));
+	});
+
 	it("child_process",async function(){
 		this.slow(1500);
 		this.timeout(3000);

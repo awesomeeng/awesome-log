@@ -3,6 +3,7 @@
 "use strict";
 
 const Log = require("../../src/AwesomeLog.js");
+
 Log.init();
 Log.start();
 Log.debug("child","test log from child 1.");

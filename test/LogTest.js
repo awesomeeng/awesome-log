@@ -8,29 +8,43 @@
 
 const assert = require("assert");
 
-const Log = require("../src/AwesomeLog");
-
-describe("Log",()=>{
+describe("AwesomeLog",()=>{
 	beforeEach(()=>{
+		const AwesomeUtils = require("@awesomeeng/awesome-utils");
+		AwesomeUtils.Module.unrequire(AwesomeUtils.Module.resolve(module,"../src/AwesomeLog"));
+
+	});
+
+	afterEach(()=>{
+		const AwesomeUtils = require("@awesomeeng/awesome-utils");
+		AwesomeUtils.Module.unrequire(AwesomeUtils.Module.resolve(module,"../src/AwesomeLog"));
+	});
+
+	it("initialize",()=>{
+		const Log = require("../src/AwesomeLog");
 		Log.init({
 			writers: [{
 				name: "null",
 				type: "null"
 			}],
 			disableLoggingNotices: true,
-			historyFormatter: "default"
+			historyFormatter: "js"
 		});
-	});
 
-	afterEach(()=>{
-	});
-
-	it("initialize",()=>{
-		Log.init();
 		assert(Log.initialized);
 	});
 
 	it("start",()=>{
+		const Log = require("../src/AwesomeLog");
+		Log.init({
+			writers: [{
+				name: "null",
+				type: "null"
+			}],
+			disableLoggingNotices: true,
+			historyFormatter: "js"
+		});
+
 		assert(!Log.running);
 		Log.start();
 		assert(Log.running);
@@ -38,6 +52,16 @@ describe("Log",()=>{
 	});
 
 	it("stop",()=>{
+		const Log = require("../src/AwesomeLog");
+		Log.init({
+			writers: [{
+				name: "null",
+				type: "null"
+			}],
+			disableLoggingNotices: true,
+			historyFormatter: "js"
+		});
+
 		assert(!Log.running);
 		Log.start();
 		assert(Log.running);
@@ -46,16 +70,16 @@ describe("Log",()=>{
 	});
 
 	it("log",()=>{
-		Log.start();
-		Log.stop();
+		const Log = require("../src/AwesomeLog");
 		Log.init({
 			writers: [{
 				name: "null",
 				type: "null"
 			}],
-			historyFormatter: "js",
 			disableLoggingNotices: true,
+			historyFormatter: "js"
 		});
+
 		Log.start();
 
 		Log.log("ACCESS","This is a ACCESS test.");
@@ -88,13 +112,16 @@ describe("Log",()=>{
 	});
 
 	it("pause/resume",function(){
+		const Log = require("../src/AwesomeLog");
 		Log.init({
 			writers: [{
 				name: "null",
 				type: "null"
 			}],
 			disableLoggingNotices: true,
+			historyFormatter: "js"
 		});
+
 		Log.start();
 		assert.equal(Log.history.length,0);
 		Log.info("Testing pause/resume 1.");
@@ -114,102 +141,18 @@ describe("Log",()=>{
 		Log.stop();
 	});
 
-	it("levels",function(){
-		Log.init({
-			writers: [{
-				name: "null",
-				type: "null"
-			}],
-			levels: "banana,aPPle,orangE",
-			historyFormatter: "js",
-			disableLoggingNotices: true
-		});
-
-		assert.equal(Log.levelNames.length,3);
-		assert(Log.levelNames.indexOf("BANANA")>-1);
-		assert(Log.levelNames.indexOf("APPLE")>-1);
-		assert(Log.levelNames.indexOf("ORANGE")>-1);
-
-		Log.start();
-
-		try {
-			Log.access("This is a ACCESS test.");
-			assert(false);
-		}
-		catch (ex) {
-			assert(true);
-		}
-		try {
-			Log.error("This is a ERROR test.");
-			assert(false);
-		}
-		catch (ex) {
-			assert(true);
-		}
-		try {
-			Log.warn("This is a WARN test.");
-			assert(false);
-		}
-		catch (ex) {
-			assert(true);
-		}
-		try {
-			Log.info("This is a INFO test.");
-			assert(false);
-		}
-		catch (ex) {
-			assert(true);
-		}
-		try {
-			Log.debug("This is a DEBUG test.");
-			assert(false);
-		}
-		catch (ex) {
-			assert(true);
-		}
-
-		Log.banana("This is a ACCESS test.");
-		Log.orange("This is a ERROR test.");
-		Log.apple("This is a WARN test.");
-		assert.equal(Log.history.length,3);
-
-		Log.apple("This is a INFO test.");
-		Log.orange("This is a INFO test.");
-		Log.banana("This is a DEBUG test.");
-
-		assert(Log.history.length===6);
-
-		Log.stop();
-		Log.init({
-			writers: [{
-				name: "null",
-				type: "null"
-			}],
-			levels: "banana,apple,orange,gar$bage,spa ced",
-			historyFormatter: "js",
-			disableLoggingNotices: true
-		});
-		Log.start();
-
-		Log.levels.forEach((level)=>{
-			assert(level.name.match(/^\w+$/));
-		});
-
-		assert(Log.history.length===0);
-
-		Log.stop();
-	});
-
 	it("events",function(done){
-		let x = 0;
-
+		const Log = require("../src/AwesomeLog");
 		Log.init({
 			writers: [{
 				name: "null",
 				type: "null"
 			}],
-			disableLoggingNotices: true
+			disableLoggingNotices: true,
+			historyFormatter: "js"
 		});
+
+		let x = 0;
 
 		Log.once("started",() => x+=1);
 		Log.on("log",() => x+=2);

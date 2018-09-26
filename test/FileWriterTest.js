@@ -11,23 +11,27 @@ const FS = require("fs");
 const Path = require("path");
 
 const AwesomeUtils = require("@awesomeeng/awesome-utils");
-const Log = require("../src/AwesomeLog");
 
 describe("FileWriterTest",()=>{
 	let id,dir,testfile;
 
 	beforeEach(()=>{
+		AwesomeUtils.Module.unrequire(AwesomeUtils.Module.resolve(module,"../src/AwesomeLog"));
+
 		id = AwesomeUtils.Random.string(16);
 		testfile = Path.resolve(process.cwd(),"./temp."+id+".tmp");
 		dir = Path.resolve(process.cwd(),"./temp."+AwesomeUtils.Random.string(16));
 	});
 
 	afterEach(()=>{
+		AwesomeUtils.Module.unrequire(AwesomeUtils.Module.resolve(module,"../src/AwesomeLog"));
+
 		if (AwesomeUtils.FS.existsSync(testfile)) FS.unlinkSync(testfile);
 		if (AwesomeUtils.FS.existsSync(dir)) AwesomeUtils.FS.recursiveRmdirSync(dir);
 	});
 
 	it("create",function(){
+		const Log = require("../src/AwesomeLog");
 		Log.init({
 			writers: [{
 				name: "file-writer-test",
@@ -48,10 +52,10 @@ describe("FileWriterTest",()=>{
 		assert(AwesomeUtils.FS.existsSync(testfile));
 
 		Log.stop();
-		Log.uninit();
 	});
 
 	it("write",function(){
+		const Log = require("../src/AwesomeLog");
 		Log.init({
 			writers: [{
 				name: "file-writer-test",
@@ -73,11 +77,10 @@ describe("FileWriterTest",()=>{
 
 		let historical = Log.history.join("\n")+"\n";
 
-		Log.stop();
-		Log.uninit();
-
-		assert(AwesomeUtils.FS.existsSync(testfile));
+		// assert(AwesomeUtils.FS.existsSync(testfile));
 		let content = FS.readFileSync(testfile);
+
+		Log.stop();
 
 		assert.deepStrictEqual(content.toString("utf-8"),historical);
 	});
@@ -88,6 +91,7 @@ describe("FileWriterTest",()=>{
 
 		let id = AwesomeUtils.Random.string(16);
 
+		const Log = require("../src/AwesomeLog");
 		Log.init({
 			writers: [{
 				name: "file-writer-test",
@@ -117,7 +121,6 @@ describe("FileWriterTest",()=>{
 		await AwesomeUtils.Promise.sleep(30);
 
 		Log.stop();
-		Log.uninit();
 
 		let files = FS.readdirSync(dir);
 		let found = files.some((file)=>{
@@ -131,6 +134,7 @@ describe("FileWriterTest",()=>{
 		this.slow(3000);
 		this.timeout(4000);
 
+		const Log = require("../src/AwesomeLog");
 		Log.init({
 			writers: [{
 				name: "file-writer-test",
@@ -160,7 +164,6 @@ describe("FileWriterTest",()=>{
 		await AwesomeUtils.Promise.sleep(30);
 
 		Log.stop();
-		Log.uninit();
 
 		let files = FS.readdirSync(dir);
 		let found = files.some((file)=>{
