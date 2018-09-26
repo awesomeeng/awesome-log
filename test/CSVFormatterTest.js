@@ -8,10 +8,19 @@
 
 const assert = require("assert");
 
-const Log = require("../src/AwesomeLog");
+const AwesomeUtils = require("@awesomeeng/awesome-utils");
 
 describe("AbstractLogFormatter",()=>{
+	beforeEach(()=>{
+		AwesomeUtils.Module.unrequire(AwesomeUtils.Module.resolve(module,"../src/AwesomeLog"));
+	});
+
+	afterEach(()=>{
+		AwesomeUtils.Module.unrequire(AwesomeUtils.Module.resolve(module,"../src/AwesomeLog"));
+	});
+
 	it("csv formatter",function(){
+		const Log = require("../src/AwesomeLog");
 		Log.init({
 			writers: [{
 				name: "null",
@@ -20,6 +29,7 @@ describe("AbstractLogFormatter",()=>{
 			disableLoggingNotices: true,
 			historyFormatter: "csv"
 		});
+
 		Log.start();
 
 		Log.info("Testing formatting...");

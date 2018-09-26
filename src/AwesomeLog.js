@@ -165,6 +165,20 @@ class AwesomeLog extends Events {
 	}
 
 	/**
+	 * @borrows LogExtensions#defineWriter as defineWriter
+	 */
+	defineWriter(name,logWriter) {
+		return LogExtensions.defineWriter(name,logWriter);
+	}
+
+	/**
+	 * @borrows LogExtensions#defineFormatter as defineFormatter
+	 */
+	defineFormatter(name,logFormatter) {
+		return LogExtensions.defineFormatter(name,logFormatter);
+	}
+
+	/**
 	 * Initializes AwesomeLog for usage. This should be called very early in your application,
 	 * in the entry point if possible.
 	 *

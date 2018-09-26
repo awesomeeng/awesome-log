@@ -7,25 +7,30 @@
 "use strict";
 
 const assert = require("assert");
-let Log;
 
 describe("LogLevels",()=>{
-	before(()=>{
+	beforeEach(()=>{
 		const AwesomeUtils = require("@awesomeeng/awesome-utils");
-		AwesomeUtils.Module.unrequire(require.resolve("../src/AwesomeLog"));
+		AwesomeUtils.Module.unrequire(AwesomeUtils.Module.resolve(module,"../src/AwesomeLog"));
+	});
 
-		Log = require("../src/AwesomeLog");
+	afterEach(()=>{
+		const AwesomeUtils = require("@awesomeeng/awesome-utils");
+		AwesomeUtils.Module.unrequire(AwesomeUtils.Module.resolve(module,"../src/AwesomeLog"));
+	});
+
+	it("levels",function(){
+		const Log = require("../src/AwesomeLog");
 		Log.init({
 			writers: [{
 				name: "null",
 				type: "null"
 			}],
+			levels: "banana,apple,orange",
 			disableLoggingNotices: true,
 			historyFormatter: "js"
 		});
-	});
 
-	it("levels",function(){
 		assert.equal(Log.levelNames.length,3);
 		assert(Log.levelNames.indexOf("BANANA")>-1);
 		assert(Log.levelNames.indexOf("APPLE")>-1);
@@ -79,24 +84,6 @@ describe("LogLevels",()=>{
 		Log.banana("This is a DEBUG test.");
 
 		assert(Log.history.length===6);
-
-		Log.stop();
-		Log.init({
-			writers: [{
-				name: "null",
-				type: "null"
-			}],
-			levels: "banana,apple,orange,gar$bage,spa ced",
-			historyFormatter: "js",
-			disableLoggingNotices: true
-		});
-		Log.start();
-
-		Log.levels.forEach((level)=>{
-			assert(level.name.match(/^\w+$/));
-		});
-
-		assert(Log.history.length===0);
 
 		Log.stop();
 	});

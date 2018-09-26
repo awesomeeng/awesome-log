@@ -7,14 +7,21 @@
 "use strict";
 
 const assert = require("assert");
-let Log;
 
 describe("AwesomeLog",()=>{
-	before(()=>{
+	beforeEach(()=>{
 		const AwesomeUtils = require("@awesomeeng/awesome-utils");
-		AwesomeUtils.Module.unrequire(require.resolve("../src/AwesomeLog"));
+		AwesomeUtils.Module.unrequire(AwesomeUtils.Module.resolve(module,"../src/AwesomeLog"));
 
-		Log = require("../src/AwesomeLog");
+	});
+
+	afterEach(()=>{
+		const AwesomeUtils = require("@awesomeeng/awesome-utils");
+		AwesomeUtils.Module.unrequire(AwesomeUtils.Module.resolve(module,"../src/AwesomeLog"));
+	});
+
+	it("initialize",()=>{
+		const Log = require("../src/AwesomeLog");
 		Log.init({
 			writers: [{
 				name: "null",
@@ -23,13 +30,21 @@ describe("AwesomeLog",()=>{
 			disableLoggingNotices: true,
 			historyFormatter: "js"
 		});
-	});
 
-	it("initialize",()=>{
 		assert(Log.initialized);
 	});
 
 	it("start",()=>{
+		const Log = require("../src/AwesomeLog");
+		Log.init({
+			writers: [{
+				name: "null",
+				type: "null"
+			}],
+			disableLoggingNotices: true,
+			historyFormatter: "js"
+		});
+
 		assert(!Log.running);
 		Log.start();
 		assert(Log.running);
@@ -37,6 +52,16 @@ describe("AwesomeLog",()=>{
 	});
 
 	it("stop",()=>{
+		const Log = require("../src/AwesomeLog");
+		Log.init({
+			writers: [{
+				name: "null",
+				type: "null"
+			}],
+			disableLoggingNotices: true,
+			historyFormatter: "js"
+		});
+
 		assert(!Log.running);
 		Log.start();
 		assert(Log.running);
@@ -45,6 +70,16 @@ describe("AwesomeLog",()=>{
 	});
 
 	it("log",()=>{
+		const Log = require("../src/AwesomeLog");
+		Log.init({
+			writers: [{
+				name: "null",
+				type: "null"
+			}],
+			disableLoggingNotices: true,
+			historyFormatter: "js"
+		});
+
 		Log.start();
 
 		Log.log("ACCESS","This is a ACCESS test.");
@@ -77,6 +112,16 @@ describe("AwesomeLog",()=>{
 	});
 
 	it("pause/resume",function(){
+		const Log = require("../src/AwesomeLog");
+		Log.init({
+			writers: [{
+				name: "null",
+				type: "null"
+			}],
+			disableLoggingNotices: true,
+			historyFormatter: "js"
+		});
+
 		Log.start();
 		assert.equal(Log.history.length,0);
 		Log.info("Testing pause/resume 1.");
@@ -97,6 +142,16 @@ describe("AwesomeLog",()=>{
 	});
 
 	it("events",function(done){
+		const Log = require("../src/AwesomeLog");
+		Log.init({
+			writers: [{
+				name: "null",
+				type: "null"
+			}],
+			disableLoggingNotices: true,
+			historyFormatter: "js"
+		});
+
 		let x = 0;
 
 		Log.once("started",() => x+=1);
