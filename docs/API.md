@@ -328,10 +328,8 @@ AwesomeLog is a singleton object returned when you`const Log = require("@awesom
     * [.historySizeLimit](#AwesomeLog+historySizeLimit) ⇒ <code>number</code>
     * [.levels](#AwesomeLog+levels) ⇒ [<code>Array.&lt;LogLevel&gt;</code>](#LogLevel)
     * [.levelNames](#AwesomeLog+levelNames) ⇒ <code>Array.&lt;string&gt;</code>
-    * [.defineWriter()](#AwesomeLog+defineWriter)
-        * [.defineWriter(name, logWriter)](#AwesomeLog+defineWriter.defineWriter) ⇒ <code>void</code>
-    * [.defineFormatter()](#AwesomeLog+defineFormatter)
-        * [.defineFormatter(name, logFormatter)](#AwesomeLog+defineFormatter.defineFormatter) ⇒ <code>void</code>
+    * [.defineWriter(name, logWriter)](#AwesomeLog+defineWriter) ⇒ <code>void</code>
+    * [.defineFormatter(name, logFormatter)](#AwesomeLog+defineFormatter) ⇒ <code>void</code>
     * [.init(config)](#AwesomeLog+init) ⇒ <code>void</code>
     * [.start()](#AwesomeLog+start) ⇒ <code>void</code>
     * [.stop()](#AwesomeLog+stop) ⇒ <code>void</code>
@@ -429,17 +427,10 @@ Returns an array of strings containing the level names, as taken from the LogLev
 
 <a name="AwesomeLog+defineWriter"></a>
 
-### awesomeLog.defineWriter()
-**Kind**: instance method of [<code>AwesomeLog</code>](#AwesomeLog)  
-
-* * *
-
-<a name="AwesomeLog+defineWriter.defineWriter"></a>
-
-#### defineWriter.defineWriter(name, logWriter) ⇒ <code>void</code>
+### awesomeLog.defineWriter(name, logWriter) ⇒ <code>void</code>
 Map a new Log Writer to a specific name, for usage in configuring AwesomeLog.
 
-**Kind**: static method of [<code>defineWriter</code>](#AwesomeLog+defineWriter)  
+**Kind**: instance method of [<code>AwesomeLog</code>](#AwesomeLog)  
 
 | Param | Type |
 | --- | --- |
@@ -451,17 +442,10 @@ Map a new Log Writer to a specific name, for usage in configuring AwesomeLog.
 
 <a name="AwesomeLog+defineFormatter"></a>
 
-### awesomeLog.defineFormatter()
-**Kind**: instance method of [<code>AwesomeLog</code>](#AwesomeLog)  
-
-* * *
-
-<a name="AwesomeLog+defineFormatter.defineFormatter"></a>
-
-#### defineFormatter.defineFormatter(name, logFormatter) ⇒ <code>void</code>
+### awesomeLog.defineFormatter(name, logFormatter) ⇒ <code>void</code>
 Map a new Log Formatter to a specific name, for usage in configuring AwesomeLog.
 
-**Kind**: static method of [<code>defineFormatter</code>](#AwesomeLog+defineFormatter)  
+**Kind**: instance method of [<code>AwesomeLog</code>](#AwesomeLog)  
 
 | Param | Type |
 | --- | --- |

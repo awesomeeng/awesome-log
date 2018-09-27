@@ -169,15 +169,23 @@ class AwesomeLog extends Events {
 	}
 
 	/**
-	 * @borrows LogExtensions#defineWriter as defineWriter
+	 * Map a new Log Writer to a specific name, for usage in configuring AwesomeLog.
+	 *
+	 * @param  {string} name
+	 * @param  {Class<AbstractLogWriter>} logWriter
+	 * @return {void}
 	 */
 	defineWriter(name,logWriter) {
 		return LogExtensions.defineWriter(name,logWriter);
 	}
 
 	/**
-	 * @borrows LogExtensions#defineFormatter as defineFormatter
-	 */
+	* Map a new Log Formatter to a specific name, for usage in configuring AwesomeLog.
+	*
+	* @param  {string} name
+	* @param  {Class<AbstractLogFormatter>} logFormatter
+	* @return {void}
+	*/
 	defineFormatter(name,logFormatter) {
 		return LogExtensions.defineFormatter(name,logFormatter);
 	}
