@@ -33,7 +33,11 @@ const $BASE = Symbol("base");
 const $STARTS = Symbol("starts");
 
 /**
- * @private
+ * AwesomeLog is a singleton object returned when you
+ * `const Log = require("@awesomeeng/awesome-log")`. From it you
+ * can initialize and start your log service and then begin writing
+ * log messages out. Please see our
+ * {@link ../README.md extensive documentation} for usage details.
  */
 class AwesomeLog extends Events {
 	constructor() {
@@ -183,7 +187,7 @@ class AwesomeLog extends Events {
 	 * in the entry point if possible.
 	 *
 	 * You may only initialize if AwesomeLog is not running, which is done by calling
-	 * `start()`.
+	 * `start()`, so do this before `start()`.
 	 *
 	 * This method takes an optional configuration object. This configuration object is merged
 	 * with the default configuration to produce the overall configuration.  Below is the
