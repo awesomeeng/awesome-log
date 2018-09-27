@@ -25,3 +25,9 @@
 #### **Version 2.0.2**
 
  - Fixes version mismatch in awesome-utils
+
+#### ** Version 2.1.0**
+
+ - Refactored out most of the scope stuff introduced in v2.0.0 as it introduced a major bug.
+
+ 

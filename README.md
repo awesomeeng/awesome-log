@@ -1,6 +1,6 @@
 # AwesomeLog
 
-AwesomeLog is a Log System for enterprise ready nodejs applications. It provides a basic out of the box logging solution that is ready to go with zero configuration but also gives you a highly configurable logging solution that with the power to do your logging right.
+AwesomeLog is a Log System for enterprise ready nodejs applications. It provides a basic out of the box logging solution that is ready to go with zero configuration but also gives you a highly configurable logging solution with the power to do your logging right.
 
 ## Why Another Log Solution?
 
@@ -11,7 +11,7 @@ AwesomeLog is similar to Winston, Log, Log4js, etc. and those are all good produ
 AwesomeLog provides...
  - Ready to go with zero initial configuration;
  - Configure and Start once, Use Everywhere;
- - Scope handling for different modules;
+ - Support for clean nested AwesomeLog usage;
  - Extremely flexible;
  - Customizable Log Levels;
  - Built-In Formatters: Default, JSON, JS, or CSV;
@@ -76,7 +76,6 @@ That's it. AwesomeLog is running and you can now use in any part of your applica
 
 To use AwesomeLog once it is configured and started is simple:
 
-
 1). You need to require AwesomeLog in any file/class that would reference it.
 
 ```
@@ -97,7 +96,7 @@ You'll notice that Log calls take one or more arguments:
 
 ## Log Levels
 
-AwesomeLog starts with five basic Log Levels: Access, Error, Warn, Info, Debug by default). Each of these associated methods on the Log instance to allow you to easily use them.  So for the default levels you get
+AwesomeLog starts with five basic Log Levels: ACCESS, ERROR, WARN, INFO, DEBUG by default). Each of these associated methods on the Log instance to allow you to easily use them.  So for the default levels you get
 ```
 Log.access(...)
 Log.error(...)
@@ -119,7 +118,7 @@ Log.funny(...);
 Log.bad(...);
 ```
 
-You may have as many Log Levels as you desire, but each must have a unique name.  Also, there are a handful of reserved words (anything that is already in the AwesomeLog class) and you cannot use them. These include: `AbstractLogWriter, AbstractLogFormatter, initialized, running, config, history, historySizeLimit, levels, levelNames, definedWriters, definedFormatters, defineWriter, defineFormatter, init, start, stop, pause, resume, clearHistory, getLevel, log, cpatureSubProcess, releaseSubProcess.`
+You may have as many Log Levels as you desire, but each must have a unique name.  Also, there are a handful of reserved words (anything that is already in the AwesomeLog class) and you cannot use them. These include: `AbstractLogWriter, AbstractLogFormatter, initialized, running, config, history, historySizeLimit, levels, levelNames, definedWriters, definedFormatters, defineWriter, defineFormatter, init, start, stop, pause, resume, clearHistory, getLevel, log, captureSubProcess, releaseSubProcess.`
 
 In addition to the log level methods, you also use the `Log.log()` method which takes the level as the first argument, so you can programmatically set the level if needed.
 ```
@@ -207,7 +206,7 @@ You can read more about how to write your own [Custom Log Formatter](./docs/LogF
  - [Advanced Configuration](./docs/Configuration.md)
  - [Console Writer Configuration](./docs/ConsoleWriterConfiguration.md)
  - [File Writer Configuration](./docs/FileWriterConfiguration.md)
- - [Scope](./docs/Scope.md)
+ - [Nested Usage](./docs/NestedUsage.md)
  - [Custom Log Levels](./docs/LogLevels.md)
  - [Custom Log Writers](./docs/LogWriters.md)
  - [Custom Log Formatters](./docs/LogFormatters.md)
