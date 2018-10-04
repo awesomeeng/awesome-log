@@ -16,7 +16,7 @@ Third, nested instance writers are never started, only the root instance writers
 
 Whenever a nested instance is used, AwesomeLog will attempt to map the nested instance log levels to the root instance log levels.  It does this in three possible ways:
 
-First, you may add a `scopeMap` property to your `log.init()` configuration that maps nested log level names to root log level names.  Here's an example.
+You may add a `scopeMap` property to your `log.init()` configuration that maps nested log level names to root log level names.  Here's an example.
 
 ```
 Log.init({
@@ -29,7 +29,7 @@ Log.init({
 });
 ```
 
-Second, you may supply a `scopeCatchAll` property to your `log.init()` configuration that, if a log level is not mapped in the `scopeMap` setting, the `scopeCatchAll` level will be used instead.  By default `scopeCatchAll` is set to `INFO`.
+Also, you may supply a `scopeCatchAll` property to your `log.init()` configuration that, if a log level is not mapped in the `scopeMap` setting, the `scopeCatchAll` level will be used instead.  By default `scopeCatchAll` is set to `INFO`.
 
 ```
 Log.init({
@@ -42,5 +42,3 @@ Log.init({
 	scopeCatchAll: "debug"
 });
 ```
-
-Finally, you may set `scopeCatchAll` to `null` and this will cause all nested log writes to be discarded entirely and thus never seen.  This is good for hiding module log information you dont want to surface, but honestly, `scopeMap` is the stronger move.
