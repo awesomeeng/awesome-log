@@ -28,7 +28,6 @@ class LogExtensions {
 		// define built in writers
 		this.defineWriter("null",AwesomeUtils.Module.resolve(module,"./writers/NullWriter"));
 		this.defineWriter("nullwriter",AwesomeUtils.Module.resolve(module,"./writers/NullWriter"));
-		this.defineWriter("subprocess",AwesomeUtils.Module.resolve(module,"./writers/SubProcessWriter"));
 		this.defineWriter("default",AwesomeUtils.Module.resolve(module,"./writers/ConsoleWriter"));
 		this.defineWriter("console",AwesomeUtils.Module.resolve(module,"./writers/ConsoleWriter"));
 		this.defineWriter("consolewriter",AwesomeUtils.Module.resolve(module,"./writers/ConsoleWriter"));
@@ -38,7 +37,6 @@ class LogExtensions {
 
 		// define built in formatters
 		this.defineFormatter("default",AwesomeUtils.Module.resolve(module,"./formatters/DefaultFormatter"));
-		this.defineFormatter("subprocess",AwesomeUtils.Module.resolve(module,"./formatters/SubProcessFormatter"));
 		this.defineFormatter("json",AwesomeUtils.Module.resolve(module,"./formatters/JSONFormatter"));
 		this.defineFormatter("js",AwesomeUtils.Module.resolve(module,"./formatters/JSObjectFormatter"));
 		this.defineFormatter("jsobject",AwesomeUtils.Module.resolve(module,"./formatters/JSObjectFormatter"));

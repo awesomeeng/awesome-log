@@ -258,9 +258,9 @@ class AwesomeLog extends Events {
 		if (!this.initialized) {
 			if (config.writers.length<1) config.writers.push({
 				name: "DefaultWriter",
-				type:  !disableSP && isSubProcess() ? "subprocess" : "default",
+				type:  !disableSP && isSubProcess() ? "null" : "default",
 				levels: "*",
-				formatter: !disableSP && isSubProcess() ? "subprocess" : "default",
+				formatter: !disableSP && isSubProcess() ? "jsobject" : "default",
 				options: {}
 			});
 
@@ -486,7 +486,23 @@ class AwesomeLog extends Events {
 			this[$BACKLOG].push(logentry);
 			if (this[$BACKLOG].length>this.config.backlogSizeLimit) this[$BACKLOG] = this[$BACKLOG].slice(Math.floor(this.backlogSizeLimit*0.1));
 		}
-		else write.call(this,logentry);
+		else if (!this.config.disableSubProcesses && isSubProcess()) {
+			if (AwesomeUtils.Workers.enabled) {
+				AwesomeUtils.Workers.Workers.parentPort.postMessage({
+					cmd: "AWESOMELOG.ENTRY",
+					logentry
+				});
+			}
+			else {
+				process.send({
+					cmd: "AWESOMELOG.ENTRY",
+					logentry
+				});
+			}
+		}
+		else {
+			write.call(this,logentry);
+		}
 
 		this.emit("log",logentry);
 
@@ -624,7 +640,7 @@ const initWriters = function initWriters() {
 	});
 };
 
-const write = function write(logentry,x) {
+const write = function write(logentry) {
 	if (!logentry) throw new Error("Missing log entry argument.");
 	if (!logentry.level || !logentry.system || !logentry.message || !logentry.args || !logentry.timestamp) throw new Error("Invalid log entry argument.");
 

@@ -181,7 +181,8 @@ const create = function create(filename,args,env=undefined) {
 				if (env) opts.env = env;
 				opts.env.NODE_PATH = process.env.NODE_PATH;
 
-				resolve(ChildProcess.fork(filename,args,opts));
+				let cp = ChildProcess.fork(filename,args,opts);
+				resolve(cp);
 			}
 		}
 		catch (ex) {
