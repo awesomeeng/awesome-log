@@ -10,6 +10,7 @@ const AwesomeUtils = require("@awesomeeng/awesome-utils");
 
 const LogLevel = require("./LogLevel");
 const LogExtensions = require("./LogExtensions");
+const WriterManager = require("./WriterManager");
 const AbstractLogWriter = require("./AbstractLogWriter");
 const AbstractLogFormatter = require("./AbstractLogFormatter");
 
@@ -24,6 +25,7 @@ catch (ex) {
 const $CONFIG = Symbol("config");
 const $BACKLOG = Symbol("backlog");
 const $HISTORY = Symbol("history");
+const $HISTORYFORMATTER = Symbol("historyFormatter");
 const $FUNCTIONS = Symbol("functions");
 const $LEVELS = Symbol("levels");
 const $WRITERS = Symbol("writers");
@@ -172,22 +174,22 @@ class AwesomeLog extends Events {
 	 * Map a new Log Writer to a specific name, for usage in configuring AwesomeLog.
 	 *
 	 * @param  {string} name
-	 * @param  {Class<AbstractLogWriter>} logWriter
+	 * @param  {string} logWriter
 	 * @return {void}
 	 */
-	defineWriter(name,logWriter) {
-		return LogExtensions.defineWriter(name,logWriter);
+	defineWriter(name,pathToWriter) {
+		return LogExtensions.defineWriter(name,pathToWriter);
 	}
 
 	/**
 	* Map a new Log Formatter to a specific name, for usage in configuring AwesomeLog.
 	*
 	* @param  {string} name
-	* @param  {Class<AbstractLogFormatter>} logFormatter
+	* @param  {string} logFormatter
 	* @return {void}
 	*/
-	defineFormatter(name,logFormatter) {
-		return LogExtensions.defineFormatter(name,logFormatter);
+	defineFormatter(name,pathToFormatter) {
+		return LogExtensions.defineFormatter(name,pathToFormatter);
 	}
 
 	/**
@@ -221,7 +223,6 @@ class AwesomeLog extends Events {
 	 *
 	 * ```
 	 * config.writes = [{
-	 *  name: "console",
 	 *  type:  "default", // "subprocess" if this is a child process
 	 *  levels: "*",
 	 *  formatter: default", // "subprocess" if this is a child process
@@ -242,6 +243,7 @@ class AwesomeLog extends Events {
 			history: true,
 			historySizeLimit: 100,
 			historyFormatter: "default",
+			historyFormatterOptions: {},
 			levels: "access,error,warn,info,debug",
 			disableLoggingNotices: !disableSP && isSubProcess() ? true : false,
 			loggingNoticesLevel: "info",
@@ -255,7 +257,7 @@ class AwesomeLog extends Events {
 
 		if (!this.initialized) {
 			if (config.writers.length<1) config.writers.push({
-				name: "console",
+				name: "DefaultWriter",
 				type:  !disableSP && isSubProcess() ? "subprocess" : "default",
 				levels: "*",
 				formatter: !disableSP && isSubProcess() ? "subprocess" : "default",
@@ -265,8 +267,10 @@ class AwesomeLog extends Events {
 			initLevels.call(this,config.levels);
 			if (!this.getLevel(config.loggingNoticesLevel)) config.loggingNoticesLevel = this.levels.slice(-1)[0] && this.levels.slice(-1)[0].name || null;
 
-			config.historyFormatter = LogExtensions.getFormatter(config.historyFormatter);
-			if (!config.historyFormatter) throw new Error("Invalid history formatter.");
+			let histformpath = LogExtensions.getFormatter(config.historyFormatter);
+			if (!histformpath) throw new Error("Invalid history formatter.");
+			if (!AwesomeUtils.FS.existsSync(histformpath)) throw new Error("Formatter not found at "+histformpath+".");
+			this[$HISTORYFORMATTER] = new (require(histformpath))(config.historyFormatterOptions||{});
 
 			if (!config.disableLoggingNotices) this.log(config.loggingNoticesLevel,"AwesomeLog initialized for levels "+this.levelNames.join("|")+".");
 
@@ -306,22 +310,31 @@ class AwesomeLog extends Events {
 		this[$RUNNING] = true;
 		this[$HISTORY] = [];
 
-		initWriters.call(this);
-
-		[...this[$SUBPROCESSES].keys()].forEach((subprocess)=>{
-			this[$SUBPROCESSES].delete(subprocess);
-			this.captureSubProcess(subprocess);
-		});
-
-		if (this[$BACKLOG]) {
-			this[$BACKLOG].forEach((logentry)=>{
-				write.call(this,logentry);
-			});
-		}
-		this[$BACKLOG] = null;
-
 		if (!this.config.disableLoggingNotices) this.log(this.config.loggingNoticesLevel,"AwesomeLog started.");
 		this.emit("started");
+
+		new Promise(async (resolve,reject)=>{
+			try {
+				await initWriters.call(this);
+
+				[...this[$SUBPROCESSES].keys()].forEach((subprocess)=>{
+					this[$SUBPROCESSES].delete(subprocess);
+					this.captureSubProcess(subprocess);
+				});
+
+				if (this[$BACKLOG]) {
+					this[$BACKLOG].forEach((logentry)=>{
+						write.call(this,logentry);
+					});
+				}
+				this[$BACKLOG] = null;
+
+				resolve();
+			}
+			catch (ex) {
+				return reject(ex);
+			}
+		});
 
 		return this;
 	}
@@ -461,7 +474,7 @@ class AwesomeLog extends Events {
 		}
 		if (typeof message!=="string") throw new Error("Invalid message argument.");
 
-		logentry = Object.assign(this[$BASE],{
+		logentry = Object.assign({},this[$BASE],{
 			level,
 			system: AwesomeUtils.VM.executionSource(3).split(/\\\\|\\|\//g).slice(-1)[0].replace(/[^\w\d_\-.]/g,""),
 			message,
@@ -582,67 +595,55 @@ const mapLevels = function initLevels(levels) {
 };
 
 const initWriters = function initWriters() {
-	// clean up old writers.
-	this[$WRITERS].forEach((writer)=>{
-		writer.flush();
-		writer.close();
+	return new Promise(async (resolve,reject)=>{
+		try {
+			// clean up old writers.
+			this[$WRITERS].forEach((writer)=>{
+				writer.flush();
+				writer.close();
+			});
+			this[$WRITERS] = [];
+
+			let configwriters = this.config.writers;
+			if (!configwriters) throw new Error("No writers configured.");
+			if (!(configwriters instanceof Array)) throw new Error("Invalid writers configured.");
+
+			// start new writers.
+			this[$WRITERS] = await Promise.all(AwesomeUtils.Array.compact(configwriters.map((writer)=>{
+				if (!writer) return null;
+
+				let manager = new WriterManager(this,writer);
+				return manager.start();
+			})));
+
+			resolve();
+		}
+		catch (ex) {
+			return reject(ex);
+		}
 	});
-	this[$WRITERS] = [];
-
-	let configwriters = this.config.writers;
-	if (!configwriters) throw new Error("No writers configured.");
-	if (!(configwriters instanceof Array)) throw new Error("Invalid writers configured.");
-
-	// start new writers.
-	this[$WRITERS] = AwesomeUtils.Array.compact(configwriters.map((writer)=>{
-		if (!writer) return null;
-
-		let name = writer.name || null;
-		if (!name) throw new Error("Missing writer name.");
-		name = name.replace(/[^\w\d_]/g,""); // strip out any non variables friendly characters.
-
-		let type = writer.type || null;
-		if (!type) throw new Error("Missing writer type.");
-		type = type.toLowerCase();
-
-		let levels = writer.levels || "*";
-		if (!levels) throw new Error("Missing writer levels.");
-		levels = levels.toLowerCase();
-
-		let formatter = writer.formatter || "default";
-		if (typeof formatter==="string") formatter = LogExtensions.getFormatter(formatter);
-		if (!formatter) throw new Error("Missing writer formatter '"+writer.formatter+"'.");
-		if (!(formatter instanceof AbstractLogFormatter)) throw new Error("Invalid writer formatter '"+writer.formatter+"', must be of type AbstractLogFormatter.");
-
-		let options = writer.options || {};
-
-		let konstructor = LogExtensions.getWriter(type) || null;
-		if (!konstructor) throw new Error("Invalid writer type '"+type+"' does not exist.");
-
-		let instance = new konstructor(this,name,levels,formatter,options);
-		return instance;
-	}));
 };
 
-const write = function write(logentry) {
+const write = function write(logentry,x) {
 	if (!logentry) throw new Error("Missing log entry argument.");
 	if (!logentry.level || !logentry.system || !logentry.message || !logentry.args || !logentry.timestamp) throw new Error("Invalid log entry argument.");
 
+	if (logentry.level && logentry.level.name) logentry.level = logentry.level.name;
 	if (this.config.history) {
-		this[$HISTORY].push(this.config.historyFormatter.format(logentry));
+		this[$HISTORY].push(this[$HISTORYFORMATTER].format(logentry));
 		if (this.history.length> this.config.historySizeLimit) this[$HISTORY] = this[$HISTORY].slice(-this.config.historySizeLimit);
 	}
 
 	this[$WRITERS].forEach((writer)=>{
 		if (!writer.takesLevel(logentry.level)) return;
-		writer.write(writer.format(logentry),logentry); // message,logentry
+		writer.write(logentry);
 	});
 };
 
 const subProcessHandler = function subProcessHandler(message) {
 	if (!message) return;
 	if (!message.cmd) return;
-	if (!message.cmd==="AwesomeLog") return;
+	if (!message.cmd==="AWESOMELOG.ENTRY") return;
 
 	let logentry = message.logentry;
 	this.getLevel(logentry.level); // cuases an exception of the process used a level we dont know.

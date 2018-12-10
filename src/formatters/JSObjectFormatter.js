@@ -17,15 +17,15 @@ class JSObjectFormatter extends AbstractLogFormatter {
 	 * Constructor for this formatter. Never called directly, but called by AwesomeLog
 	 * when `Log.start()` is called.
 	 *
-	 * @param {AwesomeLog} parent
+	 * @param {Object} options
 	 */
-	constructor(parent) {
-		super(parent);
+	constructor(options) {
+		super(options);
 	}
 
 	/**
 	 * @private
-	 * 
+	 *
 	 * Given the log entry object, format it tou our output string.
 	 *
 	 * @param  {Object} logentry
@@ -35,7 +35,7 @@ class JSObjectFormatter extends AbstractLogFormatter {
 		return {
 			timestamp: logentry.timestamp,
 			pid: logentry.pid,
-			level: logentry.level.name,
+			level: logentry.level,
 			system: logentry.system,
 			message: logentry.message,
 			args: logentry.args

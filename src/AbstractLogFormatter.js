@@ -2,7 +2,8 @@
 
 "use strict";
 
-const $PARENT = Symbol("parent");
+const $OPTIONS = Symbol("options");
+
 
 /**
  * Describes the shape of a Log Formatter. This class is expected to be extend for all
@@ -25,8 +26,8 @@ class AbstractLogFormatter {
 	*
 	* ```
 	* class MyFormatter extends AbstractLogFormatter {
-	* 	 constructor(parent) {
-	* 	   super(parent);
+	* 	 constructor() {
+	* 	   super();
 	*
 	* 	   ... your initialization code ...
 	* 	 }
@@ -36,21 +37,13 @@ class AbstractLogFormatter {
 	* Failure to not do the super constructor will result in errors.
 	*
 	* You should put any kind of initialization of your formatter in this constructor.
-	*
-	 * @param {AwesomeLog} parent
 	 */
-	constructor(parent) {
-		if (!parent) throw new Error("Missing parent argument.");
-		this[$PARENT] = parent;
+	constructor(options={}) {
+		this[$OPTIONS] = options;
 	}
 
-	/**
-	 * Returns the parent AwesomeLog instance.
-	 *
-	 * @return {AwesomeLog}
-	 */
-	get parent() {
-		return this[$PARENT];
+	get options() {
+		return this[$OPTIONS];
 	}
 
 	/**

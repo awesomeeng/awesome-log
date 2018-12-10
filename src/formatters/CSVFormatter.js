@@ -22,10 +22,10 @@ class CSVFormatter extends AbstractLogFormatter {
 	 * Constructor for this formatter. Never called directly, but called by AwesomeLog
 	 * when `Log.start()` is called.
 	 *
-	 * @param {AwesomeLog} parent
+	 * @param {Object} options
 	 */
-	constructor(parent) {
-		super(parent);
+	constructor(options) {
+		super(options);
 	}
 
 	/**
@@ -40,7 +40,7 @@ class CSVFormatter extends AbstractLogFormatter {
 		let s = [];
 
 		s.push(""+logentry.timestamp);
-		s.push("\""+logentry.level.name+"\"");
+		s.push("\""+logentry.level+"\"");
 		s.push(""+logentry.pid);
 		s.push("\""+logentry.system+"\"");
 		s.push("\""+logentry.message+"\"");

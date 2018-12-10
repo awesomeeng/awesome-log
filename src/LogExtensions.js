@@ -26,23 +26,23 @@ class LogExtensions {
 		this[$FORMATTERS] = {};
 
 		// define built in writers
-		this.defineWriter("null",require("./writers/NullWriter"));
-		this.defineWriter("nullwriter",require("./writers/NullWriter"));
-		this.defineWriter("subprocess",require("./writers/SubProcessWriter"));
-		this.defineWriter("default",require("./writers/ConsoleWriter"));
-		this.defineWriter("console",require("./writers/ConsoleWriter"));
-		this.defineWriter("consolewriter",require("./writers/ConsoleWriter"));
-		this.defineWriter("stdout",require("./writers/ConsoleWriter"));
-		this.defineWriter("file",require("./writers/FileWriter"));
-		this.defineWriter("filewriter",require("./writers/FileWriter"));
+		this.defineWriter("null",AwesomeUtils.Module.resolve(module,"./writers/NullWriter"));
+		this.defineWriter("nullwriter",AwesomeUtils.Module.resolve(module,"./writers/NullWriter"));
+		this.defineWriter("subprocess",AwesomeUtils.Module.resolve(module,"./writers/SubProcessWriter"));
+		this.defineWriter("default",AwesomeUtils.Module.resolve(module,"./writers/ConsoleWriter"));
+		this.defineWriter("console",AwesomeUtils.Module.resolve(module,"./writers/ConsoleWriter"));
+		this.defineWriter("consolewriter",AwesomeUtils.Module.resolve(module,"./writers/ConsoleWriter"));
+		this.defineWriter("stdout",AwesomeUtils.Module.resolve(module,"./writers/ConsoleWriter"));
+		this.defineWriter("file",AwesomeUtils.Module.resolve(module,"./writers/FileWriter"));
+		this.defineWriter("filewriter",AwesomeUtils.Module.resolve(module,"./writers/FileWriter"));
 
 		// define built in formatters
-		this.defineFormatter("default",require("./formatters/DefaultFormatter"));
-		this.defineFormatter("subprocess",require("./formatters/SubProcessFormatter"));
-		this.defineFormatter("json",require("./formatters/JSONFormatter"));
-		this.defineFormatter("js",require("./formatters/JSObjectFormatter"));
-		this.defineFormatter("jsobject",require("./formatters/JSObjectFormatter"));
-		this.defineFormatter("csv",require("./formatters/CSVFormatter"));
+		this.defineFormatter("default",AwesomeUtils.Module.resolve(module,"./formatters/DefaultFormatter"));
+		this.defineFormatter("subprocess",AwesomeUtils.Module.resolve(module,"./formatters/SubProcessFormatter"));
+		this.defineFormatter("json",AwesomeUtils.Module.resolve(module,"./formatters/JSONFormatter"));
+		this.defineFormatter("js",AwesomeUtils.Module.resolve(module,"./formatters/JSObjectFormatter"));
+		this.defineFormatter("jsobject",AwesomeUtils.Module.resolve(module,"./formatters/JSObjectFormatter"));
+		this.defineFormatter("csv",AwesomeUtils.Module.resolve(module,"./formatters/CSVFormatter"));
 	}
 
 	/**
@@ -104,16 +104,21 @@ class LogExtensions {
 	 * @param  {Class<AbstractLogWriter>} logWriter
 	 * @return {void}
 	 */
-	defineWriter(name,logWriter) {
+	defineWriter(name,path) {
 		if (!name) throw new Error("Missing writer name.");
+		if (typeof name!=="string") throw new Error("Invalid writer name.");
+		if (!path) throw new Error("Missing writer path.");
+		if (typeof path!=="string") throw new Error("Invalid writer path.");
+
 		name = name.toLowerCase();
-
-		if (!logWriter) throw new Error("Missing writer constructor");
-		if (!AbstractLogWriter.isPrototypeOf(logWriter)) throw new Error("Invalid writer constructor. Must inherit from AbstractLogWriter.");
-
 		if (this[$WRITERS][name]) throw new Error("Writer already defined.");
 
-		this[$WRITERS][name] = logWriter;
+		if (!AwesomeUtils.FS.existsSync(path)) throw new Error("Writer not found at "+path+".");
+
+		let logWriter = require(path);
+		if (!AbstractLogWriter.isPrototypeOf(logWriter)) throw new Error("Invalid writer constructor. Must inherit from AbstractLogWriter.");
+
+		this[$WRITERS][name] = path;
 	}
 
 	/**
@@ -123,16 +128,21 @@ class LogExtensions {
 	* @param  {Class<AbstractLogFormatter>} logFormatter
 	* @return {void}
 	*/
-	defineFormatter(name,logFormatter) {
+	defineFormatter(name,path) {
 		if (!name) throw new Error("Missing formatter name.");
+		if (typeof name!=="string") throw new Error("Invalid formatter name.");
+		if (!path) throw new Error("Missing formatter path.");
+		if (typeof path!=="string") throw new Error("Invalid formatter path.");
+
 		name = name.toLowerCase();
-
-		if (!logFormatter) throw new Error("Missing formatter constructor");
-		if (!AbstractLogFormatter.isPrototypeOf(logFormatter)) throw new Error("Invalid formatter constructor. Must inherit from AbstractLogFormatter.");
-
 		if (this[$FORMATTERS][name]) throw new Error("Formatter already defined.");
 
-		this[$FORMATTERS][name] = new logFormatter(this);
+		if (!AwesomeUtils.FS.existsSync(path)) throw new Error("Formatter not found at "+path+".");
+
+		let logFormatter = require(path);
+		if (!AbstractLogFormatter.isPrototypeOf(logFormatter)) throw new Error("Invalid formatter constructor. Must inherit from AbstractLogFormatter.");
+
+		this[$FORMATTERS][name] = path;
 	}
 }
 

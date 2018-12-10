@@ -30,10 +30,10 @@ class DefaultFormatter extends AbstractLogFormatter {
 	 * Constructor for this formatter. Never called directly, but called by AwesomeLog
 	 * when `Log.start()` is called.
 	 *
-	 * @param {AwesomeLog} parent
+	 * @param {Object} options
 	 */
-	constructor(parent) {
-		super(parent);
+	constructor(options) {
+		super(options);
 	}
 
 	/**
@@ -51,7 +51,7 @@ class DefaultFormatter extends AbstractLogFormatter {
 		msg += " : ";
 		msg += ("#"+logentry.pid).padEnd(6);
 		msg += " : ";
-		msg += logentry.level.name.slice(0,10).padEnd(10);
+		msg += logentry.level.slice(0,10).padEnd(10);
 		msg += " : ";
 		msg += logentry.system.slice(0,16).padEnd(16);
 

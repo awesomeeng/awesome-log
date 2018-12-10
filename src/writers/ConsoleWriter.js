@@ -44,13 +44,9 @@ class ConsoleWriter extends AbstractLogWriter {
 	 * Creates a new Console Writer. Never called directly, but AwesomeLog
 	 * will call this when `AwesomeLog.start()` is issued.
 	 *
-	 * @param {AwesomeLog} parent
-	 * @param {string} name
-	 * @param {string} levels
-	 * @param {AbstractLogFormatter} formatter
 	 * @param {Object} options
 	 */
-	constructor(parent,name,levels,formatter,options) {
+	constructor(options) {
 		options = AwesomeUtils.Object.extend({
 			colorize: true,
 			colorStyle: "level", // "line" or "level"
@@ -63,14 +59,11 @@ class ConsoleWriter extends AbstractLogWriter {
 			}
 		},options);
 
-		super(parent,"Console",name,levels,formatter,options);
+		super(options);
+
 		if (this.options.colorize) {
 			let theme = {};
-			parent.levels.forEach((level)=>{
-				theme[level.name] = "reset";
-			});
 			Object.keys(this.options.colors||{}).forEach((level)=>{
-				if (!theme[level]) return;
 				theme[level] = this.options.colors[level];
 			});
 			this[$THEME] = theme;
@@ -89,8 +82,8 @@ class ConsoleWriter extends AbstractLogWriter {
 	write(message,logentry) {
 		message = ""+message;
 		if (this.options.colorize) {
-			if (this.options.colorStyle==="level") process.stdout.write(message.replace(logentry.level.name,AwesomeUtils.ANSI.stylize(this[$THEME][logentry.level.name],(logentry.level.name)))+"\n");
-			else process.stdout.write(AwesomeUtils.ANSI.stylize(this[$THEME][logentry.level.name],message)+"\n");
+			if (this.options.colorStyle==="level") process.stdout.write(message.replace(logentry.level,AwesomeUtils.ANSI.stylize(this[$THEME][logentry.level],(logentry.level)))+"\n");
+			else process.stdout.write(AwesomeUtils.ANSI.stylize(this[$THEME][logentry.level],message)+"\n");
 		}
 		else process.stdout.write(message+"\n");
 	}

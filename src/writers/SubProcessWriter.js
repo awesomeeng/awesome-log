@@ -25,14 +25,10 @@ class SubProcessWriter extends AbstractLogWriter {
 	 *
 	 * Creates a new SubProcess Writer.
 	 *
-	 * @param {AwesomeLog} parent
-	 * @param {string} name
-	 * @param {string} levels
-	 * @param {AbstractLogFormatter} formatter
 	 * @param {Object} options
 	 */
-	constructor(parent,name,levels,formatter,options) {
-		super(parent,"SubProcess",name,levels,formatter,options);
+	constructor(options) {
+		super(options);
 	}
 
 	/**
@@ -50,13 +46,13 @@ class SubProcessWriter extends AbstractLogWriter {
 
 		if (Worker && Worker.parentPort && Worker.parentPort.postMessage) {
 			Worker.parentPort.postMessage({
-				cmd: "AwesomeLog",
+				cmd: "AWESOMELOG.ENTRY",
 				logentry
 			});
 		}
 		else if (process.send) {
 			process.send({
-				cmd: "AwesomeLog",
+				cmd: "AWESOMELOG.ENTRY",
 				logentry
 			});
 		}

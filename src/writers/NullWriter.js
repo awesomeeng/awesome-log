@@ -18,14 +18,10 @@ class NullWriter extends AbstractLogWriter {
 	 * Creates a new Null Writer. Never called directly, but AwesomeLog
 	 * will call this when `AwesomeLog.start()` is issued.
 	 *
-	 * @param {AwesomeLog} parent
-	 * @param {string} name
-	 * @param {string} levels
-	 * @param {AbstractLogFormatter} formatter
 	 * @param {Object} options
 	 */
-	constructor(parent,name,levels,formatter,options) {
-		super(parent,"Null",name,levels,formatter,options);
+	constructor(options) {
+		super(options);
 	}
 
 	/**
