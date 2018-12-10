@@ -1,6 +1,6 @@
 {
   "name": "@awesomeeng/awesome-log",
-  "version": "2.1.1",
+  "version": "2.1.2",
   "author": "the awesome engineering company",
   "license": "MIT",
   "contributors": [
@@ -11,7 +11,7 @@
     "node": ">=10.5.0"
   },
   "dependencies": {
-    "@awesomeeng/awesome-utils": "^1.2.0"
+    "@awesomeeng/awesome-utils": "^1.4.0"
   },
   "devDependencies": {
     "jsdoc-to-markdown": "*",
@@ -19,7 +19,9 @@
   },
   "optionalDependencies": {},
   "scripts": {
-    "docs": "jsdoc2md src/** --separators > docs/API.md"
+    "docs": "jsdoc2md src/** --separators > docs/API.md",
+	"test": "mocha test",
+    "tests": "mocha test"
   },
   "description": "AwesomeLog is a Log System for enterprise ready nodejs applications. It provides a basic out of the box logging solution that is ready to go with zero configuration but also gives you a highly configurable logging solution that with the power to do your logging right.",
   "directories": {
