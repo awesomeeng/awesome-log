@@ -114,7 +114,7 @@ class WriterManager {
 	start() {
 		if (this.running) return Promise.resolve(this);
 
-		return new Promise(async (resolve,reject)=>{
+		return new Promise((resolve,reject)=>{
 			try {
 				let config = {
 					name: this.name,
@@ -126,11 +126,15 @@ class WriterManager {
 					formatterPath: LogExtensions.getFormatter(this.formatter),
 					formatterOptions: this.formatterOptions,
 				};
-				let env = {
-					AWESOMELOG_WRITER_CONFIG: JSON.stringify(config)
+
+				let opts = {
+					env: {
+						AWESOMELOG_WRITER_CONFIG: JSON.stringify(config),
+						NODE_PATH: process.env.NODE_PATH
+					}
 				};
 
-				let thread = await create.call(this,AwesomeUtils.Module.resolve(module,"./WriterThread"),[],env);
+				let thread = ChildProcess.fork(AwesomeUtils.Module.resolve(module,"./WriterThread"),[],opts);
 				thread.on("message",(msg)=>{
 					let cmd = msg && msg.cmd || null;
 					if (cmd==="AWESOMELOG.WRITER.ERROR") {
@@ -150,13 +154,22 @@ class WriterManager {
 	}
 
 	stop() {
-		if (this.running) return Promise.resolve();
+		if (!this.running) return Promise.resolve();
 
-		return new Promise(async (resolve,reject)=>{
+		return new Promise((resolve,reject)=>{
 			try {
-				await destroy.call(this,this[$THREAD]);
-				this[$THREAD] = null;
-				resolve();
+				if (this[$THREAD]) {
+					this[$THREAD].once("exit",()=>{
+						resolve();
+					});
+					this[$THREAD].send({
+						cmd: "AWESOMELOG.WRITER.CLOSE"
+					});
+					this[$THREAD] = null;
+				}
+				else {
+					resolve();
+				}
 			}
 			catch (ex) {
 				return reject(ex);
@@ -164,61 +177,48 @@ class WriterManager {
 		});
 	}
 
-	write(entry) {
-		send.call(this,this[$THREAD],entry);
-	}
-}
-
-const create = function create(filename,args,env=undefined) {
-	return new Promise((resolve,reject)=>{
-		try {
-			if (AwesomeUtils.Workers.enabled) {
-			}
-			else {
-				let opts = {
-					env: {}
-				};
-				if (env) opts.env = env;
-				opts.env.NODE_PATH = process.env.NODE_PATH;
-
-				let cp = ChildProcess.fork(filename,args,opts);
-				resolve(cp);
-			}
-		}
-		catch (ex) {
-			return reject(ex);
-		}
-	});
-};
-
-const destroy = function destroy(thread) {
-	return new Promise((resolve,reject)=>{
-		try {
-			if (AwesomeUtils.Workers.enabled) {
-			}
-			else {
-				if (thread.killed) return resolve();
-
-				thread.once("exit",()=>{
+	write(entries) {
+		entries = entries.filter((entry)=>{
+			return this.takesLevel(entry.level);
+		});
+		return new Promise((resolve,reject)=>{
+			try {
+				this[$THREAD].send({
+					cmd: "AWESOMELOG.WRITER.ENTRIES",
+					entries: entries
+				},()=>{
 					resolve();
 				});
-				thread.kill(0);
 			}
-
-			resolve();
-		}
-		catch (ex) {
-			return reject(ex);
-		}
-	});
-};
-
-const send = function send(thread,msg) {
-	if (AwesomeUtils.Workers.enabled) {
+			catch (ex) {
+				return reject(ex);
+			}
+		});
 	}
-	else {
-		thread.send(msg);
+
+	flush() {
+		if (!this[$THREAD]) return Promise.resolve();
+
+		return new Promise((resolve,reject)=>{
+			try {
+				let handler = (msg)=>{
+					let cmd = msg && msg.cmd || null;
+					if (cmd==="AWESOMELOG.WRITER.FLUSHED") {
+						this[$THREAD].off("message",handler);
+						resolve();
+					}
+				};
+				this[$THREAD].on("message",handler);
+
+				this[$THREAD].send({
+					cmd: "AWESOMELOG.WRITER.FLUSH"
+				});
+			}
+			catch (ex) {
+				return reject(ex);
+			}
+		});
 	}
-};
+}
 
 module.exports = WriterManager;

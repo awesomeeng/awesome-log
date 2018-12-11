@@ -20,7 +20,7 @@
   "optionalDependencies": {},
   "scripts": {
     "docs": "jsdoc2md src/** --separators > docs/API.md",
-	"test": "mocha test",
+    "test": "mocha test",
     "tests": "mocha test"
   },
   "description": "AwesomeLog is a Log System for enterprise ready nodejs applications. It provides a basic out of the box logging solution that is ready to go with zero configuration but also gives you a highly configurable logging solution that with the power to do your logging right.",
@@ -36,7 +36,27 @@
     "awesome",
     "awesomeeng",
     "awesome",
-    "engineering","log","logging","logs","logger","console","stdout","stderr","log management","log rotation","logfile","logrotate","log formatter","log format","log formatting","format log","formatted log","logly","winston","sombra","log4js"
+    "engineering",
+    "log",
+    "logging",
+    "logs",
+    "logger",
+    "console",
+    "stdout",
+    "stderr",
+    "log management",
+    "log rotation",
+    "logfile",
+    "logrotate",
+    "log formatter",
+    "log format",
+    "log formatting",
+    "format log",
+    "formatted log",
+    "logly",
+    "winston",
+    "sombra",
+    "log4js"
   ],
   "bugs": {
     "url": "https://github.com/awesomeeng/awesome-log/issues"

@@ -91,7 +91,7 @@ class WriterThread {
 		}
 		catch (ex) {
 			this.sendError("Error initializing formatter at "+this[$FORMATTERPATH]+".");
-			process.exit(1);
+			this.stop(1);
 		}
 
 		try {
@@ -99,37 +99,51 @@ class WriterThread {
 		}
 		catch (ex) {
 			this.sendError("Error initializing writer at "+this[$WRITERPATH]+".");
-			process.exit(1);
+			this.stop(1);
 		}
 
-		process.on("message",(entry)=>{
-			this.write(entry);
+		process.on("message",(msg)=>{
+			let cmd = msg && msg.cmd || null;
+			if (cmd==="AWESOMELOG.WRITER.ENTRIES") {
+				this.write(msg.entries);
+			}
+			else if (cmd==="AWESOMELOG.WRITER.FLUSH") {
+				this[$WRITER].flush();
+				this.send({
+					cmd: "AWESOMELOG.WRITER.FLUSHED"
+				});
+			}
+			else if (cmd==="AWESOMELOG.WRITER.CLOSE") {
+				this.stop(0);
+				this.send({
+					cmd: "AWESOMELOG.WRITER.CLOSED"
+				});
+			}
 		});
 
 		this.sendReady();
 	}
 
-	stop() {
+	stop(exitCode) {
 		if (this[$WRITER]) {
 			this[$WRITER].flush();
 			this[$WRITER].close();
 		}
 		this[$WRITER] = null;
 		this[$FORMATTER] = null;
+
+		process.exit(exitCode);
 	}
 
-	write(entry) {
-		let msg = this[$FORMATTER] && this[$FORMATTER].format(entry) || entry;
-		this[$WRITER].write(msg,entry);
+	write(entries) {
+		entries.forEach((entry)=>{
+			let msg = this[$FORMATTER] && this[$FORMATTER].format(entry) || entry;
+			this[$WRITER].write(msg,entry);
+		});
 	}
 
 	send(msg) {
-		if (AwesomeUtils.Workers.enabled) {
-
-		}
-		else {
-			process.send(msg);
-		}
+		process.send(msg);
 	}
 
 	sendReady() {

@@ -33,6 +33,8 @@ const $RUNNING = Symbol("running");
 const $SUBPROCESSES = Symbol("subprocesshandler");
 const $BASE = Symbol("base");
 const $STARTS = Symbol("starts");
+const $BUFFER = Symbol("buffer");
+const $DRAINSCHEDULED = Symbol("drainScheduled");
 
 /**
  * AwesomeLog is a singleton object returned when you
@@ -80,6 +82,8 @@ class AwesomeLog extends Events {
 		this[$RUNNING] = false;
 		this[$SUBPROCESSES] = new Map();
 		this[$STARTS] = 0;
+		this[$BUFFER] = [];
+		this[$DRAINSCHEDULED] = false;
 
 		initLevels.call(this,"access,error,warn,info,debug");
 	}
@@ -247,6 +251,7 @@ class AwesomeLog extends Events {
 			levels: "access,error,warn,info,debug",
 			disableLoggingNotices: !disableSP && isSubProcess() ? true : false,
 			loggingNoticesLevel: "info",
+			captureExecutionSystem: false,
 			writers: [],
 			backlogSizeLimit: 1000,
 			disableSubProcesses: false,
@@ -311,9 +316,10 @@ class AwesomeLog extends Events {
 		this[$HISTORY] = [];
 
 		if (!this.config.disableLoggingNotices) this.log(this.config.loggingNoticesLevel,"AwesomeLog started.");
+
 		this.emit("started");
 
-		new Promise(async (resolve,reject)=>{
+		return new Promise(async (resolve,reject)=>{
 			try {
 				await initWriters.call(this);
 
@@ -329,14 +335,12 @@ class AwesomeLog extends Events {
 				}
 				this[$BACKLOG] = null;
 
-				resolve();
+				resolve(this);
 			}
 			catch (ex) {
 				return reject(ex);
 			}
 		});
-
-		return this;
 	}
 
 	/**
@@ -353,20 +357,27 @@ class AwesomeLog extends Events {
 		this[$BACKLOG] = this[$BACKLOG] || [];
 		this[$RUNNING] = false;
 
-		[...this[$SUBPROCESSES].keys()].forEach((subprocess)=>{
-			this.releaseSubProcess(subprocess);
-			this[$SUBPROCESSES].set(subprocess,null);
-		});
-
-		this[$WRITERS].forEach((writer)=>{
-			writer.flush();
-			writer.close();
-		});
-
 		if (!this.config.disableLoggingNotices) this.log(this.config.loggingNoticesLevel,"AwesomeLog stopped.");
+
 		this.emit("stopped");
 
-		return this;
+		return new Promise(async (resolve,reject)=>{
+			try {
+				[...this[$SUBPROCESSES].keys()].forEach((subprocess)=>{
+					this.releaseSubProcess(subprocess);
+					this[$SUBPROCESSES].set(subprocess,null);
+				});
+
+				await Promise.all(this[$WRITERS].map((writer)=>{
+					return writer.stop(0);
+				}));
+
+				resolve(this);
+			}
+			catch (ex) {
+				return reject(ex);
+			}
+		});
 	}
 
 	/**
@@ -474,13 +485,29 @@ class AwesomeLog extends Events {
 		}
 		if (typeof message!=="string") throw new Error("Invalid message argument.");
 
-		logentry = Object.assign({},this[$BASE],{
-			level,
-			system: AwesomeUtils.VM.executionSource(3).split(/\\\\|\\|\//g).slice(-1)[0].replace(/[^\w\d_\-.]/g,""),
-			message,
-			args,
-			timestamp: Date.now()
-		},logentry||{});
+		let system = "";
+		if (this.config.captureExecutionSystem) {
+			system = {};
+			Error.captureStackTrace(system);
+			system = system.stack.split(/\n/)[2].split(/\s/);
+			system = system[system.length-1];
+			let pos = system.lastIndexOf("/");
+			if (pos===-1) pos = system.lastIndexOf("\\");
+			system = system.substring(pos+1);
+			system = system.substring(0,system.indexOf(":"));
+		}
+
+		if (!logentry) {
+			logentry = {
+				level,
+				system,
+				message,
+				args,
+				timestamp: Date.now()
+			};
+		}
+
+		// this.emit("log",logentry);
 
 		if (this[$BACKLOG]) {
 			this[$BACKLOG].push(logentry);
@@ -501,12 +528,8 @@ class AwesomeLog extends Events {
 			}
 		}
 		else {
-			write.call(this,logentry);
+			return write.call(this,logentry);
 		}
-
-		this.emit("log",logentry);
-
-		return this;
 	}
 
 	/**
@@ -642,7 +665,6 @@ const initWriters = function initWriters() {
 
 const write = function write(logentry) {
 	if (!logentry) throw new Error("Missing log entry argument.");
-	if (!logentry.level || !logentry.system || !logentry.message || !logentry.args || !logentry.timestamp) throw new Error("Invalid log entry argument.");
 
 	if (logentry.level && logentry.level.name) logentry.level = logentry.level.name;
 	if (this.config.history) {
@@ -650,10 +672,22 @@ const write = function write(logentry) {
 		if (this.history.length> this.config.historySizeLimit) this[$HISTORY] = this[$HISTORY].slice(-this.config.historySizeLimit);
 	}
 
+	this[$BUFFER].push(logentry);
+	scheduleDrain.call(this);
+};
+
+const scheduleDrain = function scheduleDrain() {
+	if (this[$DRAINSCHEDULED]) return;
+	this[$DRAINSCHEDULED] = true;
+	process.nextTick(drain.bind(this));
+};
+
+const drain = function drain() {
+	this[$DRAINSCHEDULED] = false;
 	this[$WRITERS].forEach((writer)=>{
-		if (!writer.takesLevel(logentry.level)) return;
-		writer.write(logentry);
+		writer.write(this[$BUFFER]);
 	});
+	this[$BUFFER].length = 0;
 };
 
 const subProcessHandler = function subProcessHandler(message) {
