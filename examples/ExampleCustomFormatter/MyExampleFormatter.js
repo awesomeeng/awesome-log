@@ -28,15 +28,15 @@ const AbstractLogFormatter = Log.AbstractLogFormatter;
 // When you subclass AbstractLogFormatter you are required to implement
 // two specific methods...
 //
-//		constructor(parent)
+//		constructor(options)
 //
 // 		format(logentry)
 //
 class MyExampleFormatter extends AbstractLogFormatter {
 	// Implement the constructor by just calling super.
 	// In most cases for formatter, this is fine.
-	constructor(parent) {
-		super(parent);
+	constructor(options) {
+		super(options);
 	}
 
 	// Now implement the format function. The format function
@@ -53,15 +53,15 @@ class MyExampleFormatter extends AbstractLogFormatter {
 	format(logentry) {
 		let msg = "";
 
-		msg += "#"+logentry.pid+"";
+		msg += "#"+logentry.pid||0+"";
 		msg += " : ";
-		msg += new Date(logentry.timestamp).toISOString();
+		msg += new Date(logentry.timestamp||Date.now()).toISOString();
 		msg += " : ";
-		msg += logentry.system;
+		msg += logentry.system||"";
 		msg += " : ";
-		msg += logentry.level.name;
+		msg += logentry.level||"";
 		msg += " : ";
-		msg += logentry.message;
+		msg += logentry.text||"";
 
 		return msg;
 	}
@@ -74,12 +74,12 @@ module.exports = MyExampleFormatter;
 
 // Final step is to register the writer with the Log system.
 //
-// We do this by giving it a common unique name, and passing
-// the class we defined into it. The unique name we use here
-// is the name by which others will reference this formatter.
-// So choose something meaningful.
+// We do this by giving it a common unique name, and the filename
+// of the javascript file which exports the AbstractLogFormatter
+// class.  If this is the same file we are currently in you can
+// reference this as "module.filename".
 //
 // When the writer is used an instance of it will be created, and
 // the various write, flush, close methods will be called.
 //
-Log.defineFormatter("my-example-formatter",MyExampleFormatter)
+Log.defineFormatter("my-example-formatter",module.filename);
