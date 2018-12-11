@@ -16,6 +16,7 @@ const $OPTIONS = Symbol("options");
 const $FORMATTER = Symbol("formatter");
 const $FORMATTEROPTIONS = Symbol("formatterOptions");
 const $THREAD = Symbol("thread");
+const $ISNULL = Symbol("isNullWriter");
 
 /**
  * @private
@@ -73,6 +74,7 @@ class WriterManager {
 		this[$FORMATTER] = formatter;
 		this[$FORMATTEROPTIONS] = formatterOptions;
 		this[$THREAD] = null;
+		this[$ISNULL] = type==="null";
 	}
 
 	get parent() {
@@ -122,6 +124,8 @@ class WriterManager {
 	start() {
 		if (this.running) return Promise.resolve(this);
 
+		if (this[$ISNULL]) return Promise.resolve(this);
+
 		return new Promise((resolve,reject)=>{
 			try {
 				let config = {
@@ -164,6 +168,8 @@ class WriterManager {
 	stop() {
 		if (!this.running) return Promise.resolve();
 
+		if (this[$ISNULL]) return Promise.resolve(this);
+
 		return new Promise((resolve,reject)=>{
 			try {
 				if (this[$THREAD]) {
@@ -186,6 +192,8 @@ class WriterManager {
 	}
 
 	write(entries) {
+		if (this[$ISNULL]) return Promise.resolve();
+
 		entries = entries.filter((entry)=>{
 			return this.takesLevel(entry.level);
 		});
@@ -206,6 +214,8 @@ class WriterManager {
 
 	flush() {
 		if (!this[$THREAD]) return Promise.resolve();
+
+		if (this[$ISNULL]) return Promise.resolve();
 
 		return new Promise((resolve,reject)=>{
 			try {
