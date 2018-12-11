@@ -23,7 +23,6 @@ AwesomeLog provides...
  - Log History;
  - Pause/Resume;
  - SubProcess Logging;
- - Events for programatic notification of Log changes.
 
 ## Contents
  - [Installation](#installation)

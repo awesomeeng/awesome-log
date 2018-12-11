@@ -43,10 +43,8 @@ const $FIELDSFUNC = Symbol("fieldsFunction");
  * log messages out. Please see our
  * {@link ../README.md extensive documentation} for usage details.
  */
-class AwesomeLog extends Events {
+class AwesomeLog {
 	constructor() {
-		super();
-
 		this[$CONFIG] = null;
 		this[$BACKLOG] = [];
 		this[$HISTORY] = [];
@@ -262,16 +260,12 @@ class AwesomeLog extends Events {
 
 			if (!config.disableLoggingNotices) this.log(config.loggingNoticesLevel,"AwesomeLog initialized for levels "+this.levelNames.join("|")+".");
 
-			this.emit("initialized",config);
-
 			this[$CONFIG] = config;
 		}
 		else {
 			mapLevels.call(this,config.levels);
 
 			if (!this.config.disableLoggingNotices) this.log(this.config.loggingNoticesLevel,"AwesomeLog mapped levels from dependant module "+config.levels+".");
-
-			this.emit("mapped",config.levels);
 		}
 
 		return this;
@@ -303,8 +297,6 @@ class AwesomeLog extends Events {
 		this[$HISTORY] = [];
 
 		if (!this.config.disableLoggingNotices) this.log(this.config.loggingNoticesLevel,"AwesomeLog started.");
-
-		this.emit("started");
 
 		return new Promise(async (resolve,reject)=>{
 			try {
@@ -349,8 +341,6 @@ class AwesomeLog extends Events {
 
 		if (!this.config.disableLoggingNotices) this.log(this.config.loggingNoticesLevel,"AwesomeLog stopped.");
 
-		this.emit("stopped");
-
 		return new Promise(async (resolve,reject)=>{
 			try {
 				[...this[$SUBPROCESSES].keys()].forEach((subprocess)=>{
@@ -382,7 +372,6 @@ class AwesomeLog extends Events {
 		this[$BACKLOG] = this[$BACKLOG] || [];
 
 		if (!this.config.disableLoggingNotices) this.log(this.config.loggingNoticesLevel,"AwesomeLog paused.");
-		this.emit("paused");
 
 		return this;
 	}
@@ -403,7 +392,6 @@ class AwesomeLog extends Events {
 		this[$BACKLOG] = null;
 
 		if (!this.config.disableLoggingNotices) this.log(this.config.loggingNoticesLevel,"AwesomeLog resumed.");
-		this.emit("resumed");
 
 		return this;
 	}
@@ -473,8 +461,6 @@ class AwesomeLog extends Events {
 		if (typeof text!=="string") throw new Error("Invalid text argument.");
 
 		logentry = this[$FIELDSFUNC](logentry||{},level,text,args);
-
-		// this.emit("log",logentry);
 
 		if (this[$BACKLOG]) {
 			this[$BACKLOG].push(logentry);
@@ -706,7 +692,6 @@ const createFieldsFunction = function(fields) {
 const write = function write(logentry) {
 	if (!logentry) throw new Error("Missing log entry argument.");
 
-	// if (logentry.level && logentry.level.name) logentry.level = logentry.level.name;
 	if (this.config.history) {
 		this[$HISTORY].push(this[$HISTORYFORMATTER].format(logentry));
 		if (this.history.length> this.config.historySizeLimit) this[$HISTORY] = this[$HISTORY].slice(-this.config.historySizeLimit);
