@@ -18,18 +18,22 @@ const AbstractLogFormatter = require("../AbstractLogFormatter");
 class CSVFormatter extends AbstractLogFormatter {
 	/**
 	 * @private
+	 */
+	/**
 	 *
 	 * Constructor for this formatter. Never called directly, but called by AwesomeLog
 	 * when `Log.start()` is called.
 	 *
-	 * @param {AwesomeLog} parent
+	 * @param {Object} options
 	 */
-	constructor(parent) {
-		super(parent);
+	constructor(options) {
+		super(options);
 	}
 
 	/**
  	 * @private
+	 */
+	/**
 	 *
 	 * Given the log entry object, format it to our output string.
 	 *
@@ -39,11 +43,11 @@ class CSVFormatter extends AbstractLogFormatter {
 	format(logentry) {
 		let s = [];
 
-		s.push(""+logentry.timestamp);
-		s.push("\""+logentry.level.name+"\"");
-		s.push(""+logentry.pid);
-		s.push("\""+logentry.system+"\"");
-		s.push("\""+logentry.message+"\"");
+		s.push(""+logentry.timestamp||Date.now());
+		s.push("\""+logentry.level||""+"\"");
+		s.push(""+logentry.pid||"????");
+		s.push("\""+logentry.system||""+"\"");
+		s.push("\""+logentry.text||""+"\"");
 		if (logentry.args && logentry.args.length>0) s = s.concat(logentry.args.map((arg)=>{
 			if (arg===null || arg===undefined) return "";
 			else if (typeof arg==="string") return "\""+arg+"\"";

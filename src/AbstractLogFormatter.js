@@ -2,12 +2,13 @@
 
 "use strict";
 
-const $PARENT = Symbol("parent");
+const $OPTIONS = Symbol("options");
+
 
 /**
  * Describes the shape of a Log Formatter. This class is expected to be extend for all
  * Log Formatter implementations. After this class is extended, you pass the extending
- * class into `AwesomeLog.defineLogFormatter(name,class)` to add your Log Formatter to
+ * class into `AwesomeLog.defineLogFormatter(name,filename)` to add your Log Formatter to
  * AwesomeLog for usage.
  *
  * @see {@link ./docs/LogFormatters.md Log Writer} documentation for more details.
@@ -25,8 +26,8 @@ class AbstractLogFormatter {
 	*
 	* ```
 	* class MyFormatter extends AbstractLogFormatter {
-	* 	 constructor(parent) {
-	* 	   super(parent);
+	* 	 constructor(options) {
+	* 	   super(options);
 	*
 	* 	   ... your initialization code ...
 	* 	 }
@@ -37,26 +38,26 @@ class AbstractLogFormatter {
 	*
 	* You should put any kind of initialization of your formatter in this constructor.
 	*
-	 * @param {AwesomeLog} parent
+	* @param {Object} options
 	 */
-	constructor(parent) {
-		if (!parent) throw new Error("Missing parent argument.");
-		this[$PARENT] = parent;
+	constructor(options={}) {
+		this[$OPTIONS] = options;
 	}
 
 	/**
-	 * Returns the parent AwesomeLog instance.
+	 * Returns the options passed into the constructor.
 	 *
-	 * @return {AwesomeLog}
+	 * @return {Object}
 	 */
-	get parent() {
-		return this[$PARENT];
+	get options() {
+		return this[$OPTIONS];
 	}
 
 	/**
 	 * Called when a logentry needs to be formatted.  The underlying writer will call this for
 	 * each log message it needs to write out.
 	 *
+	 * @param {Object} logentry
 	 * @return {Object}
 	 */
 	format(/*logentry*/) {

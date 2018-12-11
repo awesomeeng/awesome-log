@@ -17,3 +17,7 @@ The history setting are configured as part of the `Log.init()` configuration.  Y
 You access the history of AwesomeLog with the `Log.history` member.  This will return an array of the last N log messages.
 
 You also have access to the `Log.historySizeLimit` member for getting the configured size limit.
+
+## Performance
+
+Turning on history slow down AwesomeLog's overall performance. If this is of concern to you, please consider turning off history.

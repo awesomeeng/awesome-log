@@ -42,8 +42,8 @@ class MyExampleWriter extends AbstractLogWriter {
 	// arguments are passed when the writer is constructed during
 	// init() phase.
 	//
-	constructor(parent,name,levels,formatter,options) {
-		super(parent,"MyExampleWriter",name,levels,formatter,options);
+	constructor(options) {
+		super(options);
 	}
 
 	// Here we implement the write(message,logentry) function.
@@ -78,12 +78,12 @@ module.exports = MyExampleWriter;
 
 // Final step is to register the writer with the Log system.
 //
-// We do this by giving it a common unique name, and passing
-// the class we defined into it. The unique name we use here
-// is the name by which others will reference this formatter.
-// So choose something meaningful.
+// We do this by giving it a common unique name, and the filename
+// of the javascript file which exports the AbstractLogWriter
+// class.  If this is the same file we are currently in you can
+// reference this as "module.filename".
 //
 // When the writer is used an instance of it will be created, and
 // the various write, flush, close methods will be called.
 //
-Log.defineWriter("my-example-writer",MyExampleWriter);
+Log.defineWriter("my-example-writer",module.filename);

@@ -13,19 +13,23 @@ const AbstractLogFormatter = require("../AbstractLogFormatter");
 class JSObjectFormatter extends AbstractLogFormatter {
 	/**
 	 * @private
+	 */
+	/**
 	 *
 	 * Constructor for this formatter. Never called directly, but called by AwesomeLog
 	 * when `Log.start()` is called.
 	 *
-	 * @param {AwesomeLog} parent
+	 * @param {Object} options
 	 */
-	constructor(parent) {
-		super(parent);
+	constructor(options) {
+		super(options);
 	}
 
 	/**
 	 * @private
-	 * 
+	 */
+	/**
+	 *
 	 * Given the log entry object, format it tou our output string.
 	 *
 	 * @param  {Object} logentry
@@ -33,11 +37,11 @@ class JSObjectFormatter extends AbstractLogFormatter {
 	 */
 	format(logentry) {
 		return {
-			timestamp: logentry.timestamp,
-			pid: logentry.pid,
-			level: logentry.level.name,
-			system: logentry.system,
-			message: logentry.message,
+			timestamp: logentry.timestamp||Date.now(),
+			pid: logentry.pid||"????",
+			level: logentry.level||"",
+			system: logentry.system||"",
+			message: logentry.text||"",
 			args: logentry.args
 		};
 	}

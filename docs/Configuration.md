@@ -17,11 +17,36 @@ The following configuration options are supported.
 
  - **writers** [array] - Describes what devices a log message is written to such as the console, a file, or a database.  Multiple writers are supported. If no writer is passed in, AwesomeLog will give you a default Console Writer.  See [Writer Configuration](#writer-configuration) below for more details.
 
- - **history** [boolean] - Set to false if you do not want AwesomeLog to keep a small history of log messages.  The history can be used for programatic access to the log. History is enabled by default.
+ - **history** [boolean] - Set to false if you do not want AwesomeLog to keep a small history of log messages.  The history can be used for programatic access to the log. History is enabled by default. NOTE: Turning on history will impact your performance; if this is a concern, please disable history.
 
  - **histroySizeLimit** [number] - The number of log entries kept in the history. 1000 by default.
 
  - **historyFormatter** [string] - The formatter used when writing messages to the history. `default` is used by default. It should be noted that this formatter only applies to the history, not the writers.
+
+ - **fields** [string] - A comma delimited string of the fields to include in each log entry. THe fields can be choen from the following:
+
+   - **timestamp**: The current time, in UTC.
+   - **level**: The log level for this particular log entry.
+   - **text**: The text message for this particular log entry.
+   - **args**: Any extra arguments passed to the log call.
+   - **system**: The javascript file in which this log call was made. Please note that including this field is very expensive from a performance standpoint, and it should only be used in development systems.
+   - **hostname**: The hostname of the machine the log event occured on. Good for integrated log systems.
+   - **domain**: The domain name portion of the hostname, that is the last two segments of the hostname.
+   - **servername**: The computer name for the machine the log event occured on. This is the first segment of the hostname.
+   - **pid**: The process id for this log message. In subprocess systems this can be a valuable debugging tool.
+   - **ppid**: The parent process id.
+   - **main**: The path to the executed node executable.
+   - **execpath**: The path to the executed node executable.
+   - **argv**: The initial arguments passed to the executed node executable.
+   - **arch**: The architecture value for the current OS.
+   - **platform**: The platform value for the current OS.
+   - **bits**: The bits value for the current OS.
+   - **cpus**: The number of physical CPUs on the current machine.
+   - **startingdir**: The starting directory of the node application.
+   - **homedir**: The user's home directory.
+   - **username**: The user's username.
+   - **version**: The version of node.
+
 
  - **backlogSizeLimit** [number] - The number of log entries to hold pending being written.  If the backlog is exceeded, old messages will be dropped in favor of newer messages. This should be incredibly rare. 1000 is the default setting.
 

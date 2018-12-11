@@ -19,10 +19,13 @@ Log.start();
 // Once the log system is started you can make log statement against the
 // various log levels, by default they are access, error, warn, info, debug.
 Log.info("This is an example log message.");
+Log.info("Another log message with arguments.",1,2,3);
+Log.info({
+	text: "A log object.",
+	red: "red",
+	green: 25,
+	blue: false
+});
 
-// You do Log.init() and Log.start() once for your application, and then can
-// use it anywhere in your application.
-//
-// It's best if Log.init() and Log.start() live at the top of your
-// application code, probably in the code entry point.
-//
+// stop logging once we are done.
+Log.stop();

@@ -109,7 +109,9 @@ class MyExampleWriter extends AbstractLogWriter {
 	}
 }
 
-Log.defineWriter("my-example-writer",MyExampleWriter);
+module.exports = MyExampleWriter;
+
+Log.defineWriter("my-example-writer",module.filename);
 ```
 
 It begins by requiring `AwesomeLog` and `AwesomeLog.AbstractLogWriter`.
@@ -126,6 +128,6 @@ When you subclass AbstractLogWriter you are required to implement four specific 
 
  - `close()`: Close is called following `flush()` during shutdown. It is here where you would do any cleanup of your device that is needed.  Not all devices require this, but it still must be included.
 
-Finally, once our new Writer class is set, we call `defineWriter(typeName,logWriter)` to tell AwesomeLog about it.  `defineWriter(typeName,logWriter)` take two arguments, the first the `typeName` is the string value to be used to reference the writer in the `type` setting, and second the `logWriter` is the writer class we just defined (not an instance of the class) to call when the writer is started.
+Finally, once our new LogWriter class is set, we call `defineWriter(typeName,logWriterFilename)` to tell AwesomeLog about it.  `defineWriter(formatterName,logWriterFilename)` take two arguments, the first the `formatterName` is the string value to be used to reference the formatter in the `formatter` setting, and second the `logWriterFilename` is the filename of the exported formatter class we just defined (not an instance of the class) to call when the formatter is used.
 
 After `defineWriter` is called, one can use the writer in `Log.init()`.

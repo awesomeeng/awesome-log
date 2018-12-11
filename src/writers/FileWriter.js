@@ -46,23 +46,21 @@ const $ROOT = Symbol("root");
 class FileWriter extends AbstractLogWriter {
 	/**
 	 * @private
+	 */
+	/**
 	 *
 	 * Creates a new File Writer. Never called directly, but AwesomeLog
 	 * will call this when `AwesomeLog.start()` is issued.
 	 *
-	 * @param {AwesomeLog} parent
-	 * @param {string} name
-	 * @param {string} levels
-	 * @param {AbstractLogFormatter} formatter
 	 * @param {Object} options
 	 */
-	constructor(parent,name,levels,formatter,options) {
+	constructor(options) {
 		options = AwesomeUtils.Object.extend({
 			filename: "logs/AwesomeLog.{YYYYMMDD}.log",
 			housekeeping: false
 		},options);
 
-		super(parent,"File",name,levels,formatter,options);
+		super(options);
 
 		this[$ROOT] = Path.dirname(Path.resolve(process.cwd(),options.filename)).replace(/\\|\\\\/g,"/");
 		while (this[$ROOT].match(/\{[^}]+\}/g)) this[$ROOT] = Path.dirname(this[$ROOT]);
@@ -75,6 +73,8 @@ class FileWriter extends AbstractLogWriter {
 
 	/**
 	 * @private
+	 */
+	/**
 	 *
 	 * Write a log message to the log file.
 	 *
@@ -97,6 +97,8 @@ class FileWriter extends AbstractLogWriter {
 
 	/**
 	 * @private
+	 */
+	/**
 	 *
 	 * Flush the pending writes. This has not effect in this case.
 	 *
@@ -108,6 +110,8 @@ class FileWriter extends AbstractLogWriter {
 
 	/**
 	 * @private
+	 */
+	/**
 	 *
 	 * Close the file.
 	 *

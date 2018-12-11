@@ -10,6 +10,7 @@ const AwesomeUtils = require("@awesomeeng/awesome-utils");
 
 const LogLevel = require("./LogLevel");
 const LogExtensions = require("./LogExtensions");
+const WriterManager = require("./WriterManager");
 const AbstractLogWriter = require("./AbstractLogWriter");
 const AbstractLogFormatter = require("./AbstractLogFormatter");
 
@@ -24,13 +25,16 @@ catch (ex) {
 const $CONFIG = Symbol("config");
 const $BACKLOG = Symbol("backlog");
 const $HISTORY = Symbol("history");
+const $HISTORYFORMATTER = Symbol("historyFormatter");
 const $FUNCTIONS = Symbol("functions");
 const $LEVELS = Symbol("levels");
 const $WRITERS = Symbol("writers");
 const $RUNNING = Symbol("running");
 const $SUBPROCESSES = Symbol("subprocesshandler");
-const $BASE = Symbol("base");
 const $STARTS = Symbol("starts");
+const $BUFFER = Symbol("buffer");
+const $DRAINSCHEDULED = Symbol("drainScheduled");
+const $FIELDSFUNC = Symbol("fieldsFunction");
 
 /**
  * AwesomeLog is a singleton object returned when you
@@ -43,32 +47,6 @@ class AwesomeLog extends Events {
 	constructor() {
 		super();
 
-		const hostname = OS.hostname();
-		const domain = hostname.split(".").slice(-2).join(".");
-		const servername = hostname.split(".").slice(0,1);
-		let bits = 32;
-		let arch = OS.arch();
-		if (arch==="arm64" || arch==="mipsel" || arch==="ppc64" || arch==="s390x" || arch==="x64") bits = 64;
-
-		this[$BASE] = {
-			hostname,
-			domain,
-			servername,
-			pid: process.pid,
-			ppid: process.ppid,
-			main: process.mainModule.filename,
-			arch: OS.arch(),
-			platform: OS.platform(),
-			bits,
-			cpus: OS.cpus().length,
-			argv: process.argv.slice(2).join(" "),
-			execPath: process.execPath,
-			startingDirectory: process.cwd(),
-			homedir: OS.homedir(),
-			username: OS.userInfo().username,
-			version: process.version
-		};
-
 		this[$CONFIG] = null;
 		this[$BACKLOG] = [];
 		this[$HISTORY] = [];
@@ -78,6 +56,11 @@ class AwesomeLog extends Events {
 		this[$RUNNING] = false;
 		this[$SUBPROCESSES] = new Map();
 		this[$STARTS] = 0;
+		this[$BUFFER] = [];
+		this[$DRAINSCHEDULED] = false;
+		this[$FIELDSFUNC] = (obj)=>{
+			return obj;
+		};
 
 		initLevels.call(this,"access,error,warn,info,debug");
 	}
@@ -169,25 +152,27 @@ class AwesomeLog extends Events {
 	}
 
 	/**
-	 * Map a new Log Writer to a specific name, for usage in configuring AwesomeLog.
+	* Map a new Log Writer to a specific filename, for usage in configuring AwesomeLog.
+	* The filename given must export a class that extends AbstractLogWriter.
 	 *
 	 * @param  {string} name
-	 * @param  {Class<AbstractLogWriter>} logWriter
+	 * @param  {string} filename
 	 * @return {void}
 	 */
-	defineWriter(name,logWriter) {
-		return LogExtensions.defineWriter(name,logWriter);
+	defineWriter(name,filename) {
+		return LogExtensions.defineWriter(name,filename);
 	}
 
 	/**
-	* Map a new Log Formatter to a specific name, for usage in configuring AwesomeLog.
+	* Map a new Log Formatter to a specific filename, for usage in configuring AwesomeLog.
+	* The filename given must export a class that extends AbstractLogFormatter.
 	*
 	* @param  {string} name
-	* @param  {Class<AbstractLogFormatter>} logFormatter
+	* @param  {string} filename
 	* @return {void}
 	*/
-	defineFormatter(name,logFormatter) {
-		return LogExtensions.defineFormatter(name,logFormatter);
+	defineFormatter(name,filename) {
+		return LogExtensions.defineFormatter(name,filename);
 	}
 
 	/**
@@ -209,6 +194,7 @@ class AwesomeLog extends Events {
 	 *   levels: "access,error,warn,info,debug",
 	 *   disableLoggingNotices: false, // true if this is a child process
 	 *   loggingNoticesLevel: "info",
+	 *   fields: "timestamp,pid,system,level,text,args",
 	 *   writers: [],
 	 *   backlogSizeLimit: 1000,
 	 *   disableSubProcesses: false,
@@ -220,8 +206,7 @@ class AwesomeLog extends Events {
 	 * If no writers are provided, a default Console Writer is added to the configuration.
 	 *
 	 * ```
-	 * config.writes = [{
-	 *  name: "console",
+	 * config.writers = [{
 	 *  type:  "default", // "subprocess" if this is a child process
 	 *  levels: "*",
 	 *  formatter: default", // "subprocess" if this is a child process
@@ -242,9 +227,11 @@ class AwesomeLog extends Events {
 			history: true,
 			historySizeLimit: 100,
 			historyFormatter: "default",
+			historyFormatterOptions: {},
 			levels: "access,error,warn,info,debug",
 			disableLoggingNotices: !disableSP && isSubProcess() ? true : false,
 			loggingNoticesLevel: "info",
+			fields: "timestamp,pid,system,level,text,args",
 			writers: [],
 			backlogSizeLimit: 1000,
 			disableSubProcesses: false,
@@ -254,19 +241,23 @@ class AwesomeLog extends Events {
 		disableSP = config.disableSubProcesses;
 
 		if (!this.initialized) {
+			this[$FIELDSFUNC] = createFieldsFunction.call(this,config.fields);
+
 			if (config.writers.length<1) config.writers.push({
-				name: "console",
-				type:  !disableSP && isSubProcess() ? "subprocess" : "default",
+				name: "DefaultWriter",
+				type:  !disableSP && isSubProcess() ? "null" : "default",
 				levels: "*",
-				formatter: !disableSP && isSubProcess() ? "subprocess" : "default",
+				formatter: !disableSP && isSubProcess() ? "jsobject" : "default",
 				options: {}
 			});
 
 			initLevels.call(this,config.levels);
 			if (!this.getLevel(config.loggingNoticesLevel)) config.loggingNoticesLevel = this.levels.slice(-1)[0] && this.levels.slice(-1)[0].name || null;
 
-			config.historyFormatter = LogExtensions.getFormatter(config.historyFormatter);
-			if (!config.historyFormatter) throw new Error("Invalid history formatter.");
+			let histformpath = LogExtensions.getFormatter(config.historyFormatter);
+			if (!histformpath) throw new Error("Invalid history formatter.");
+			if (!AwesomeUtils.FS.existsSync(histformpath)) throw new Error("Formatter not found at "+histformpath+".");
+			this[$HISTORYFORMATTER] = new (require(histformpath))(config.historyFormatterOptions||{});
 
 			if (!config.disableLoggingNotices) this.log(config.loggingNoticesLevel,"AwesomeLog initialized for levels "+this.levelNames.join("|")+".");
 
@@ -289,10 +280,14 @@ class AwesomeLog extends Events {
 	 * Starts AwesomeLog running and outputting log messages. This should be called
 	 * very early in your application, in the entry point if possible.
 	 *
-	 * `startt()` is responsible for initializing the writers.
+	 * `start()` is responsible for initializing the writers.
 	 *
 	 * If any backlog messages exist when `start()` is called, they will be written
 	 * via the writers after they are started.
+	 *
+	 * `start()` returns a promise, which allows it to be awaited using async/await.
+	 * It is okay not to await for start to complete. AwesomeLog will still capture
+	 * any log writes in its backlog and write them when `start()` is complete.
 	 *
 	 * @return {void}
 	 */
@@ -306,29 +301,40 @@ class AwesomeLog extends Events {
 		this[$RUNNING] = true;
 		this[$HISTORY] = [];
 
-		initWriters.call(this);
-
-		[...this[$SUBPROCESSES].keys()].forEach((subprocess)=>{
-			this[$SUBPROCESSES].delete(subprocess);
-			this.captureSubProcess(subprocess);
-		});
-
-		if (this[$BACKLOG]) {
-			this[$BACKLOG].forEach((logentry)=>{
-				write.call(this,logentry);
-			});
-		}
-		this[$BACKLOG] = null;
-
 		if (!this.config.disableLoggingNotices) this.log(this.config.loggingNoticesLevel,"AwesomeLog started.");
+
 		this.emit("started");
 
-		return this;
+		return new Promise(async (resolve,reject)=>{
+			try {
+				await initWriters.call(this);
+
+				[...this[$SUBPROCESSES].keys()].forEach((subprocess)=>{
+					this[$SUBPROCESSES].delete(subprocess);
+					this.captureSubProcess(subprocess);
+				});
+
+				if (this[$BACKLOG]) {
+					this[$BACKLOG].forEach((logentry)=>{
+						write.call(this,logentry);
+					});
+				}
+				this[$BACKLOG] = null;
+
+				resolve(this);
+			}
+			catch (ex) {
+				return reject(ex);
+			}
+		});
 	}
 
 	/**
 	 * Stops AwesomeLog running. Once stopped AwesomeLog can be reconfigured via another
 	 * `init()` call.
+	 *
+	 * `stop()` returns a promise, which allows it to be awaited using async/await.
+	 * Generally it is okay to not await for `stop()` to complete.
 	 *
 	 * @return {void}
 	 */
@@ -340,20 +346,27 @@ class AwesomeLog extends Events {
 		this[$BACKLOG] = this[$BACKLOG] || [];
 		this[$RUNNING] = false;
 
-		[...this[$SUBPROCESSES].keys()].forEach((subprocess)=>{
-			this.releaseSubProcess(subprocess);
-			this[$SUBPROCESSES].set(subprocess,null);
-		});
-
-		this[$WRITERS].forEach((writer)=>{
-			writer.flush();
-			writer.close();
-		});
-
 		if (!this.config.disableLoggingNotices) this.log(this.config.loggingNoticesLevel,"AwesomeLog stopped.");
+
 		this.emit("stopped");
 
-		return this;
+		return new Promise(async (resolve,reject)=>{
+			try {
+				[...this[$SUBPROCESSES].keys()].forEach((subprocess)=>{
+					this.releaseSubProcess(subprocess);
+					this[$SUBPROCESSES].set(subprocess,null);
+				});
+
+				await Promise.all(this[$WRITERS].map((writer)=>{
+					return writer.stop(0);
+				}));
+
+				resolve(this);
+			}
+			catch (ex) {
+				return reject(ex);
+			}
+		});
 	}
 
 	/**
@@ -432,52 +445,58 @@ class AwesomeLog extends Events {
 	 * `log()` is called by all other shortcut log methods.
 	 *
 	 * @param  {string|LogLevel} level
-	 * @param  {string} message
+	 * @param  {string} text
 	 * @param  {*} args
 	 * @return {AwesomeLog}
 	 */
-	log(level,message,...args) {
+	log(level,text,...args) {
 		let logentry = null;
 
-		if (!message && level && typeof level==="object" && !(level instanceof LogLevel) && level.level && level.message && level.args) {
+		if (!text && level && typeof level==="object" && !(level instanceof LogLevel) && level.level && level.text && level.args) {
 			logentry = level;
-			message = logentry.message;
-			args = logentry.args;
-			level = logentry.level;
+			text = logentry.text||"";
+			args = logentry.args||[];
+			level = logentry.level||"";
 		}
-
-		level = this.getLevel(level);
-		if (!level) throw new Error("Missing level argument.");
-		if (!(level instanceof LogLevel)) throw new Error("Invalid level argument.");
-		if (logentry) logentry.level = level;
-
-		args = [].concat(args); // has to come before message check
-		if (logentry) logentry.args = args;
-
-		if (!message) throw new Error("Missing message argument.");
-		if (message instanceof Error) {
-			args.unshift(message);
-			message = message.message;
+		if (typeof text==="object") {
+			logentry = text;
+			text = logentry.text||"";
+			args = logentry.args||[];
+			level =logentry.level||level||"";
 		}
-		if (typeof message!=="string") throw new Error("Invalid message argument.");
+		level = this.getLevel(level).name;
 
-		logentry = Object.assign(this[$BASE],{
-			level,
-			system: AwesomeUtils.VM.executionSource(3).split(/\\\\|\\|\//g).slice(-1)[0].replace(/[^\w\d_\-.]/g,""),
-			message,
-			args,
-			timestamp: Date.now()
-		},logentry||{});
+		if (text instanceof Error) {
+			args.unshift(text);
+			text = text.text;
+		}
+		if (typeof text!=="string") throw new Error("Invalid text argument.");
+
+		logentry = this[$FIELDSFUNC](logentry||{},level,text,args);
+
+		// this.emit("log",logentry);
 
 		if (this[$BACKLOG]) {
 			this[$BACKLOG].push(logentry);
 			if (this[$BACKLOG].length>this.config.backlogSizeLimit) this[$BACKLOG] = this[$BACKLOG].slice(Math.floor(this.backlogSizeLimit*0.1));
 		}
-		else write.call(this,logentry);
-
-		this.emit("log",logentry);
-
-		return this;
+		else if (!this.config.disableSubProcesses && isSubProcess()) {
+			if (AwesomeUtils.Workers.enabled) {
+				AwesomeUtils.Workers.Workers.parentPort.postMessage({
+					cmd: "AWESOMELOG.ENTRY",
+					logentry
+				});
+			}
+			else {
+				process.send({
+					cmd: "AWESOMELOG.ENTRY",
+					logentry
+				});
+			}
+		}
+		else {
+			return write.call(this,logentry);
+		}
 	}
 
 	/**
@@ -582,67 +601,139 @@ const mapLevels = function initLevels(levels) {
 };
 
 const initWriters = function initWriters() {
-	// clean up old writers.
-	this[$WRITERS].forEach((writer)=>{
-		writer.flush();
-		writer.close();
+	return new Promise(async (resolve,reject)=>{
+		try {
+			// clean up old writers.
+			this[$WRITERS].forEach((writer)=>{
+				writer.flush();
+				writer.close();
+			});
+			this[$WRITERS] = [];
+
+			let configwriters = this.config.writers;
+			if (!configwriters) throw new Error("No writers configured.");
+			if (!(configwriters instanceof Array)) throw new Error("Invalid writers configured.");
+
+			// start new writers.
+			this[$WRITERS] = await Promise.all(AwesomeUtils.Array.compact(configwriters.map((writer)=>{
+				if (!writer) return null;
+
+				let manager = new WriterManager(this,writer);
+				return manager.start();
+			})));
+
+			resolve();
+		}
+		catch (ex) {
+			return reject(ex);
+		}
 	});
-	this[$WRITERS] = [];
+};
 
-	let configwriters = this.config.writers;
-	if (!configwriters) throw new Error("No writers configured.");
-	if (!(configwriters instanceof Array)) throw new Error("Invalid writers configured.");
+const createFieldsFunction = function(fields) {
+	let f = "const obj = arguments[0];";
+	f += "const level = arguments[1];";
+	f += "const text = arguments[2];";
+	f += "const args = arguments[3];";
 
-	// start new writers.
-	this[$WRITERS] = AwesomeUtils.Array.compact(configwriters.map((writer)=>{
-		if (!writer) return null;
+	fields.split(",").forEach((field)=>{
+		field = field.toLowerCase();
 
-		let name = writer.name || null;
-		if (!name) throw new Error("Missing writer name.");
-		name = name.replace(/[^\w\d_]/g,""); // strip out any non variables friendly characters.
+		let pid = process.pid;
+		let ppid = process.ppid;
+		let hostname = OS.hostname();
+		let domain = hostname.split(".").slice(-2).join(".");
+		let servername = hostname.split(".").slice(0,1);
+		let bits = 32;
+		let arch = OS.arch();
+		if (arch==="arm64" || arch==="mipsel" || arch==="ppc64" || arch==="s390x" || arch==="x64") bits = 64;
+		let main = process.mainModule.filename;
+		let platform =  OS.platform();
+		let cpus =  OS.cpus().length;
+		let argv =  process.argv.slice(2).join(" ");
+		let execPath =  process.execPath;
+		let startingDirectory =  process.cwd();
+		let homedir =  OS.homedir();
+		let username =  OS.userInfo().username;
+		let version =  process.version;
 
-		let type = writer.type || null;
-		if (!type) throw new Error("Missing writer type.");
-		type = type.toLowerCase();
+		if (field==="timestamp") f += "obj.timestamp = Date.now();";
+		else if (field==="level") f += "obj.level = level && level.name || level;";
+		else if (field==="system") {
+			f += `const system = ()=>{
+				let system = {};
+				Error.captureStackTrace(system);
+				system = system.stack.split(/\\n/)[4].split(/\\s/);
+				system = system[system.length-1];
+				let pos = system.lastIndexOf("/");
+				if (pos===-1) pos = system.lastIndexOf("\\\\");
+				system = system.substring(pos+1);
+				system = system.substring(0,system.indexOf(":"));
+				return system;
+			};`;
 
-		let levels = writer.levels || "*";
-		if (!levels) throw new Error("Missing writer levels.");
-		levels = levels.toLowerCase();
+			f += "obj.system = system();";
+		}
+		else if (field==="args") f += "obj.args = args;";
+		else if (field==="text") f += "obj.text = text;";
+		else if (field==="pid") f += "obj.pid = "+pid+";";
+		else if (field==="ppid") f += "obj.ppid = "+ppid+";";
+		else if (field==="hostname") f += "obj.hostname = '"+hostname+"';";
+		else if (field==="domain") f += "obj.domain = '"+domain+"';";
+		else if (field==="servername") f += "obj.servername = '"+servername+"';";
+		else if (field==="main") f += "obj.main = '"+main+"';";
+		else if (field==="arch") f += "obj.arch = '"+arch+"';";
+		else if (field==="platform") f += "obj.platform = '"+platform+"';";
+		else if (field==="bits") f += "obj.bits = "+bits+";";
+		else if (field==="cpus") f += "obj.cpus = "+cpus+";";
+		else if (field==="argv") f += "obj.argv = '"+argv+"';";
+		else if (field==="execpath") f += "obj.execpath = '"+execPath+"';";
+		else if (field==="exec") f += "obj.execpath = '"+execPath+"';";
+		else if (field==="startingdirectory") f += "obj.startingdirectory = '"+startingDirectory+"';";
+		else if (field==="startingdir") f += "obj.startingdirectory = '"+startingDirectory+"';";
+		else if (field==="homedir") f += "obj.homedir = '"+homedir+"';";
+		else if (field==="home") f += "obj.homedir = '"+homedir+"';";
+		else if (field==="username") f += "obj.username = '"+username+"';";
+		else if (field==="user") f += "obj.username = '"+username+"';";
+		else if (field==="version") f += "obj.version = "+version+";";
+	});
 
-		let formatter = writer.formatter || "default";
-		if (typeof formatter==="string") formatter = LogExtensions.getFormatter(formatter);
-		if (!formatter) throw new Error("Missing writer formatter '"+writer.formatter+"'.");
-		if (!(formatter instanceof AbstractLogFormatter)) throw new Error("Invalid writer formatter '"+writer.formatter+"', must be of type AbstractLogFormatter.");
+	f += "return obj;";
 
-		let options = writer.options || {};
-
-		let konstructor = LogExtensions.getWriter(type) || null;
-		if (!konstructor) throw new Error("Invalid writer type '"+type+"' does not exist.");
-
-		let instance = new konstructor(this,name,levels,formatter,options);
-		return instance;
-	}));
+	return new Function(f);
 };
 
 const write = function write(logentry) {
 	if (!logentry) throw new Error("Missing log entry argument.");
-	if (!logentry.level || !logentry.system || !logentry.message || !logentry.args || !logentry.timestamp) throw new Error("Invalid log entry argument.");
 
+	if (logentry.level && logentry.level.name) logentry.level = logentry.level.name;
 	if (this.config.history) {
-		this[$HISTORY].push(this.config.historyFormatter.format(logentry));
+		this[$HISTORY].push(this[$HISTORYFORMATTER].format(logentry));
 		if (this.history.length> this.config.historySizeLimit) this[$HISTORY] = this[$HISTORY].slice(-this.config.historySizeLimit);
 	}
 
+	this[$BUFFER].push(logentry);
+	scheduleDrain.call(this);
+};
+
+const scheduleDrain = function scheduleDrain() {
+	if (this[$DRAINSCHEDULED]) return;
+	this[$DRAINSCHEDULED] = true;
+	process.nextTick(drain.bind(this));
+};
+
+const drain = function drain() {
+	this[$DRAINSCHEDULED] = false;
 	this[$WRITERS].forEach((writer)=>{
-		if (!writer.takesLevel(logentry.level)) return;
-		writer.write(writer.format(logentry),logentry); // message,logentry
+		writer.write(this[$BUFFER]);
 	});
+	this[$BUFFER].length = 0;
 };
 
 const subProcessHandler = function subProcessHandler(message) {
 	if (!message) return;
 	if (!message.cmd) return;
-	if (!message.cmd==="AwesomeLog") return;
+	if (!message.cmd==="AWESOMELOG.ENTRY") return;
 
 	let logentry = message.logentry;
 	this.getLevel(logentry.level); // cuases an exception of the process used a level we dont know.

@@ -26,18 +26,22 @@ const AbstractLogFormatter = require("../AbstractLogFormatter");
 class DefaultFormatter extends AbstractLogFormatter {
 	/**
 	 * @private
+	 */
+	/**
 	 *
 	 * Constructor for this formatter. Never called directly, but called by AwesomeLog
 	 * when `Log.start()` is called.
 	 *
-	 * @param {AwesomeLog} parent
+	 * @param {Object} options
 	 */
-	constructor(parent) {
-		super(parent);
+	constructor(options) {
+		super(options);
 	}
 
 	/**
 	 * @private
+	 */
+	/**
 	 *
 	 * Given the log entry object, format it tou our output string.
 	 *
@@ -47,13 +51,13 @@ class DefaultFormatter extends AbstractLogFormatter {
 	format(logentry) {
 		let msg = "";
 
-		msg += new Date(logentry.timestamp).toISOString();
+		msg += new Date(logentry.timestamp||Date.now()).toISOString();
 		msg += " : ";
-		msg += ("#"+logentry.pid).padEnd(6);
+		msg += ("#"+logentry.pid||"????").padEnd(6);
 		msg += " : ";
-		msg += logentry.level.name.slice(0,10).padEnd(10);
+		msg += (logentry.level||"").slice(0,10).padEnd(10);
 		msg += " : ";
-		msg += logentry.system.slice(0,16).padEnd(16);
+		msg += (logentry.system||"").slice(0,16).padEnd(16);
 
 		let args = logentry.args || [];
 		if (args.length>0) {
@@ -61,12 +65,12 @@ class DefaultFormatter extends AbstractLogFormatter {
 			args = args.map(formatArg.bind(this,prefix));
 
 			msg += " : ";
-			msg += logentry.message;
+			msg += logentry.text||"";
 			msg += args;
 		}
 		else {
 			msg += " : ";
-			msg += logentry.message;
+			msg += logentry.text||"";
 		}
 
 		return msg;

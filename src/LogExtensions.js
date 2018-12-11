@@ -12,6 +12,8 @@ const $FORMATTERS = Symbol("defined_formatters");
 
 /**
  * @private
+ */
+/**
  *
  * LogExtensions manages the formatters and writers defined for AwesomeLog.
  * It is exposed only through `defineWriter` and `defineFormatter` in the
@@ -26,27 +28,27 @@ class LogExtensions {
 		this[$FORMATTERS] = {};
 
 		// define built in writers
-		this.defineWriter("null",require("./writers/NullWriter"));
-		this.defineWriter("nullwriter",require("./writers/NullWriter"));
-		this.defineWriter("subprocess",require("./writers/SubProcessWriter"));
-		this.defineWriter("default",require("./writers/ConsoleWriter"));
-		this.defineWriter("console",require("./writers/ConsoleWriter"));
-		this.defineWriter("consolewriter",require("./writers/ConsoleWriter"));
-		this.defineWriter("stdout",require("./writers/ConsoleWriter"));
-		this.defineWriter("file",require("./writers/FileWriter"));
-		this.defineWriter("filewriter",require("./writers/FileWriter"));
+		this.defineWriter("null",AwesomeUtils.Module.resolve(module,"./writers/NullWriter"));
+		this.defineWriter("nullwriter",AwesomeUtils.Module.resolve(module,"./writers/NullWriter"));
+		this.defineWriter("default",AwesomeUtils.Module.resolve(module,"./writers/ConsoleWriter"));
+		this.defineWriter("console",AwesomeUtils.Module.resolve(module,"./writers/ConsoleWriter"));
+		this.defineWriter("consolewriter",AwesomeUtils.Module.resolve(module,"./writers/ConsoleWriter"));
+		this.defineWriter("stdout",AwesomeUtils.Module.resolve(module,"./writers/ConsoleWriter"));
+		this.defineWriter("file",AwesomeUtils.Module.resolve(module,"./writers/FileWriter"));
+		this.defineWriter("filewriter",AwesomeUtils.Module.resolve(module,"./writers/FileWriter"));
 
 		// define built in formatters
-		this.defineFormatter("default",require("./formatters/DefaultFormatter"));
-		this.defineFormatter("subprocess",require("./formatters/SubProcessFormatter"));
-		this.defineFormatter("json",require("./formatters/JSONFormatter"));
-		this.defineFormatter("js",require("./formatters/JSObjectFormatter"));
-		this.defineFormatter("jsobject",require("./formatters/JSObjectFormatter"));
-		this.defineFormatter("csv",require("./formatters/CSVFormatter"));
+		this.defineFormatter("default",AwesomeUtils.Module.resolve(module,"./formatters/DefaultFormatter"));
+		this.defineFormatter("json",AwesomeUtils.Module.resolve(module,"./formatters/JSONFormatter"));
+		this.defineFormatter("js",AwesomeUtils.Module.resolve(module,"./formatters/JSObjectFormatter"));
+		this.defineFormatter("jsobject",AwesomeUtils.Module.resolve(module,"./formatters/JSObjectFormatter"));
+		this.defineFormatter("csv",AwesomeUtils.Module.resolve(module,"./formatters/CSVFormatter"));
 	}
 
 	/**
 	 * @private
+	 */
+	/**
 	 *
 	 * Returns an array of strings containing the defined Log Writer names that can be used.
 	 *
@@ -58,6 +60,8 @@ class LogExtensions {
 
 	/**
 	 * @private
+	 */
+	/**
 	 *
 	 * Returns an array of strings containing the defined Log Formatter names that can be used.
 	 *
@@ -69,6 +73,8 @@ class LogExtensions {
 
 	/**
 	 * @private
+	 */
+	/**
 	 *
 	 * Returns an AbstractLogWriter implementation for the given name, or undefined.
 	 *
@@ -84,6 +90,8 @@ class LogExtensions {
 
 	/**
 	 * @private
+	 */
+	/**
 	 *
 	 * Returns an AbstractLogFormatter implementation for the given name, or undefined.
 	 *
@@ -98,41 +106,53 @@ class LogExtensions {
 	}
 
 	/**
-	 * Map a new Log Writer to a specific name, for usage in configuring AwesomeLog.
+	 * Map a new Log Writer at the given filename to a specific name, for usage in configuring AwesomeLog.
+	 * The filename given must export a class that extends AbstractLogWriter.
 	 *
 	 * @param  {string} name
-	 * @param  {Class<AbstractLogWriter>} logWriter
+	 * @param  {string} filename
 	 * @return {void}
 	 */
-	defineWriter(name,logWriter) {
+	defineWriter(name,filename) {
 		if (!name) throw new Error("Missing writer name.");
+		if (typeof name!=="string") throw new Error("Invalid writer name.");
+		if (!filename) throw new Error("Missing writer filename.");
+		if (typeof filename!=="string") throw new Error("Invalid writer filename.");
+
 		name = name.toLowerCase();
-
-		if (!logWriter) throw new Error("Missing writer constructor");
-		if (!AbstractLogWriter.isPrototypeOf(logWriter)) throw new Error("Invalid writer constructor. Must inherit from AbstractLogWriter.");
-
 		if (this[$WRITERS][name]) throw new Error("Writer already defined.");
 
-		this[$WRITERS][name] = logWriter;
+		if (!AwesomeUtils.FS.existsSync(filename)) throw new Error("Writer not found at "+filename+".");
+
+		let logWriter = require(filename);
+		if (!AbstractLogWriter.isPrototypeOf(logWriter)) throw new Error("Invalid writer constructor. Must inherit from AbstractLogWriter.");
+
+		this[$WRITERS][name] = filename;
 	}
 
 	/**
-	* Map a new Log Formatter to a specific name, for usage in configuring AwesomeLog.
+	* Map a new Log Formatter to a specific filename, for usage in configuring AwesomeLog.
+	* The filename given must export a class that extends AbstractLogFormatter.
 	*
 	* @param  {string} name
-	* @param  {Class<AbstractLogFormatter>} logFormatter
+	* @param  {string} filename
 	* @return {void}
 	*/
-	defineFormatter(name,logFormatter) {
+	defineFormatter(name,filename) {
 		if (!name) throw new Error("Missing formatter name.");
+		if (typeof name!=="string") throw new Error("Invalid formatter name.");
+		if (!filename) throw new Error("Missing formatter filename.");
+		if (typeof filename!=="string") throw new Error("Invalid formatter filename.");
+
 		name = name.toLowerCase();
-
-		if (!logFormatter) throw new Error("Missing formatter constructor");
-		if (!AbstractLogFormatter.isPrototypeOf(logFormatter)) throw new Error("Invalid formatter constructor. Must inherit from AbstractLogFormatter.");
-
 		if (this[$FORMATTERS][name]) throw new Error("Formatter already defined.");
 
-		this[$FORMATTERS][name] = new logFormatter(this);
+		if (!AwesomeUtils.FS.existsSync(filename)) throw new Error("Formatter not found at "+filename+".");
+
+		let logFormatter = require(filename);
+		if (!AbstractLogFormatter.isPrototypeOf(logFormatter)) throw new Error("Invalid formatter constructor. Must inherit from AbstractLogFormatter.");
+
+		this[$FORMATTERS][name] = filename;
 	}
 }
 
