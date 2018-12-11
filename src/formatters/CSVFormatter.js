@@ -39,11 +39,11 @@ class CSVFormatter extends AbstractLogFormatter {
 	format(logentry) {
 		let s = [];
 
-		s.push(""+logentry.timestamp);
-		s.push("\""+logentry.level+"\"");
-		s.push(""+logentry.pid);
-		s.push("\""+logentry.system+"\"");
-		s.push("\""+logentry.message+"\"");
+		s.push(""+logentry.timestamp||Date.now());
+		s.push("\""+logentry.level||""+"\"");
+		s.push(""+logentry.pid||"????");
+		s.push("\""+logentry.system||""+"\"");
+		s.push("\""+logentry.text||""+"\"");
 		if (logentry.args && logentry.args.length>0) s = s.concat(logentry.args.map((arg)=>{
 			if (arg===null || arg===undefined) return "";
 			else if (typeof arg==="string") return "\""+arg+"\"";

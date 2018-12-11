@@ -47,13 +47,13 @@ class DefaultFormatter extends AbstractLogFormatter {
 	format(logentry) {
 		let msg = "";
 
-		msg += new Date(logentry.timestamp).toISOString();
+		msg += new Date(logentry.timestamp||Date.now()).toISOString();
 		msg += " : ";
-		msg += ("#"+logentry.pid).padEnd(6);
+		msg += ("#"+logentry.pid||"????").padEnd(6);
 		msg += " : ";
-		msg += logentry.level.slice(0,10).padEnd(10);
+		msg += (logentry.level||"").slice(0,10).padEnd(10);
 		msg += " : ";
-		msg += logentry.system.slice(0,16).padEnd(16);
+		msg += (logentry.system||"").slice(0,16).padEnd(16);
 
 		let args = logentry.args || [];
 		if (args.length>0) {
@@ -61,12 +61,12 @@ class DefaultFormatter extends AbstractLogFormatter {
 			args = args.map(formatArg.bind(this,prefix));
 
 			msg += " : ";
-			msg += logentry.message;
+			msg += logentry.text||"";
 			msg += args;
 		}
 		else {
 			msg += " : ";
-			msg += logentry.message;
+			msg += logentry.text||"";
 		}
 
 		return msg;

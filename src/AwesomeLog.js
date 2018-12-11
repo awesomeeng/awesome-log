@@ -31,10 +31,10 @@ const $LEVELS = Symbol("levels");
 const $WRITERS = Symbol("writers");
 const $RUNNING = Symbol("running");
 const $SUBPROCESSES = Symbol("subprocesshandler");
-const $BASE = Symbol("base");
 const $STARTS = Symbol("starts");
 const $BUFFER = Symbol("buffer");
 const $DRAINSCHEDULED = Symbol("drainScheduled");
+const $FIELDSFUNC = Symbol("fieldsFunction");
 
 /**
  * AwesomeLog is a singleton object returned when you
@@ -47,32 +47,6 @@ class AwesomeLog extends Events {
 	constructor() {
 		super();
 
-		const hostname = OS.hostname();
-		const domain = hostname.split(".").slice(-2).join(".");
-		const servername = hostname.split(".").slice(0,1);
-		let bits = 32;
-		let arch = OS.arch();
-		if (arch==="arm64" || arch==="mipsel" || arch==="ppc64" || arch==="s390x" || arch==="x64") bits = 64;
-
-		this[$BASE] = {
-			hostname,
-			domain,
-			servername,
-			pid: process.pid,
-			ppid: process.ppid,
-			main: process.mainModule.filename,
-			arch: OS.arch(),
-			platform: OS.platform(),
-			bits,
-			cpus: OS.cpus().length,
-			argv: process.argv.slice(2).join(" "),
-			execPath: process.execPath,
-			startingDirectory: process.cwd(),
-			homedir: OS.homedir(),
-			username: OS.userInfo().username,
-			version: process.version
-		};
-
 		this[$CONFIG] = null;
 		this[$BACKLOG] = [];
 		this[$HISTORY] = [];
@@ -84,6 +58,9 @@ class AwesomeLog extends Events {
 		this[$STARTS] = 0;
 		this[$BUFFER] = [];
 		this[$DRAINSCHEDULED] = false;
+		this[$FIELDSFUNC] = (obj)=>{
+			return obj;
+		};
 
 		initLevels.call(this,"access,error,warn,info,debug");
 	}
@@ -251,7 +228,7 @@ class AwesomeLog extends Events {
 			levels: "access,error,warn,info,debug",
 			disableLoggingNotices: !disableSP && isSubProcess() ? true : false,
 			loggingNoticesLevel: "info",
-			captureExecutionSystem: false,
+			fields: "timestamp,pid,system,level,text,args",
 			writers: [],
 			backlogSizeLimit: 1000,
 			disableSubProcesses: false,
@@ -261,6 +238,8 @@ class AwesomeLog extends Events {
 		disableSP = config.disableSubProcesses;
 
 		if (!this.initialized) {
+			this[$FIELDSFUNC] = createFieldsFunction.call(this,config.fields);
+
 			if (config.writers.length<1) config.writers.push({
 				name: "DefaultWriter",
 				type:  !disableSP && isSubProcess() ? "null" : "default",
@@ -460,52 +439,30 @@ class AwesomeLog extends Events {
 	 * @param  {*} args
 	 * @return {AwesomeLog}
 	 */
-	log(level,message,...args) {
+	log(level,text,...args) {
 		let logentry = null;
 
-		if (!message && level && typeof level==="object" && !(level instanceof LogLevel) && level.level && level.message && level.args) {
+		if (!text && level && typeof level==="object" && !(level instanceof LogLevel) && level.level && level.text && level.args) {
 			logentry = level;
-			message = logentry.message;
-			args = logentry.args;
-			level = logentry.level;
+			text = logentry.text||"";
+			args = logentry.args||[];
+			level = logentry.level||"";
 		}
-
-		level = this.getLevel(level);
-		if (!level) throw new Error("Missing level argument.");
-		if (!(level instanceof LogLevel)) throw new Error("Invalid level argument.");
-		if (logentry) logentry.level = level;
-
-		args = [].concat(args); // has to come before message check
-		if (logentry) logentry.args = args;
-
-		if (!message) throw new Error("Missing message argument.");
-		if (message instanceof Error) {
-			args.unshift(message);
-			message = message.message;
+		if (typeof text==="object") {
+			logentry = text;
+			text = logentry.text||"";
+			args = logentry.args||[];
+			level =logentry.level||level||"";
 		}
-		if (typeof message!=="string") throw new Error("Invalid message argument.");
+		level = this.getLevel(level).name;
 
-		let system = "";
-		if (this.config.captureExecutionSystem) {
-			system = {};
-			Error.captureStackTrace(system);
-			system = system.stack.split(/\n/)[2].split(/\s/);
-			system = system[system.length-1];
-			let pos = system.lastIndexOf("/");
-			if (pos===-1) pos = system.lastIndexOf("\\");
-			system = system.substring(pos+1);
-			system = system.substring(0,system.indexOf(":"));
+		if (text instanceof Error) {
+			args.unshift(text);
+			text = text.text;
 		}
+		if (typeof text!=="string") throw new Error("Invalid text argument.");
 
-		if (!logentry) {
-			logentry = {
-				level,
-				system,
-				message,
-				args,
-				timestamp: Date.now()
-			};
-		}
+		logentry = this[$FIELDSFUNC](logentry||{},level,text,args);
 
 		// this.emit("log",logentry);
 
@@ -661,6 +618,79 @@ const initWriters = function initWriters() {
 			return reject(ex);
 		}
 	});
+};
+
+const createFieldsFunction = function(fields) {
+	let f = "const obj = arguments[0];";
+	f += "const level = arguments[1];";
+	f += "const text = arguments[2];";
+	f += "const args = arguments[3];";
+
+	fields.split(",").forEach((field)=>{
+		field = field.toLowerCase();
+
+		let pid = process.pid;
+		let ppid = process.ppid;
+		let hostname = OS.hostname();
+		let domain = hostname.split(".").slice(-2).join(".");
+		let servername = hostname.split(".").slice(0,1);
+		let bits = 32;
+		let arch = OS.arch();
+		if (arch==="arm64" || arch==="mipsel" || arch==="ppc64" || arch==="s390x" || arch==="x64") bits = 64;
+		let main = process.mainModule.filename;
+		let platform =  OS.platform();
+		let cpus =  OS.cpus().length;
+		let argv =  process.argv.slice(2).join(" ");
+		let execPath =  process.execPath;
+		let startingDirectory =  process.cwd();
+		let homedir =  OS.homedir();
+		let username =  OS.userInfo().username;
+		let version =  process.version;
+
+		if (field==="timestamp") f += "obj.timestamp = Date.now();";
+		else if (field==="level") f += "obj.level = level && level.name || level;";
+		else if (field==="system") {
+			f += `const system = ()=>{
+				let system = {};
+				Error.captureStackTrace(system);
+				system = system.stack.split(/\\n/)[4].split(/\\s/);
+				system = system[system.length-1];
+				let pos = system.lastIndexOf("/");
+				if (pos===-1) pos = system.lastIndexOf("\\\\");
+				system = system.substring(pos+1);
+				system = system.substring(0,system.indexOf(":"));
+				return system;
+			};`;
+
+			f += "obj.system = system();";
+		}
+		else if (field==="args") f += "obj.args = args;";
+		else if (field==="text") f += "obj.text = text;";
+		else if (field==="pid") f += "obj.pid = "+pid+";";
+		else if (field==="ppid") f += "obj.ppid = "+ppid+";";
+		else if (field==="hostname") f += "obj.hostname = '"+hostname+"';";
+		else if (field==="domain") f += "obj.domain = '"+domain+"';";
+		else if (field==="servername") f += "obj.servername = '"+servername+"';";
+		else if (field==="main") f += "obj.main = '"+main+"';";
+		else if (field==="arch") f += "obj.arch = '"+arch+"';";
+		else if (field==="platform") f += "obj.platform = '"+platform+"';";
+		else if (field==="bits") f += "obj.bits = "+bits+";";
+		else if (field==="cpus") f += "obj.cpus = "+cpus+";";
+		else if (field==="argv") f += "obj.argv = '"+argv+"';";
+		else if (field==="execpath") f += "obj.execpath = '"+execPath+"';";
+		else if (field==="exec") f += "obj.execpath = '"+execPath+"';";
+		else if (field==="startingdirectory") f += "obj.startingdirectory = '"+startingDirectory+"';";
+		else if (field==="startingdir") f += "obj.startingdirectory = '"+startingDirectory+"';";
+		else if (field==="homedir") f += "obj.homedir = '"+homedir+"';";
+		else if (field==="home") f += "obj.homedir = '"+homedir+"';";
+		else if (field==="username") f += "obj.username = '"+username+"';";
+		else if (field==="user") f += "obj.username = '"+username+"';";
+		else if (field==="version") f += "obj.version = "+version+";";
+	});
+
+	f += "return obj;";
+
+	return new Function(f);
 };
 
 const write = function write(logentry) {

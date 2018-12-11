@@ -33,11 +33,11 @@ class JSObjectFormatter extends AbstractLogFormatter {
 	 */
 	format(logentry) {
 		return {
-			timestamp: logentry.timestamp,
-			pid: logentry.pid,
-			level: logentry.level,
-			system: logentry.system,
-			message: logentry.message,
+			timestamp: logentry.timestamp||Date.now(),
+			pid: logentry.pid||"????",
+			level: logentry.level||"",
+			system: logentry.system||"",
+			message: logentry.text||"",
 			args: logentry.args
 		};
 	}
