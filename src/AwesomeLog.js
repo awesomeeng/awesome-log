@@ -56,7 +56,8 @@ class AwesomeLog extends Events {
 		this[$RUNNING] = false;
 		this[$SUBPROCESSES] = new Map();
 		this[$STARTS] = 0;
-		this[$BUFFER] = [];
+		this[$BUFFER] = new Array(1000).fill(null);
+		this[$BUFFER].length = 0;
 		this[$DRAINSCHEDULED] = false;
 		this[$FIELDSFUNC] = (obj)=>{
 			return obj;
@@ -465,7 +466,6 @@ class AwesomeLog extends Events {
 			level =logentry.level||level||"";
 		}
 		level = this.getLevel(level).name;
-
 		if (text instanceof Error) {
 			args.unshift(text);
 			text = text.text;
@@ -706,7 +706,7 @@ const createFieldsFunction = function(fields) {
 const write = function write(logentry) {
 	if (!logentry) throw new Error("Missing log entry argument.");
 
-	if (logentry.level && logentry.level.name) logentry.level = logentry.level.name;
+	// if (logentry.level && logentry.level.name) logentry.level = logentry.level.name;
 	if (this.config.history) {
 		this[$HISTORY].push(this[$HISTORYFORMATTER].format(logentry));
 		if (this.history.length> this.config.historySizeLimit) this[$HISTORY] = this[$HISTORY].slice(-this.config.historySizeLimit);
