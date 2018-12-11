@@ -14,6 +14,8 @@ const AbstractLogWriter = require("../AbstractLogWriter");
 class NullWriter extends AbstractLogWriter {
 	/**
 	 * @private
+	 */
+	/**
 	 *
 	 * Creates a new Null Writer. Never called directly, but AwesomeLog
 	 * will call this when `AwesomeLog.start()` is issued.

@@ -27,8 +27,8 @@ class AbstractLogWriter {
 	 *
 	 * ```
 	 * class MyWriter extends AbstractLogWriter {
-	 * 	 constructor(parent,type,name,levels,formatter,options) {
-	 * 	   super(parent,type,name,levels,formatter,options);
+	 * 	 constructor(options) {
+	 * 	   super(options);
 	 *
 	 * 	   ... your initialization code ...
 	 * 	 }
@@ -39,6 +39,7 @@ class AbstractLogWriter {
 	 *
 	 * You should put any kind of initialization of your writer in this constructor.
 	 *
+	 * @param {Object} options
 	 */
 	constructor(options={}) {
 		if (!options) throw new Error("Missing options argument.");

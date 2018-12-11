@@ -87,7 +87,9 @@ class MyExampleFormatter extends AbstractLogFormatter {
 	}
 }
 
-Log.defineFormatter("my-example-formatter",MyExampleFormatter)
+module.exports = MyExampleFormatter;
+
+Log.defineFormatter("my-example-formatter",module.filename);
 ```
 
 First, we require `AwesomeLog` and `AwesomeLog.AbstractLogFormatter`.
@@ -100,20 +102,20 @@ In our class we are required to implement two methods:
 
  - **`format(logentry)`**: The `format(logentry)` gets a `logentry` object that has a number of [different keys](#log-entry-keys) about the log message.  It returns a string (or otherwise) formatted message, like in our example.
 
- Finally, once our new LogFormatter class is set, we call `defineFormatter(typeName,logFormatter)` to tell AwesomeLog about it.  `defineFormatter(formatterName,logFormatter)` take two arguments, the first the `formatterName` is the string value to be used to reference the formatter in the `formatter` setting, and second the `logFormatter` is the formatter class we just defined (not an instance of the class) to call when the formatter is used.
+Finally, once our new LogFormatter class is set, we call `defineFormatter(typeName,logFormatterFilename)` to tell AwesomeLog about it.  `defineFormatter(formatterName,logFormatterFilename)` take two arguments, the first the `formatterName` is the string value to be used to reference the formatter in the `formatter` setting, and second the `logFormatterFilename` is the filename of the exported formatter class we just defined (not an instance of the class) to call when the formatter is used.
 
- After `defineWriter` is called, one can use the writer in `Log.init()`.
+After `defineFormatter` is called, one can use the writer in `Log.init()`.
 
 ## Log Entry Keys
 
-Each Log Entry that a formatter receives is an object with a dozen or so key/values in it. These are the properties that are available to you when creating a custom formatter for formatting the message. It is highly recommended that if a key/value pair is provided that you use that value instead of trying to compute it otherwise, especially if you are using Child Processes or the like.
+Each Log Entry that a formatter receives an object with a dozen or so key/values in it. These properties are dicated by your `log.init()` `fields` setting.
 
-Below is a list of the keys provided:
+Below is a list of the possible provided:
 
  - **timestamp**: The time (unix epoch) this log message wasa generated.
  - **level**: The Log Level of this log message. (This may be a Log Level object or a string.)
  - **system**: The System that was passed to the log message call, or the source file it was called from.
- - **message**: The log message itself.
+ - **text**: The log text itself.
  - **args**: Any addition log message arguments passed in.<br/><br/>
  - **hostname**: The FQDN hostname of the machine.
  - **domain**: The domain name (last two segments of the FQDN).

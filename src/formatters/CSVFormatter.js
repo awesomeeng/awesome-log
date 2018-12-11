@@ -18,6 +18,8 @@ const AbstractLogFormatter = require("../AbstractLogFormatter");
 class CSVFormatter extends AbstractLogFormatter {
 	/**
 	 * @private
+	 */
+	/**
 	 *
 	 * Constructor for this formatter. Never called directly, but called by AwesomeLog
 	 * when `Log.start()` is called.
@@ -30,6 +32,8 @@ class CSVFormatter extends AbstractLogFormatter {
 
 	/**
  	 * @private
+	 */
+	/**
 	 *
 	 * Given the log entry object, format it to our output string.
 	 *

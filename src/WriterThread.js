@@ -2,10 +2,6 @@
 
 "use strict";
 
-const ChildProcess = require("child_process");
-
-const AwesomeUtils = require("@awesomeeng/awesome-utils");
-
 const $NAME = Symbol("name");
 const $LEVELS = Symbol("levels");
 const $WRITER = Symbol("writer");
@@ -17,6 +13,14 @@ const $FORMATTERTYPE = Symbol("formatterType");
 const $FORMATTERPATH = Symbol("formatterPath");
 const $FORMATTEROPTIONS = Symbol("formatterOptions");
 
+/**
+ * @private
+ */
+/**
+ *
+ * Used internally to manage the connection between AwesomeLog and
+ * a given writer process.
+ */
 class WriterThread {
 	constructor(config) {
 		let name = config.name || null;

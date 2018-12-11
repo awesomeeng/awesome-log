@@ -8,7 +8,7 @@ const $OPTIONS = Symbol("options");
 /**
  * Describes the shape of a Log Formatter. This class is expected to be extend for all
  * Log Formatter implementations. After this class is extended, you pass the extending
- * class into `AwesomeLog.defineLogFormatter(name,class)` to add your Log Formatter to
+ * class into `AwesomeLog.defineLogFormatter(name,filename)` to add your Log Formatter to
  * AwesomeLog for usage.
  *
  * @see {@link ./docs/LogFormatters.md Log Writer} documentation for more details.
@@ -26,8 +26,8 @@ class AbstractLogFormatter {
 	*
 	* ```
 	* class MyFormatter extends AbstractLogFormatter {
-	* 	 constructor() {
-	* 	   super();
+	* 	 constructor(options) {
+	* 	   super(options);
 	*
 	* 	   ... your initialization code ...
 	* 	 }
@@ -37,11 +37,18 @@ class AbstractLogFormatter {
 	* Failure to not do the super constructor will result in errors.
 	*
 	* You should put any kind of initialization of your formatter in this constructor.
+	*
+	* @param {Object} options
 	 */
 	constructor(options={}) {
 		this[$OPTIONS] = options;
 	}
 
+	/**
+	 * Returns the options passed into the constructor.
+	 *
+	 * @return {Object}
+	 */
 	get options() {
 		return this[$OPTIONS];
 	}
@@ -50,6 +57,7 @@ class AbstractLogFormatter {
 	 * Called when a logentry needs to be formatted.  The underlying writer will call this for
 	 * each log message it needs to write out.
 	 *
+	 * @param {Object} logentry
 	 * @return {Object}
 	 */
 	format(/*logentry*/) {

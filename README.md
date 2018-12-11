@@ -14,6 +14,7 @@ AwesomeLog provides...
  - Support for clean nested AwesomeLog usage;
  - Extremely flexible;
  - Customizable Log Levels;
+ - Configurable log entry field contents;
  - Built-In Formatters: Default, JSON, JS, or CSV;
  - Or add your own log formatters;
  - Console and File writers;
@@ -30,6 +31,8 @@ AwesomeLog provides...
  - [Log Levels](#log-levels)
  - [Log Writers](#log-writers)
  - [Log Formatters](#log-formatters)
+ - [Fields](#fields)
+ - [Performance](#performance)
  - [Documentation](#documentation)
  - [Examples](#examples)
  - [Awesome Engineering](#the-awesome-engineering-company)
@@ -164,6 +167,8 @@ This example enables two writers, a console writer and a file writer.
 
 You can read more about [Configuration](./docs/Configuration), [Console Writer](./docs/ConsoleWriterConfiguration), or [File Writer](./docs/FileWriterConfiguration), or how to write your own [Custom Log Writer](./docs/LogWriters) in the respective documentation.
 
+Each LogWriter is run in its own isolated process and log messages are passed to it. This allows AwesomeLog to execute much faster.
+
 ## Log Formatters
 
 A Log Formatter takes the log message details (as well as a number of other system information details) and formats that into a single string message. Each Log Writer (see above) can have it's own Log Formatter.  If you do not provide a formatter, `default` is used.
@@ -200,6 +205,56 @@ AwesomeLog ships with four built-in Log Formatters:
 
 You can read more about how to write your own [Custom Log Formatter](./docs/LogFormatters) in the documentation.
 
+## Fields
+
+During configuration you can specify which fields you want to be in each log entry.  AwesomeLog supplies a variety of field options.  However, it is worth noting that some fields are more expensive than other, performance wise.
+
+In particular, the `system` field if very expensive from a performance point of view.  If performance is a consideration for you, please consider leaving this field out.
+
+Fields are configured thus:
+
+```
+Log.init({
+	fields: "timestamp,pid,system,text,args"
+});
+```
+
+The `fields` configuration property is a comma delimited string of each field name.  Order is irrelevant as the formatter you choose will dictate its own ordering.
+
+The following fields are available:
+ - **timestamp**: The current time, in UTC.
+ - **level**: The log level for this particular log entry.
+ - **text**: The text message for this particular log entry.
+ - **args**: Any extra arguments passed to the log call.
+ - **system**: The javascript file in which this log call was made. Please note that including this field is very expensive from a performance standpoint, and it should only be used in development systems.
+ - **hostname**: The hostname of the machine the log event occured on. Good for integrated log systems.
+ - **domain**: The domain name portion of the hostname, that is the last two segments of the hostname.
+ - **servername**: The computer name for the machine the log event occured on. This is the first segment of the hostname.
+ - **pid**: The process id for this log message. In subprocess systems this can be a valuable debugging tool.
+ - **ppid**: The parent process id.
+ - **main**: The path to the executed node executable.
+ - **execpath**: The path to the executed node executable.
+ - **argv**: The initial arguments passed to the executed node executable.
+ - **arch**: The architecture value for the current OS.
+ - **platform**: The platform value for the current OS.
+ - **bits**: The bits value for the current OS.
+ - **cpus**: The number of physical CPUs on the current machine.
+ - **startingdir**: The starting directory of the node application.
+ - **homedir**: The user's home directory.
+ - **username**: The user's username.
+ - **version**: The version of node.
+
+## Performance
+
+A note about performance: AwesomeLog is configured by default to perform optimally, while still giving you as much information as possible.  It is possible to configure AwesomeLog for a more tuned performance if you desire. We recommend the following configuration to do so:
+
+```
+Log.init({
+	fields: "timestamp,level,pid,text,args",
+	history: false,
+	disableLoggingNotices: true
+});
+```
 
 ## Documentation
 

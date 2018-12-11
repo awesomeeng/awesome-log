@@ -152,25 +152,27 @@ class AwesomeLog extends Events {
 	}
 
 	/**
-	 * Map a new Log Writer to a specific name, for usage in configuring AwesomeLog.
+	* Map a new Log Writer to a specific filename, for usage in configuring AwesomeLog.
+	* The filename given must export a class that extends AbstractLogWriter.
 	 *
 	 * @param  {string} name
-	 * @param  {string} logWriter
+	 * @param  {string} filename
 	 * @return {void}
 	 */
-	defineWriter(name,pathToWriter) {
-		return LogExtensions.defineWriter(name,pathToWriter);
+	defineWriter(name,filename) {
+		return LogExtensions.defineWriter(name,filename);
 	}
 
 	/**
-	* Map a new Log Formatter to a specific name, for usage in configuring AwesomeLog.
+	* Map a new Log Formatter to a specific filename, for usage in configuring AwesomeLog.
+	* The filename given must export a class that extends AbstractLogFormatter.
 	*
 	* @param  {string} name
-	* @param  {string} logFormatter
+	* @param  {string} filename
 	* @return {void}
 	*/
-	defineFormatter(name,pathToFormatter) {
-		return LogExtensions.defineFormatter(name,pathToFormatter);
+	defineFormatter(name,filename) {
+		return LogExtensions.defineFormatter(name,filename);
 	}
 
 	/**
@@ -192,6 +194,7 @@ class AwesomeLog extends Events {
 	 *   levels: "access,error,warn,info,debug",
 	 *   disableLoggingNotices: false, // true if this is a child process
 	 *   loggingNoticesLevel: "info",
+	 *   fields: "timestamp,pid,system,level,text,args",
 	 *   writers: [],
 	 *   backlogSizeLimit: 1000,
 	 *   disableSubProcesses: false,
@@ -203,7 +206,7 @@ class AwesomeLog extends Events {
 	 * If no writers are provided, a default Console Writer is added to the configuration.
 	 *
 	 * ```
-	 * config.writes = [{
+	 * config.writers = [{
 	 *  type:  "default", // "subprocess" if this is a child process
 	 *  levels: "*",
 	 *  formatter: default", // "subprocess" if this is a child process
@@ -277,10 +280,14 @@ class AwesomeLog extends Events {
 	 * Starts AwesomeLog running and outputting log messages. This should be called
 	 * very early in your application, in the entry point if possible.
 	 *
-	 * `startt()` is responsible for initializing the writers.
+	 * `start()` is responsible for initializing the writers.
 	 *
 	 * If any backlog messages exist when `start()` is called, they will be written
 	 * via the writers after they are started.
+	 *
+	 * `start()` returns a promise, which allows it to be awaited using async/await.
+	 * It is okay not to await for start to complete. AwesomeLog will still capture
+	 * any log writes in its backlog and write them when `start()` is complete.
 	 *
 	 * @return {void}
 	 */
@@ -325,6 +332,9 @@ class AwesomeLog extends Events {
 	/**
 	 * Stops AwesomeLog running. Once stopped AwesomeLog can be reconfigured via another
 	 * `init()` call.
+	 *
+	 * `stop()` returns a promise, which allows it to be awaited using async/await.
+	 * Generally it is okay to not await for `stop()` to complete.
 	 *
 	 * @return {void}
 	 */
@@ -435,7 +445,7 @@ class AwesomeLog extends Events {
 	 * `log()` is called by all other shortcut log methods.
 	 *
 	 * @param  {string|LogLevel} level
-	 * @param  {string} message
+	 * @param  {string} text
 	 * @param  {*} args
 	 * @return {AwesomeLog}
 	 */

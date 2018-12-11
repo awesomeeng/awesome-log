@@ -40,6 +40,8 @@ const $THEME = Symbol("theme");
 class ConsoleWriter extends AbstractLogWriter {
 	/**
 	 * @private
+	 */
+	/**
 	 *
 	 * Creates a new Console Writer. Never called directly, but AwesomeLog
 	 * will call this when `AwesomeLog.start()` is issued.
@@ -72,6 +74,8 @@ class ConsoleWriter extends AbstractLogWriter {
 
 	/**
 	 * @private
+	 */
+	/**
 	 *
 	 * Write a log message to STDOUT.
 	 *
@@ -90,6 +94,8 @@ class ConsoleWriter extends AbstractLogWriter {
 
 	/**
 	 * @private
+	 */
+	/**
 	 *
 	 * Flush the pending writes. This has not effect in this case.
 	 *
@@ -101,6 +107,8 @@ class ConsoleWriter extends AbstractLogWriter {
 
 	/**
 	 * @private
+	 */
+	/**
 	 *
 	 * Close the writer. This has not effect in this case.
 	 *

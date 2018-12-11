@@ -17,6 +17,14 @@ const $FORMATTER = Symbol("formatter");
 const $FORMATTEROPTIONS = Symbol("formatterOptions");
 const $THREAD = Symbol("thread");
 
+/**
+ * @private
+ */
+/**
+ *
+ * Used internally to manage the connection between AwesomeLog and
+ * a given writer process.
+ */
 class WriterManager {
 	constructor(parent,config) {
 		config = AwesomeUtils.Object.extend({

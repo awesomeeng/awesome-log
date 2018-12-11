@@ -13,6 +13,8 @@ const AbstractLogFormatter = require("../AbstractLogFormatter");
 class JSObjectFormatter extends AbstractLogFormatter {
 	/**
 	 * @private
+	 */
+	/**
 	 *
 	 * Constructor for this formatter. Never called directly, but called by AwesomeLog
 	 * when `Log.start()` is called.
@@ -25,6 +27,8 @@ class JSObjectFormatter extends AbstractLogFormatter {
 
 	/**
 	 * @private
+	 */
+	/**
 	 *
 	 * Given the log entry object, format it tou our output string.
 	 *

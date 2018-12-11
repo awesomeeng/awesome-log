@@ -46,6 +46,8 @@ const $ROOT = Symbol("root");
 class FileWriter extends AbstractLogWriter {
 	/**
 	 * @private
+	 */
+	/**
 	 *
 	 * Creates a new File Writer. Never called directly, but AwesomeLog
 	 * will call this when `AwesomeLog.start()` is issued.
@@ -71,6 +73,8 @@ class FileWriter extends AbstractLogWriter {
 
 	/**
 	 * @private
+	 */
+	/**
 	 *
 	 * Write a log message to the log file.
 	 *
@@ -93,6 +97,8 @@ class FileWriter extends AbstractLogWriter {
 
 	/**
 	 * @private
+	 */
+	/**
 	 *
 	 * Flush the pending writes. This has not effect in this case.
 	 *
@@ -104,6 +110,8 @@ class FileWriter extends AbstractLogWriter {
 
 	/**
 	 * @private
+	 */
+	/**
 	 *
 	 * Close the file.
 	 *

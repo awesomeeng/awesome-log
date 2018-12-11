@@ -12,6 +12,8 @@ const $FORMATTERS = Symbol("defined_formatters");
 
 /**
  * @private
+ */
+/**
  *
  * LogExtensions manages the formatters and writers defined for AwesomeLog.
  * It is exposed only through `defineWriter` and `defineFormatter` in the
@@ -45,6 +47,8 @@ class LogExtensions {
 
 	/**
 	 * @private
+	 */
+	/**
 	 *
 	 * Returns an array of strings containing the defined Log Writer names that can be used.
 	 *
@@ -56,6 +60,8 @@ class LogExtensions {
 
 	/**
 	 * @private
+	 */
+	/**
 	 *
 	 * Returns an array of strings containing the defined Log Formatter names that can be used.
 	 *
@@ -67,6 +73,8 @@ class LogExtensions {
 
 	/**
 	 * @private
+	 */
+	/**
 	 *
 	 * Returns an AbstractLogWriter implementation for the given name, or undefined.
 	 *
@@ -82,6 +90,8 @@ class LogExtensions {
 
 	/**
 	 * @private
+	 */
+	/**
 	 *
 	 * Returns an AbstractLogFormatter implementation for the given name, or undefined.
 	 *
@@ -96,51 +106,53 @@ class LogExtensions {
 	}
 
 	/**
-	 * Map a new Log Writer to a specific name, for usage in configuring AwesomeLog.
+	 * Map a new Log Writer at the given filename to a specific name, for usage in configuring AwesomeLog.
+	 * The filename given must export a class that extends AbstractLogWriter.
 	 *
 	 * @param  {string} name
-	 * @param  {Class<AbstractLogWriter>} logWriter
+	 * @param  {string} filename
 	 * @return {void}
 	 */
-	defineWriter(name,path) {
+	defineWriter(name,filename) {
 		if (!name) throw new Error("Missing writer name.");
 		if (typeof name!=="string") throw new Error("Invalid writer name.");
-		if (!path) throw new Error("Missing writer path.");
-		if (typeof path!=="string") throw new Error("Invalid writer path.");
+		if (!filename) throw new Error("Missing writer filename.");
+		if (typeof filename!=="string") throw new Error("Invalid writer filename.");
 
 		name = name.toLowerCase();
 		if (this[$WRITERS][name]) throw new Error("Writer already defined.");
 
-		if (!AwesomeUtils.FS.existsSync(path)) throw new Error("Writer not found at "+path+".");
+		if (!AwesomeUtils.FS.existsSync(filename)) throw new Error("Writer not found at "+filename+".");
 
-		let logWriter = require(path);
+		let logWriter = require(filename);
 		if (!AbstractLogWriter.isPrototypeOf(logWriter)) throw new Error("Invalid writer constructor. Must inherit from AbstractLogWriter.");
 
-		this[$WRITERS][name] = path;
+		this[$WRITERS][name] = filename;
 	}
 
 	/**
-	* Map a new Log Formatter to a specific name, for usage in configuring AwesomeLog.
+	* Map a new Log Formatter to a specific filename, for usage in configuring AwesomeLog.
+	* The filename given must export a class that extends AbstractLogFormatter.
 	*
 	* @param  {string} name
-	* @param  {Class<AbstractLogFormatter>} logFormatter
+	* @param  {string} filename
 	* @return {void}
 	*/
-	defineFormatter(name,path) {
+	defineFormatter(name,filename) {
 		if (!name) throw new Error("Missing formatter name.");
 		if (typeof name!=="string") throw new Error("Invalid formatter name.");
-		if (!path) throw new Error("Missing formatter path.");
-		if (typeof path!=="string") throw new Error("Invalid formatter path.");
+		if (!filename) throw new Error("Missing formatter filename.");
+		if (typeof filename!=="string") throw new Error("Invalid formatter filename.");
 
 		name = name.toLowerCase();
 		if (this[$FORMATTERS][name]) throw new Error("Formatter already defined.");
 
-		if (!AwesomeUtils.FS.existsSync(path)) throw new Error("Formatter not found at "+path+".");
+		if (!AwesomeUtils.FS.existsSync(filename)) throw new Error("Formatter not found at "+filename+".");
 
-		let logFormatter = require(path);
+		let logFormatter = require(filename);
 		if (!AbstractLogFormatter.isPrototypeOf(logFormatter)) throw new Error("Invalid formatter constructor. Must inherit from AbstractLogFormatter.");
 
-		this[$FORMATTERS][name] = path;
+		this[$FORMATTERS][name] = filename;
 	}
 }
 
