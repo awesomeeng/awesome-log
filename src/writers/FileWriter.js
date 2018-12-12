@@ -174,7 +174,7 @@ const housekeeping = function housekeeping() {
 	if (!this.options.housekeeping) return;
 	if (!this.options.filename.match(/\{[\w\d-._]+\}/)) return;
 
-	let duration = Math.max(100,Math.min(9999999999,this.options.housekeeping||60000));
+	let duration = Math.max(1,Math.min(9999999999,this.options.housekeeping||60000));
 
 	let dir = this[$ROOT];
 	if (!AwesomeUtils.FS.existsSync(dir)) return;
@@ -189,9 +189,11 @@ const housekeeping = function housekeeping() {
 
 	let files = AwesomeUtils.FS.recursiveListSync(dir);
 	files.forEach((file)=>{
-		if (file===this[$FILENAME]) return;
+		let resolved = Path.resolve(dir,file);
+		let filename = resolved.replace(/\\/g,"/");
+		if (file===this[$FILENAME] || file===this[$FILENAME] || filename===this[$FILENAME]) return;
 
-		let match = matcher.exec(file);
+		let match = matcher.exec(filename);
 		if (!match) return;
 
 		let dates = [...match];
@@ -209,7 +211,7 @@ const housekeeping = function housekeeping() {
 
 		if (old) {
 			try {
-				FS.unlinkSync(file);
+				FS.unlinkSync(resolved);
 			}
 			catch (ex) {
 				if (!ex.message.startsWith("ENOENT")) throw ex;

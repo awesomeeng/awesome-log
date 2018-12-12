@@ -222,7 +222,7 @@ class WriterManager {
 
 					this[$WRITERFORMATTER] = null;
 
-					return resolve();
+					resolve();
 				}
 			}
 			catch (ex) {

@@ -227,7 +227,7 @@ class AwesomeLog {
 	init(config) {
 		let disableSP = config && config.disableSubProcesses || false;
 		config = AwesomeUtils.Object.extend({
-			separate: false,
+			separate: true,
 			buffering: false,
 			history: true,
 			historySizeLimit: 100,
@@ -606,12 +606,12 @@ const initWriters = function initWriters() {
 			if (!(configwriters instanceof Array)) throw new Error("Invalid writers configured.");
 
 			// start new writers.
-			this[$WRITERS] = await Promise.all(AwesomeUtils.Array.compact(configwriters.map((writer)=>{
-				if (!writer) return null;
+			this[$WRITERS] = await Promise.all(AwesomeUtils.Array.compact(configwriters.map((config)=>{
+				if (!config) return null;
 
-				let manager = new WriterManager(this,writer,this.config.separate);
-				manager.start();
-				return manager;
+				let writer = new WriterManager(this,config,this.config.separate);
+				writer.start();
+				return writer;
 			})));
 
 			resolve();

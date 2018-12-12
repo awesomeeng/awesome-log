@@ -137,6 +137,7 @@ describe("FileWriterTest",()=>{
 
 		let files = FS.readdirSync(dir);
 		let found = files.some((file)=>{
+			file = Path.resolve(dir,file);
 			return file.startsWith("temp."+id+".") && file.endsWith(".tmp");
 		});
 
@@ -179,6 +180,7 @@ describe("FileWriterTest",()=>{
 		await AwesomeUtils.Promise.sleep(30);
 
 		await Log.stop();
+		await AwesomeUtils.Promise.sleep(1000);
 
 		let files = FS.readdirSync(dir);
 		let found = files.some((file)=>{
