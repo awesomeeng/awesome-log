@@ -245,13 +245,14 @@ The following fields are available:
 
 ## Performance
 
-A note about performance: AwesomeLog is configured by default to perform optimally, while still giving you as much information as possible.  It is possible to configure AwesomeLog for a more tuned performance if you desire. We recommend the following configuration to do so:
+AwesomeLog is configured by default to perform in manner best suited to development.  For production systems, a slioghtly more nuanced configuration will perform better, but at a reduction in development information. When run with this performance configuration AwesomeLog will perform slightly better than most other nodejs logging systems like Winston, Bunyan, Bole, Debug, etc. except for pino, which is crazy fast.
+
+#### Recommended production configuration
 
 ```
 Log.init({
 	fields: "timestamp,level,pid,text,args",
-	history: false,
-	disableLoggingNotices: true
+	history: false
 });
 ```
 
