@@ -35,6 +35,7 @@ const $STARTS = Symbol("starts");
 const $BUFFER = Symbol("buffer");
 const $DRAINSCHEDULED = Symbol("drainScheduled");
 const $FIELDSFUNC = Symbol("fieldsFunction");
+const $ISSUBPROCESS = Symbol("isSubprocess");
 
 /**
  * AwesomeLog is a singleton object returned when you
@@ -60,6 +61,7 @@ class AwesomeLog {
 		this[$FIELDSFUNC] = (obj)=>{
 			return obj;
 		};
+		this[$ISSUBPROCESS] = !!Process.channel || Worker && Worker.parentPort && Worker.parentPort.postMessage || false;
 
 		initLevels.call(this,"access,error,warn,info,debug");
 	}
@@ -228,7 +230,7 @@ class AwesomeLog {
 			historyFormatter: "default",
 			historyFormatterOptions: {},
 			levels: "access,error,warn,info,debug",
-			disableLoggingNotices: !disableSP && isSubProcess() ? true : false,
+			disableLoggingNotices: !disableSP && this[$ISSUBPROCESS] ? true : false,
 			loggingNoticesLevel: "info",
 			fields: "timestamp,pid,system,level,text,args",
 			writers: [],
@@ -244,9 +246,9 @@ class AwesomeLog {
 
 			if (config.writers.length<1) config.writers.push({
 				name: "DefaultWriter",
-				type:  !disableSP && isSubProcess() ? "null" : "default",
+				type:  !disableSP && this[$ISSUBPROCESS] ? "null" : "default",
 				levels: "*",
-				formatter: !disableSP && isSubProcess() ? "jsobject" : "default",
+				formatter: !disableSP && this[$ISSUBPROCESS] ? "jsobject" : "default",
 				options: {}
 			});
 
@@ -466,7 +468,7 @@ class AwesomeLog {
 			this[$BACKLOG].push(logentry);
 			if (this[$BACKLOG].length>this.config.backlogSizeLimit) this[$BACKLOG] = this[$BACKLOG].slice(Math.floor(this.backlogSizeLimit*0.1));
 		}
-		else if (!this.config.disableSubProcesses && isSubProcess()) {
+		else if (this[$ISSUBPROCESS] && !this.config.disableSubProcesses) {
 			if (AwesomeUtils.Workers.enabled) {
 				AwesomeUtils.Workers.Workers.parentPort.postMessage({
 					cmd: "AWESOMELOG.ENTRY",
@@ -523,10 +525,6 @@ class AwesomeLog {
 		return this;
 	}
 }
-
-const isSubProcess = function isSubProcess() {
-	return !!Process.channel || Worker && Worker.parentPort && Worker.parentPort.postMessage || false;
-};
 
 const initLevels = function initLevels(levels) {
 	// If we have pre-existing levels, remove the functions...
