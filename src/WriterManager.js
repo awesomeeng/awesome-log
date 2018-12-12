@@ -116,7 +116,7 @@ class WriterManager {
 	 * @return {LogLevel}
 	 */
 	takesLevel(level) {
-		if (!level) throw new Error("Missing level argument.");
+		if (!level) return false;
 		level = this.parent.getLevel(level);
 		return this[$LEVELS].indexOf(level)>-1;
 	}
