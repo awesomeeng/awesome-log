@@ -245,7 +245,7 @@ The following fields are available:
 
 ## Performance
 
-AwesomeLog is configured by default to perform in manner best suited to development.  For production systems, a slioghtly more nuanced configuration will perform better, but at a reduction in development information. When run with this performance configuration AwesomeLog will perform slightly better than most other nodejs logging systems like Winston, Bunyan, Bole, Debug, etc. except for pino, which is crazy fast.
+AwesomeLog is configured by default to perform in manner best suited to development.  For production systems, a slioghtly more nuanced configuration will perform better, but at a reduction in development information. When run with this performance configuration AwesomeLog will perform slightly better than most other nodejs logging systems like Winston, Bunyan, Bole, Debug, etc. and performs about the same as pino.
 
 #### Recommended production configuration
 
