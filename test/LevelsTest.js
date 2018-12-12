@@ -19,7 +19,7 @@ describe("LogLevels",()=>{
 		AwesomeUtils.Module.unrequire(AwesomeUtils.Module.resolve(module,"../src/AwesomeLog"));
 	});
 
-	it("levels",function(){
+	it("levels",async function(){
 		const Log = require("../src/AwesomeLog");
 		Log.init({
 			writers: [{
@@ -36,7 +36,7 @@ describe("LogLevels",()=>{
 		assert(Log.levelNames.indexOf("APPLE")>-1);
 		assert(Log.levelNames.indexOf("ORANGE")>-1);
 
-		Log.start();
+		await Log.start();
 
 		try {
 			Log.access("This is a ACCESS test.");
@@ -85,6 +85,6 @@ describe("LogLevels",()=>{
 
 		assert(Log.history.length===6);
 
-		Log.stop();
+		await Log.stop();
 	});
 });

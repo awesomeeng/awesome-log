@@ -4,9 +4,11 @@
 
 const Log = require("../../src/AwesomeLog.js");
 
-Log.init();
-Log.start();
-Log.debug("child","test log from child 1.");
-Log.debug("child","test log from child 2.");
-Log.debug("child","test log from child 3.");
-Log.stop();
+(async ()=>{
+	Log.init();
+	await Log.start();
+	Log.debug("child","test log from child 1.");
+	Log.debug("child","test log from child 2.");
+	Log.debug("child","test log from child 3.");
+	await Log.stop();
+})();

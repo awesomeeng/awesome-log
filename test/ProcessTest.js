@@ -43,7 +43,7 @@ describe("Process",function(){
 			}],
 			disableLoggingNotices: true,
 		});
-		Log.start();
+		await Log.start();
 
 		let childpath = Path.resolve(Path.dirname(module.filename),"./processes/ProcessTestChild.js");
 		let child = CP.fork(childpath,[],{});
@@ -54,7 +54,7 @@ describe("Process",function(){
 
 		assert.equal(Log.history.length,3);
 
-		Log.stop();
+		await Log.stop();
 	});
 
 	it("cluster",async function(){
@@ -68,7 +68,7 @@ describe("Process",function(){
 			}],
 			disableLoggingNotices: true,
 		});
-		Log.start();
+		await Log.start();
 
 		let workerpath = Path.resolve(Path.dirname(module.filename),"./processes/ProcessTestCluster.js");
 		Cluster.setupMaster({
@@ -82,7 +82,7 @@ describe("Process",function(){
 
 		assert.equal(Log.history.length,3);
 
-		Log.stop();
+		await Log.stop();
 	});
 
 	// only runs if worker threads are enabled with the --experimental-worker flag.
@@ -98,7 +98,7 @@ describe("Process",function(){
 				}],
 				disableLoggingNotices: true,
 			});
-			Log.start();
+			await Log.start();
 
 			let workerpath = Path.resolve(Path.dirname(module.filename),"./processes/ProcessTestWorker.js");
 			let worker = new Worker.Worker(workerpath);
@@ -109,7 +109,7 @@ describe("Process",function(){
 
 			assert.equal(Log.history.length,3);
 
-			Log.stop();
+			await Log.stop();
 		}
 	});
 

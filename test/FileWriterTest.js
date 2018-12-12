@@ -30,7 +30,9 @@ describe("FileWriterTest",()=>{
 		if (AwesomeUtils.FS.existsSync(dir)) AwesomeUtils.FS.recursiveRmdirSync(dir);
 	});
 
-	it("create",function(){
+	it("create",async function(){
+		this.slow(500);
+
 		const Log = require("../src/AwesomeLog");
 		Log.init({
 			writers: [{
@@ -41,20 +43,23 @@ describe("FileWriterTest",()=>{
 					filename: testfile
 				}
 			}],
+			buffering: false,
 			disableLoggingNotices: true,
 			historyFormatter: "default",
 			historySizeLimit: 200,
 		});
-		Log.start();
+		await Log.start();
 
 		Log.info("Test","Testing file creation...");
 
-		assert(AwesomeUtils.FS.existsSync(testfile));
+		await Log.stop();
 
-		Log.stop();
+		assert(AwesomeUtils.FS.existsSync(testfile));
 	});
 
-	it("write",function(){
+	it("write",async function(){
+		this.slow(500);
+
 		const Log = require("../src/AwesomeLog");
 		Log.init({
 			writers: [{
@@ -65,11 +70,12 @@ describe("FileWriterTest",()=>{
 					filename: testfile
 				}
 			}],
+			buffering: false,
 			disableLoggingNotices: true,
 			historyFormatter: "default",
 			historySizeLimit: 200,
 		});
-		Log.start();
+		await Log.start();
 
 		new Array(99).fill(0).forEach((x,i)=>{
 			Log.info("Test","Testing file writer "+i+"...");
@@ -77,10 +83,9 @@ describe("FileWriterTest",()=>{
 
 		let historical = Log.history.join("\n")+"\n";
 
-		// assert(AwesomeUtils.FS.existsSync(testfile));
-		let content = FS.readFileSync(testfile);
+		await Log.stop();
 
-		Log.stop();
+		let content = FS.readFileSync(testfile);
 
 		assert.deepStrictEqual(content.toString("utf-8"),historical);
 	});
@@ -101,11 +106,12 @@ describe("FileWriterTest",()=>{
 					filename: Path.resolve(dir,"./tempt."+id+".{x}.tmp")
 				}
 			}],
+			buffering: false,
 			disableLoggingNotices: true,
 			historyFormatter: "default",
 			historySizeLimit: 200,
 		});
-		Log.start();
+		await Log.start();
 
 		Log.info("Test","Testing formatting 1...");
 		await AwesomeUtils.Promise.sleep(5);
@@ -120,7 +126,7 @@ describe("FileWriterTest",()=>{
 		Log.info("Test","Testing formatting 6...");
 		await AwesomeUtils.Promise.sleep(30);
 
-		Log.stop();
+		await Log.stop();
 
 		let files = FS.readdirSync(dir);
 		let found = files.some((file)=>{
@@ -144,11 +150,12 @@ describe("FileWriterTest",()=>{
 					filename: Path.resolve(dir,"./{YYYYMM}/temp."+id+".{x}.tmp")
 				}
 			}],
+			buffering: false,
 			disableLoggingNotices: true,
 			historyFormatter: "default",
 			historySizeLimit: 200,
 		});
-		Log.start();
+		await Log.start();
 
 		Log.info("Test","Testing formatting 1...");
 		await AwesomeUtils.Promise.sleep(5);
@@ -163,7 +170,7 @@ describe("FileWriterTest",()=>{
 		Log.info("Test","Testing formatting 6...");
 		await AwesomeUtils.Promise.sleep(30);
 
-		Log.stop();
+		await Log.stop();
 
 		let files = FS.readdirSync(dir);
 		let found = files.some((file)=>{

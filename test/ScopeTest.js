@@ -26,7 +26,7 @@ describe("Scope",function(){
 		AwesomeUtils.Module.unrequire(AwesomeUtils.Module.resolve(module,"./scope/Module5"));
 	});
 
-	it("nested module1",function(){
+	it("nested module1",async function(){
 		const Log = require("../src/AwesomeLog");
 		Log.init({
 			writers: [{
@@ -41,7 +41,7 @@ describe("Scope",function(){
 			}
 		});
 
-		Log.start();
+		await Log.start();
 
 		Log.info("Main");
 		assert.equal(Log.history.length,1);
@@ -49,10 +49,10 @@ describe("Scope",function(){
 		require("./scope/Module1.js");
 		assert.equal(Log.history.length,3);
 
-		Log.stop();
+		await Log.stop();
 	});
 
-	it("nested module2",function(){
+	it("nested module2",async function(){
 		const Log = require("../src/AwesomeLog");
 		Log.init({
 			writers: [{
@@ -67,7 +67,7 @@ describe("Scope",function(){
 			}
 		});
 
-		Log.start();
+		await Log.start();
 
 		Log.info("Main");
 		assert.equal(Log.history.length,1);
@@ -75,10 +75,10 @@ describe("Scope",function(){
 		require("./scope/Module2.js");
 		assert.equal(Log.history.length,5);
 
-		Log.stop();
+		await Log.stop();
 	});
 
-	it("nested class",function(){
+	it("nested class",async function(){
 		const Log = require("../src/AwesomeLog");
 		Log.init({
 			writers: [{
@@ -93,7 +93,7 @@ describe("Scope",function(){
 			}
 		});
 
-		Log.start();
+		await Log.start();
 
 		Log.info("Main");
 		assert.equal(Log.history.length,1);
@@ -105,10 +105,10 @@ describe("Scope",function(){
 
 		assert.equal(Log.history.length,7);
 
-		Log.stop();
+		await Log.stop();
 	});
 
-	it("scope map",function(){
+	it("scope map",async function(){
 		const Log = require("../src/AwesomeLog");
 		Log.init({
 			writers: [{
@@ -123,7 +123,7 @@ describe("Scope",function(){
 			}
 		});
 
-		Log.start();
+		await Log.start();
 
 		Log.info("Main");
 		require("./scope/Module1.js");
@@ -131,6 +131,6 @@ describe("Scope",function(){
 		assert(Log.history[1].indexOf("ACCESS")>-1);
 		assert(Log.history[2].indexOf("ERROR")>-1);
 
-		Log.stop();
+		await Log.stop();
 	});
 });

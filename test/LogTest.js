@@ -27,6 +27,7 @@ describe("AwesomeLog",()=>{
 				name: "null",
 				type: "null"
 			}],
+			buffering: false,
 			disableLoggingNotices: true,
 			historyFormatter: "js"
 		});
@@ -34,53 +35,56 @@ describe("AwesomeLog",()=>{
 		assert(Log.initialized);
 	});
 
-	it("start",()=>{
+	it("start",async ()=>{
 		const Log = require("../src/AwesomeLog");
 		Log.init({
 			writers: [{
 				name: "null",
 				type: "null"
 			}],
+			buffering: false,
 			disableLoggingNotices: true,
 			historyFormatter: "js"
 		});
 
 		assert(!Log.running);
-		Log.start();
+		await Log.start();
 		assert(Log.running);
-		Log.stop();
+		await Log.stop();
 	});
 
-	it("stop",()=>{
+	it("stop",async ()=>{
 		const Log = require("../src/AwesomeLog");
 		Log.init({
 			writers: [{
 				name: "null",
 				type: "null"
 			}],
+			buffering: false,
 			disableLoggingNotices: true,
 			historyFormatter: "js"
 		});
 
 		assert(!Log.running);
-		Log.start();
+		await Log.start();
 		assert(Log.running);
-		Log.stop();
+		await Log.stop();
 		assert(!Log.running);
 	});
 
-	it("log",()=>{
+	it("log",async ()=>{
 		const Log = require("../src/AwesomeLog");
 		Log.init({
 			writers: [{
 				name: "null",
 				type: "null"
 			}],
+			buffering: false,
 			disableLoggingNotices: true,
 			historyFormatter: "js"
 		});
 
-		Log.start();
+		await Log.start();
 
 		Log.log("ACCESS","This is a ACCESS test.");
 		Log.log("ERROR","This is a ERROR test.");
@@ -96,8 +100,9 @@ describe("AwesomeLog",()=>{
 		Log.log("DEBUG","This is a DEBUG test.");
 		assert(Log.history.length===10);
 
-		Log.stop();
-		Log.start();
+		await Log.stop();
+		await Log.start();
+
 		assert(Log.history.length===0);
 		Log.log("access","The quick brown fox jumped over the lazy dog.");
 		assert.equal(Log.history.length,1);
@@ -108,21 +113,22 @@ describe("AwesomeLog",()=>{
 		assert.equal(Log.history[0].message,"The quick brown fox jumped over the lazy dog.");
 		assert(Log.history[0].args.length<1);
 
-		Log.stop();
+		await Log.stop();
 	});
 
-	it("pause/resume",function(){
+	it("pause/resume",async function(){
 		const Log = require("../src/AwesomeLog");
 		Log.init({
 			writers: [{
 				name: "null",
 				type: "null"
 			}],
+			buffering: false,
 			disableLoggingNotices: true,
 			historyFormatter: "js"
 		});
 
-		Log.start();
+		await Log.start();
 		assert.equal(Log.history.length,0);
 		Log.info("Testing pause/resume 1.");
 		assert.equal(Log.history.length,1);
@@ -138,36 +144,6 @@ describe("AwesomeLog",()=>{
 		assert.equal(Log.history.length,4);
 		Log.info("Testing pause/resume 5.");
 		assert.equal(Log.history.length,5);
-		Log.stop();
-	});
-
-	it("events",function(done){
-		const Log = require("../src/AwesomeLog");
-		Log.init({
-			writers: [{
-				name: "null",
-				type: "null"
-			}],
-			disableLoggingNotices: true,
-			historyFormatter: "js"
-		});
-
-		let x = 0;
-
-		Log.once("started",() => x+=1);
-		Log.on("log",() => x+=2);
-		Log.once("paused",() => x+=3);
-		Log.once("resumed",() => x+=5);
-		Log.once("stopped",() => {
-			assert.equal(x,13);
-			done();
-		});
-
-		Log.start();
-		Log.debug("testing events 1.");
-		Log.pause();
-		Log.debug("testing events 2.");
-		Log.resume();
-		Log.stop();
+		await Log.stop();
 	});
 });
