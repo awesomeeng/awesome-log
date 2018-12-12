@@ -596,8 +596,7 @@ const initWriters = function initWriters() {
 		try {
 			// clean up old writers.
 			this[$WRITERS].forEach((writer)=>{
-				writer.flush();
-				writer.close();
+				writer.stop();
 			});
 			this[$WRITERS] = [];
 
