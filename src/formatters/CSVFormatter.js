@@ -43,22 +43,35 @@ class CSVFormatter extends AbstractLogFormatter {
 	format(logentry) {
 		let s = [];
 
-		s.push(""+logentry.timestamp||Date.now());
-		s.push("\""+logentry.level||""+"\"");
-		s.push(""+logentry.pid||"????");
-		s.push("\""+logentry.system||""+"\"");
-		s.push("\""+logentry.text||""+"\"");
+		s.push(this.formatValue(logentry.timestamp||Date.now()));
+		s.push(this.formatValue(logentry.level||""));
+		s.push(this.formatValue(logentry.pid||"????"));
+		s.push(this.formatValue(logentry.system||""));
+		s.push(this.formatValue(logentry.text||""));
 		if (logentry.args && logentry.args.length>0) s = s.concat(logentry.args.map((arg)=>{
-			if (arg===null || arg===undefined) return "";
-			else if (typeof arg==="string") return "\""+arg+"\"";
-			else if (typeof arg==="number") return ""+arg;
-			else if (typeof arg==="boolean") return ""+arg;
-			else if (arg instanceof Date) return ""+arg.getTime();
-			else if (arg instanceof Array) return "\""+this.formatCSVJSON(arg)+"\"";
-			else if (arg instanceof Object) return "\""+this.formatCSVJSON(arg)+"\"";
-			else return arg.toString();
+			return this.formatValue(arg);
 		}));
+
+		s.concat(Object.keys(logentry).map((key)=>{
+			if (key==="timestamp" || key==="level" || key==="pid" || key==="system" || key==="text" || key==="args") return;
+			return this.formatValue(logentry[key]);
+		}));
+
 		return s.join(",");
+	}
+
+	/**
+	 * @private
+	 */
+	formatValue(value) {
+		if (value===null || value===undefined) return "";
+		else if (typeof value==="string") return "\""+value+"\"";
+		else if (typeof value==="number") return ""+value;
+		else if (typeof value==="boolean") return ""+value;
+		else if (value instanceof Date) return ""+value.getTime();
+		else if (value instanceof Array) return "\""+this.formatCSVJSON(value)+"\"";
+		else if (value instanceof Object) return "\""+this.formatCSVJSON(value)+"\"";
+		else return "\""+value.toString()+"\"";
 	}
 
 	/**
