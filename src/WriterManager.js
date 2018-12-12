@@ -9,6 +9,7 @@ const AwesomeUtils = require("@awesomeeng/awesome-utils");
 const LogExtensions = require("./LogExtensions");
 
 const $PARENT = Symbol("parent");
+const $SEPARATE = Symbol("separate");
 const $NAME = Symbol("name");
 const $LEVELS = Symbol("levels");
 const $TYPE = Symbol("type");
@@ -17,6 +18,8 @@ const $FORMATTER = Symbol("formatter");
 const $FORMATTEROPTIONS = Symbol("formatterOptions");
 const $THREAD = Symbol("thread");
 const $ISNULL = Symbol("isNullWriter");
+const $WRITER = Symbol("writer");
+const $WRITERFORMATTER = Symbol("writerFormatter");
 
 /**
  * @private
@@ -27,7 +30,7 @@ const $ISNULL = Symbol("isNullWriter");
  * a given writer process.
  */
 class WriterManager {
-	constructor(parent,config) {
+	constructor(parent,config,separate=false) {
 		config = AwesomeUtils.Object.extend({
 			name: null,
 			levels: "*",
@@ -67,6 +70,7 @@ class WriterManager {
 		let formatterOptions = config.formatterOptions;
 
 		this[$PARENT] = parent;
+		this[$SEPARATE] = separate;
 		this[$NAME] = name;
 		this[$LEVELS] = levels;
 		this[$TYPE] = type;
@@ -75,6 +79,8 @@ class WriterManager {
 		this[$FORMATTEROPTIONS] = formatterOptions;
 		this[$THREAD] = null;
 		this[$ISNULL] = type==="null";
+		this[$WRITER] = null;
+		this[$WRITERFORMATTER] = null;
 	}
 
 	get parent() {
@@ -139,25 +145,46 @@ class WriterManager {
 					formatterOptions: this.formatterOptions,
 				};
 
-				let opts = {
-					env: {
-						AWESOMELOG_WRITER_CONFIG: JSON.stringify(config),
-						NODE_PATH: process.env.NODE_PATH
-					}
-				};
+				if (this[$SEPARATE]) {
+					let opts = {
+						env: {
+							AWESOMELOG_WRITER_CONFIG: JSON.stringify(config),
+							NODE_PATH: process.env.NODE_PATH
+						}
+					};
 
-				let thread = ChildProcess.fork(AwesomeUtils.Module.resolve(module,"./WriterThread"),[],opts);
-				thread.on("message",(msg)=>{
-					let cmd = msg && msg.cmd || null;
-					if (cmd==="AWESOMELOG.WRITER.ERROR") {
-						this.stop();
-						throw new Error("Writer "+this.name+" had an error: "+msg.details);
+					let thread = ChildProcess.fork(AwesomeUtils.Module.resolve(module,"./WriterThread"),[],opts);
+					thread.on("message",(msg)=>{
+						let cmd = msg && msg.cmd || null;
+						if (cmd==="AWESOMELOG.WRITER.ERROR") {
+							this.stop();
+							throw new Error("Writer "+this.name+" had an error: "+msg.details);
+						}
+						else if (cmd==="AWESOMELOG.WRITER.READY") {
+							this[$THREAD] = thread;
+							resolve(this);
+						}
+					});
+				}
+				else {
+					try {
+						this[$WRITERFORMATTER] = new (require(config.formatterPath))(config.formatterOptions);
 					}
-					else if (cmd==="AWESOMELOG.WRITER.READY") {
-						this[$THREAD] = thread;
-						resolve(this);
+					catch (ex) {
+						this.sendError("Error initializing formatter at "+config.formatterPath+".");
+						this.stop(1);
 					}
-				});
+
+					try {
+						this[$WRITER] = new (require(config.writerPath))(config.writerOptions);
+					}
+					catch (ex) {
+						this.sendError("Error initializing writer at "+config.writerPath+".");
+						this.stop(1);
+					}
+
+					resolve(this);
+				}
 			}
 			catch (ex) {
 				return reject(ex);
@@ -172,17 +199,30 @@ class WriterManager {
 
 		return new Promise((resolve,reject)=>{
 			try {
-				if (this[$THREAD]) {
-					this[$THREAD].once("exit",()=>{
+				if (this[$SEPARATE]) {
+					if (this[$THREAD]) {
+						this[$THREAD].once("exit",()=>{
+							resolve();
+						});
+						this[$THREAD].send({
+							cmd: "AWESOMELOG.WRITER.CLOSE"
+						});
+						this[$THREAD] = null;
+					}
+					else {
 						resolve();
-					});
-					this[$THREAD].send({
-						cmd: "AWESOMELOG.WRITER.CLOSE"
-					});
-					this[$THREAD] = null;
+					}
 				}
 				else {
-					resolve();
+					if (this[$WRITER]) {
+						this[$WRITER].flush();
+						this[$WRITER].close();
+						this[$WRITER] = null;
+					}
+
+					this[$WRITERFORMATTER] = null;
+
+					return resolve();
 				}
 			}
 			catch (ex) {
@@ -197,14 +237,24 @@ class WriterManager {
 		entries = entries.filter((entry)=>{
 			return this.takesLevel(entry.level);
 		});
+
 		return new Promise((resolve,reject)=>{
 			try {
-				this[$THREAD].send({
-					cmd: "AWESOMELOG.WRITER.ENTRIES",
-					entries: entries
-				},()=>{
+				if (this[$SEPARATE]) {
+					this[$THREAD].send({
+						cmd: "AWESOMELOG.WRITER.ENTRIES",
+						entries: entries
+					},()=>{
+						resolve();
+					});
+				}
+				else {
+					entries.forEach((logentry)=>{
+						let msg = this[$WRITERFORMATTER].format(logentry);
+						this[$WRITER].write(msg,logentry);
+					});
 					resolve();
-				});
+				}
 			}
 			catch (ex) {
 				return reject(ex);
@@ -219,18 +269,23 @@ class WriterManager {
 
 		return new Promise((resolve,reject)=>{
 			try {
-				let handler = (msg)=>{
-					let cmd = msg && msg.cmd || null;
-					if (cmd==="AWESOMELOG.WRITER.FLUSHED") {
-						this[$THREAD].off("message",handler);
-						resolve();
-					}
-				};
-				this[$THREAD].on("message",handler);
+				if (this[$SEPARATE]) {
+					let handler = (msg)=>{
+						let cmd = msg && msg.cmd || null;
+						if (cmd==="AWESOMELOG.WRITER.FLUSHED") {
+							this[$THREAD].off("message",handler);
+							resolve();
+						}
+					};
+					this[$THREAD].on("message",handler);
 
-				this[$THREAD].send({
-					cmd: "AWESOMELOG.WRITER.FLUSH"
-				});
+					this[$THREAD].send({
+						cmd: "AWESOMELOG.WRITER.FLUSH"
+					});
+				}
+				else {
+					this[$WRITER].flush();
+				}
 			}
 			catch (ex) {
 				return reject(ex);

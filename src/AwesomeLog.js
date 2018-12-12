@@ -227,6 +227,7 @@ class AwesomeLog {
 	init(config) {
 		let disableSP = config && config.disableSubProcesses || false;
 		config = AwesomeUtils.Object.extend({
+			separate: false,
 			buffering: false,
 			history: true,
 			historySizeLimit: 100,
@@ -608,8 +609,9 @@ const initWriters = function initWriters() {
 			this[$WRITERS] = await Promise.all(AwesomeUtils.Array.compact(configwriters.map((writer)=>{
 				if (!writer) return null;
 
-				let manager = new WriterManager(this,writer);
-				return manager.start();
+				let manager = new WriterManager(this,writer,this.config.separate);
+				manager.start();
+				return manager;
 			})));
 
 			resolve();
@@ -700,7 +702,6 @@ const createWriteFunction = function createWriteFunction() {
 	f += "const buffer = arguments[3];";
 	f += "const writers = arguments[4];";
 	f += "const scheduleDrain = arguments[5];";
-
 
 	if (this.config.history) {
 		let historySizeLimit = this.config.historySizeLimit;

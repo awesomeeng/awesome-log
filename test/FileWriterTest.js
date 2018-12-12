@@ -23,8 +23,10 @@ describe("FileWriterTest",()=>{
 		dir = Path.resolve(process.cwd(),"./temp."+AwesomeUtils.Random.string(16));
 	});
 
-	afterEach(()=>{
+	afterEach(async ()=>{
 		AwesomeUtils.Module.unrequire(AwesomeUtils.Module.resolve(module,"../src/AwesomeLog"));
+
+		await AwesomeUtils.Promise.sleep(100);
 
 		if (AwesomeUtils.FS.existsSync(testfile)) FS.unlinkSync(testfile);
 		if (AwesomeUtils.FS.existsSync(dir)) AwesomeUtils.FS.recursiveRmdirSync(dir);
@@ -43,6 +45,7 @@ describe("FileWriterTest",()=>{
 					filename: testfile
 				}
 			}],
+			separate: false,
 			buffering: false,
 			disableLoggingNotices: true,
 			historyFormatter: "default",
@@ -50,7 +53,7 @@ describe("FileWriterTest",()=>{
 		});
 		await Log.start();
 
-		Log.info("Test","Testing file creation...");
+		Log.info("Testing file creation...");
 
 		await Log.stop();
 
@@ -70,6 +73,7 @@ describe("FileWriterTest",()=>{
 					filename: testfile
 				}
 			}],
+			separate: false,
 			buffering: false,
 			disableLoggingNotices: true,
 			historyFormatter: "default",
@@ -78,7 +82,7 @@ describe("FileWriterTest",()=>{
 		await Log.start();
 
 		new Array(99).fill(0).forEach((x,i)=>{
-			Log.info("Test","Testing file writer "+i+"...");
+			Log.info("Testing file writer "+i+"...");
 		});
 
 		let historical = Log.history.join("\n")+"\n";
@@ -103,9 +107,10 @@ describe("FileWriterTest",()=>{
 				type: "file",
 				options: {
 					housekeeping: 10,
-					filename: Path.resolve(dir,"./tempt."+id+".{x}.tmp")
+					filename: Path.resolve(dir,"./temp."+id+".{x}.tmp")
 				}
 			}],
+			separate: false,
 			buffering: false,
 			disableLoggingNotices: true,
 			historyFormatter: "default",
@@ -113,20 +118,22 @@ describe("FileWriterTest",()=>{
 		});
 		await Log.start();
 
-		Log.info("Test","Testing formatting 1...");
+		Log.info("Testing formatting 1...");
 		await AwesomeUtils.Promise.sleep(5);
-		Log.info("Test","Testing formatting 2...");
+		Log.info("Testing formatting 2...");
 		await AwesomeUtils.Promise.sleep(5);
-		Log.info("Test","Testing formatting 3...");
+		Log.info("Testing formatting 3...");
 		await AwesomeUtils.Promise.sleep(5);
-		Log.info("Test","Testing formatting 4...");
+		Log.info("Testing formatting 4...");
 		await AwesomeUtils.Promise.sleep(5);
-		Log.info("Test","Testing formatting 5...");
+		Log.info("Testing formatting 5...");
 		await AwesomeUtils.Promise.sleep(5);
-		Log.info("Test","Testing formatting 6...");
+		Log.info("Testing formatting 6...");
 		await AwesomeUtils.Promise.sleep(30);
 
 		await Log.stop();
+
+		await AwesomeUtils.Promise.sleep(1000);
 
 		let files = FS.readdirSync(dir);
 		let found = files.some((file)=>{
@@ -150,6 +157,7 @@ describe("FileWriterTest",()=>{
 					filename: Path.resolve(dir,"./{YYYYMM}/temp."+id+".{x}.tmp")
 				}
 			}],
+			separate: false,
 			buffering: false,
 			disableLoggingNotices: true,
 			historyFormatter: "default",
@@ -157,17 +165,17 @@ describe("FileWriterTest",()=>{
 		});
 		await Log.start();
 
-		Log.info("Test","Testing formatting 1...");
+		Log.info("Testing formatting 1...");
 		await AwesomeUtils.Promise.sleep(5);
-		Log.info("Test","Testing formatting 2...");
+		Log.info("Testing formatting 2...");
 		await AwesomeUtils.Promise.sleep(5);
-		Log.info("Test","Testing formatting 3...");
+		Log.info("Testing formatting 3...");
 		await AwesomeUtils.Promise.sleep(5);
-		Log.info("Test","Testing formatting 4...");
+		Log.info("Testing formatting 4...");
 		await AwesomeUtils.Promise.sleep(5);
-		Log.info("Test","Testing formatting 5...");
+		Log.info("Testing formatting 5...");
 		await AwesomeUtils.Promise.sleep(5);
-		Log.info("Test","Testing formatting 6...");
+		Log.info("Testing formatting 6...");
 		await AwesomeUtils.Promise.sleep(30);
 
 		await Log.stop();
