@@ -252,6 +252,7 @@ AwesomeLog is configured by default to perform in manner best suited to developm
 ```
 Log.init({
 	fields: "timestamp,level,pid,text,args",
+	buffering: true,
 	history: false
 });
 ```

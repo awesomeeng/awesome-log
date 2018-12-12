@@ -3,7 +3,6 @@
 "use strict";
 
 const OS = require("os");
-const Events = require("events");
 const Process = require("process");
 
 const AwesomeUtils = require("@awesomeeng/awesome-utils");
@@ -35,6 +34,7 @@ const $STARTS = Symbol("starts");
 const $BUFFER = Symbol("buffer");
 const $DRAINSCHEDULED = Symbol("drainScheduled");
 const $FIELDSFUNC = Symbol("fieldsFunction");
+const $WRITEFUNC = Symbol("writeFunction");
 const $ISSUBPROCESS = Symbol("isSubprocess");
 
 /**
@@ -61,6 +61,7 @@ class AwesomeLog {
 		this[$FIELDSFUNC] = (obj)=>{
 			return obj;
 		};
+		this[$WRITEFUNC] = ()=>{};
 		this[$ISSUBPROCESS] = !!Process.channel || Worker && Worker.parentPort && Worker.parentPort.postMessage || false;
 
 		initLevels.call(this,"access,error,warn,info,debug");
@@ -189,6 +190,7 @@ class AwesomeLog {
 	 *
 	 * ```
 	 * config = {
+	 *   buffering: false
 	 *   history: true,
 	 *   historySizeLimit: 100,
 	 *   historyFormatter: "default",
@@ -225,6 +227,7 @@ class AwesomeLog {
 	init(config) {
 		let disableSP = config && config.disableSubProcesses || false;
 		config = AwesomeUtils.Object.extend({
+			buffering: false,
 			history: true,
 			historySizeLimit: 100,
 			historyFormatter: "default",
@@ -242,8 +245,6 @@ class AwesomeLog {
 		disableSP = config.disableSubProcesses;
 
 		if (!this.initialized) {
-			this[$FIELDSFUNC] = createFieldsFunction.call(this,config.fields);
-
 			if (config.writers.length<1) config.writers.push({
 				name: "DefaultWriter",
 				type:  !disableSP && this[$ISSUBPROCESS] ? "null" : "default",
@@ -260,9 +261,14 @@ class AwesomeLog {
 			if (!AwesomeUtils.FS.existsSync(histformpath)) throw new Error("Formatter not found at "+histformpath+".");
 			this[$HISTORYFORMATTER] = new (require(histformpath))(config.historyFormatterOptions||{});
 
-			if (!config.disableLoggingNotices) this.log(config.loggingNoticesLevel,"AwesomeLog initialized for levels "+this.levelNames.join("|")+".");
-
 			this[$CONFIG] = config;
+
+			// these must come after this[$CONFIG] is set.
+			this[$FIELDSFUNC] = createFieldsFunction.call(this,config.fields);
+			this[$WRITEFUNC] = createWriteFunction.call(this);
+
+			// these must come after this[$CONFIG] is set.
+			if (!config.disableLoggingNotices) this.log(config.loggingNoticesLevel,"AwesomeLog initialized for levels "+this.levelNames.join("|")+".");
 		}
 		else {
 			mapLevels.call(this,config.levels);
@@ -443,30 +449,31 @@ class AwesomeLog {
 	log(level,text,...args) {
 		let logentry = null;
 
-		if (!text && level && typeof level==="object" && !(level instanceof LogLevel) && level.level && level.text && level.args) {
+		if (!text && level && typeof level==="object") {
 			logentry = level;
 			text = logentry.text||"";
 			args = logentry.args||[];
 			level = logentry.level||"";
 		}
-		if (typeof text==="object") {
+		if (typeof text==="object" && !(text instanceof Error)) {
 			logentry = text;
 			text = logentry.text||"";
 			args = logentry.args||[];
 			level =logentry.level||level||"";
 		}
-		level = this.getLevel(level).name;
 		if (text instanceof Error) {
 			args.unshift(text);
-			text = text.text;
+			text = text.message;
 		}
-		if (typeof text!=="string") throw new Error("Invalid text argument.");
+
+		level = this.getLevel(level).name;
 
 		logentry = this[$FIELDSFUNC](logentry||{},level,text,args);
 
+
 		if (this[$BACKLOG]) {
 			this[$BACKLOG].push(logentry);
-			if (this[$BACKLOG].length>this.config.backlogSizeLimit) this[$BACKLOG] = this[$BACKLOG].slice(Math.floor(this.backlogSizeLimit*0.1));
+			if (this[$BACKLOG].length>this.config.backlogSizeLimit) this[$BACKLOG].shift();
 		}
 		else if (this[$ISSUBPROCESS] && !this.config.disableSubProcesses) {
 			if (AwesomeUtils.Workers.enabled) {
@@ -483,7 +490,7 @@ class AwesomeLog {
 			}
 		}
 		else {
-			return write.call(this,logentry);
+			write.call(this,logentry);
 		}
 	}
 
@@ -684,19 +691,38 @@ const createFieldsFunction = function(fields) {
 
 	f += "return obj;";
 
-	return new Function(f);
+	return new Function(f).bind(this);
+};
+
+const createWriteFunction = function createWriteFunction() {
+	let f = "const logentry = arguments[0];";
+	f += "const history = arguments[1];";
+	f += "const historyFormatter = arguments[2];";
+	f += "const buffer = arguments[3];";
+	f += "const writers = arguments[4];";
+	f += "const scheduleDrain = arguments[5];";
+
+
+	if (this.config.history) {
+		let historySizeLimit = this.config.historySizeLimit;
+		f += "history.push(historyFormatter.format(logentry));";
+		f += "if (history.length>"+historySizeLimit+") history.shift();";
+	}
+
+	if (this.config.buffering) {
+		f += "buffer.push(logentry);";
+		f += "scheduleDrain.call(this);";
+	}
+	else {
+		f += "writers.forEach((writer)=>{";
+		f += "writer.write([logentry]);";
+		f += "});";
+	}
+	return new Function(f).bind(this);
 };
 
 const write = function write(logentry) {
-	if (!logentry) throw new Error("Missing log entry argument.");
-
-	if (this.config.history) {
-		this[$HISTORY].push(this[$HISTORYFORMATTER].format(logentry));
-		if (this.history.length> this.config.historySizeLimit) this[$HISTORY] = this[$HISTORY].slice(-this.config.historySizeLimit);
-	}
-
-	this[$BUFFER].push(logentry);
-	scheduleDrain.call(this);
+	this[$WRITEFUNC](logentry,this[$HISTORY],this[$HISTORYFORMATTER],this[$BUFFER],this[$WRITERS],scheduleDrain);
 };
 
 const scheduleDrain = function scheduleDrain() {
