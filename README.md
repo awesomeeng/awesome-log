@@ -4,7 +4,7 @@ AwesomeLog is a Log System for enterprise ready nodejs applications. It provides
 
 ## Why Another Log Solution?
 
-AwesomeLog is similar to Winston, Log, Log4js, etc. and those are all good products.  AwesomeLog just provides a different method of Logging; one we think is cleaner and more stable. If you want to use Winston/Log/Log4js/whatever, that's perfectly fine by us. But if you want to try something a little cleaner, with a bit more features, consider AwesomeLog.
+AwesomeLog is similar to Winston, Log, pino, Log4js, etc. and those are all good products.  AwesomeLog just provides a different method of Logging; one we think is cleaner and more stable. If you want to use Winston/Log/pino/Log4js/whatever, that's perfectly fine by us. But if you want to try something a little cleaner, with a bit more features, consider AwesomeLog.
 
 ## Features
 
@@ -206,9 +206,9 @@ You can read more about how to write your own [Custom Log Formatter](./docs/LogF
 
 ## Fields
 
-During configuration you can specify which fields you want to be in each log entry.  AwesomeLog supplies a variety of field options.  However, it is worth noting that some fields are more expensive than other, performance wise.
+AwesomeLog supplies a variety of field options.  During configuration you can specify which fields you want to be in each log entry, although what gets output is also determined by the log formatter you choose.  For example, you can specify the `hostname` field, but the Default formatter doesnt use it.  Some formatters do output the entire log entry structure though like the CSV Formatter, the JSON formatter, or the JS Object formatter.
 
-In particular, the `system` field if very expensive from a performance point of view.  If performance is a consideration for you, please consider leaving this field out.
+It is worth noting that some fields are more expensive than others, performance wise. In particular, the `system` field if very expensive from a performance point of view.  If performance is a consideration for you, please consider leaving this field out.
 
 Fields are configured thus:
 

@@ -53,6 +53,10 @@ AwesomeLog ships with four built-in Log Formatters:
 	[object Object]
 	```
 
+## Formatters and Fields
+
+In your `Log.init()` you may specify a `fields` configuration property which determines what fields are popualted into each log entry.  However, the Log Formatter you choose is not under any obligation to display all of the fields in a Log Entry.  Some formatters may limit the set of shown fields intentionally.  In particular, the Default formatter limits field output to `timestamp,pid,level,system,text,args`.  Please see the [Configuration documentation](./docs/Configuration.md) for more details aboutt the `fields` configuration property.
+
 ## Writing a Custom Log Formatter
 
 AwesomeLog strives to be highly configurable. As such, you are completely able to add your own formatters to AwesomeLog.
