@@ -1,6 +1,6 @@
 {
   "name": "@awesomeeng/awesome-log",
-  "version": "2.1.2",
+  "version": "3.0.0",
   "author": "the awesome engineering company",
   "license": "MIT",
   "contributors": [
@@ -11,14 +11,16 @@
     "node": ">=10.5.0"
   },
   "dependencies": {
-    "@awesomeeng/awesome-utils": "^1.4.1"
+    "@awesomeeng/awesome-utils": "^1.4.3"
   },
   "devDependencies": {
     "jsdoc-to-markdown": "*",
-    "mocha": "*"
+    "mocha": "*",
+	"eslint": "*"
   },
   "optionalDependencies": {},
   "scripts": {
+	"lint": "eslint src examples test",
     "docs": "jsdoc2md src/** --separators > docs/API.md",
     "test": "mocha test",
     "tests": "mocha test"
@@ -55,6 +57,9 @@
     "formatted log",
     "logly",
     "winston",
+    "bunyan",
+    "debug",
+    "pino",
     "sombra",
     "log4js"
   ],

@@ -83,10 +83,6 @@ documentation for more details.</p>
 <dd><p>A writer for outputing to /dev/null, thus outputting to nowhere.</p>
 <p>NullWriter has no options.</p>
 </dd>
-<dt><a href="#WriterThread">WriterThread</a></dt>
-<dd><p>Used internally to manage the connection between AwesomeLog and
-a given writer process.</p>
-</dd>
 </dl>
 
 ## Interfaces
@@ -1234,16 +1230,6 @@ will call this when `AwesomeLog.start()` is issued.
 Returns the Writer option passed in.
 
 **Kind**: instance property of [<code>NullWriter</code>](#NullWriter)  
-
-* * *
-
-<a name="WriterThread"></a>
-
-## WriterThread
-Used internally to manage the connection between AwesomeLog and
-a given writer process.
-
-**Kind**: global class  
 
 * * *
 
