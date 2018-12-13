@@ -16,11 +16,6 @@ const $FORMATTEROPTIONS = Symbol("formatterOptions");
 /**
  * @private
  */
-/**
- *
- * Used internally to manage the connection between AwesomeLog and
- * a given writer process.
- */
 class WriterThread {
 	constructor(config) {
 		let name = config.name || null;

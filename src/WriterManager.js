@@ -24,11 +24,6 @@ const $WRITERFORMATTER = Symbol("writerFormatter");
 /**
  * @private
  */
-/**
- *
- * Used internally to manage the connection between AwesomeLog and
- * a given writer process.
- */
 class WriterManager {
 	constructor(parent,config,separate=false) {
 		config = AwesomeUtils.Object.extend({
