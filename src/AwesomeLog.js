@@ -317,12 +317,14 @@ class AwesomeLog {
 					this.captureSubProcess(subprocess);
 				});
 
-				if (this[$BACKLOG]) {
-					this[$BACKLOG].forEach((logentry)=>{
-						write.call(this,logentry);
-					});
-				}
-				this[$BACKLOG] = null;
+				setImmediate(()=>{
+					if (this[$BACKLOG]) {
+						this[$BACKLOG].forEach((logentry)=>{
+							write.call(this,logentry);
+						});
+					}
+					this[$BACKLOG] = null;
+				});
 
 				resolve(this);
 			}
@@ -608,11 +610,16 @@ const initWriters = function initWriters() {
 
 			// start new writers.
 			this[$WRITERS] = await Promise.all(AwesomeUtils.Array.compact(configwriters.map((config)=>{
-				if (!config) return null;
-
-				let writer = new WriterManager(this,config,this.config.separate);
-				writer.start();
-				return writer;
+				return new Promise(async (resolve,reject)=>{
+					try {
+						let writer = new WriterManager(this,config,this.config.separate);
+						await writer.start();
+						resolve(writer);
+					}
+					catch (ex) {
+						return reject(ex);
+					}
+				});
 			})));
 
 			resolve();
