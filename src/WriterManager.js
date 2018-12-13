@@ -112,7 +112,7 @@ class WriterManager {
 	}
 
 	get running() {
-		return !!this[$THREAD];
+		return !!((this[$SEPARATE] && this[$THREAD]) || (!this[$SEPARATE] && this[$WRITER]));
 	}
 
 	/**
