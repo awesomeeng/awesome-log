@@ -317,14 +317,12 @@ class AwesomeLog {
 					this.captureSubProcess(subprocess);
 				});
 
-				setImmediate(()=>{
-					if (this[$BACKLOG]) {
-						this[$BACKLOG].forEach((logentry)=>{
-							write.call(this,logentry);
-						});
-					}
-					this[$BACKLOG] = null;
-				});
+				if (this[$BACKLOG]) {
+					this[$BACKLOG].forEach((logentry)=>{
+						write.call(this,logentry);
+					});
+				}
+				this[$BACKLOG] = null;
 
 				resolve(this);
 			}
