@@ -29,6 +29,8 @@ Log.init({
 Log.start();
 
 // Log something out to it...
+// See the MyExampleCustomWriter.js file for implementation details.
 Log.info("This is an example log message.");
 
-// See the MyExampleCustomWriter.js file for implementation details.
+// stop when we are done.
+Log.stop();

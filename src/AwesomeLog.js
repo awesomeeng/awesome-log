@@ -36,6 +36,7 @@ const $DRAINSCHEDULED = Symbol("drainScheduled");
 const $FIELDSFUNC = Symbol("fieldsFunction");
 const $WRITEFUNC = Symbol("writeFunction");
 const $ISSUBPROCESS = Symbol("isSubprocess");
+const $STARTPENDING = Symbol("startPending");
 
 /**
  * AwesomeLog is a singleton object returned when you
@@ -63,6 +64,7 @@ class AwesomeLog {
 		};
 		this[$WRITEFUNC] = ()=>{};
 		this[$ISSUBPROCESS] = !!Process.channel || Worker && Worker.parentPort && Worker.parentPort.postMessage || false;
+		this[$STARTPENDING] = false;
 
 		initLevels.call(this,"access,error,warn,info,debug");
 	}
@@ -299,10 +301,11 @@ class AwesomeLog {
 	start() {
 		this[$STARTS] += 1;
 
-		if (this.running) return;
+		if (this.running) return Promise.resolve(this);
 
 		if (this[$CONFIG]===null) this.init();
 
+		this[$STARTPENDING] = true;
 		this[$RUNNING] = true;
 		this[$HISTORY] = [];
 
@@ -324,9 +327,12 @@ class AwesomeLog {
 				}
 				this[$BACKLOG] = null;
 
+				this[$STARTPENDING] = false;
 				resolve(this);
 			}
 			catch (ex) {
+				this[$STARTPENDING] = false;
+				this[$RUNNING] = false;
 				return reject(ex);
 			}
 		});
@@ -342,27 +348,47 @@ class AwesomeLog {
 	 * @return {void}
 	 */
 	stop() {
-		this[$STARTS] -= 1;
+		if (!this.running || this[$STARTS]>1) return Promise.resolve(this);
 
-		if (!this.running || this[$STARTS]>1) return;
-
-		this[$BACKLOG] = this[$BACKLOG] || [];
-		this[$RUNNING] = false;
-
-		if (!this.config.disableLoggingNotices) this.log(this.config.loggingNoticesLevel,"AwesomeLog stopped.");
-
-		return new Promise(async (resolve,reject)=>{
+		return new Promise((resolve,reject)=>{
 			try {
-				[...this[$SUBPROCESSES].keys()].forEach((subprocess)=>{
-					this.releaseSubProcess(subprocess);
-					this[$SUBPROCESSES].set(subprocess,null);
-				});
+				let check = async ()=>{
+					if (!this[$STARTPENDING]) {
+						await stop();
+						resolve(this);
+						return;
+					}
+					setImmediate(check);
+				};
 
-				await Promise.all(this[$WRITERS].map((writer)=>{
-					return writer.stop(0);
-				}));
+				let stop = ()=>{
+					this[$STARTS] -= 1;
 
-				resolve(this);
+					this[$BACKLOG] = this[$BACKLOG] || [];
+					this[$RUNNING] = false;
+
+					if (!this.config.disableLoggingNotices) this.log(this.config.loggingNoticesLevel,"AwesomeLog stopped.");
+
+					return new Promise(async (resolve,reject)=>{
+						try {
+							[...this[$SUBPROCESSES].keys()].forEach((subprocess)=>{
+								this.releaseSubProcess(subprocess);
+								this[$SUBPROCESSES].set(subprocess,null);
+							});
+
+							await Promise.all(this[$WRITERS].map((writer)=>{
+								return writer.stop(0);
+							}));
+
+							resolve(this);
+						}
+						catch (ex) {
+							return reject(ex);
+						}
+					});
+				};
+
+				check();
 			}
 			catch (ex) {
 				return reject(ex);
