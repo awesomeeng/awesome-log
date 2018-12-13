@@ -258,6 +258,8 @@ Log.init({
 });
 ```
 
+With regards to the `fields` configuration property: most fields are fine, however, the `system` field does add a significant performance cost and should only be used in development environments.
+
 ## Documentation
 
  - [Advanced Configuration](./docs/Configuration.md)

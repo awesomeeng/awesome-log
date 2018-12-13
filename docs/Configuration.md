@@ -20,6 +20,7 @@ The following configuration options are supported.
  - **separate** [boolean] - If true, runs each writer in a separate process which is much more performant but there is a slight risk of loss of log information in the event of a crash. true by default.
 
  - **buffering** [boolean] - If true, log calls will be buffered until process.nextTick() is executed. This increases performance, but adds a slight delay before writing messages out.  Generally, if you are doing a lot of syncronous code which runs for a long period on the main javascript thread, set this to false. false by default.
+
  - **history** [boolean] - Set to false if you do not want AwesomeLog to keep a small history of log messages.  The history can be used for programatic access to the log. History is enabled by default. NOTE: Turning on history will impact your performance; if this is a concern, please disable history.
 
  - **histroySizeLimit** [number] - The number of log entries kept in the history. 1000 by default.

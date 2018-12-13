@@ -190,7 +190,8 @@ class AwesomeLog {
 	 *
 	 * ```
 	 * config = {
-	 *   buffering: false
+	 *   buffering: false,
+	 *   separate: true,
 	 *   history: true,
 	 *   historySizeLimit: 100,
 	 *   historyFormatter: "default",
