@@ -103,8 +103,8 @@ class WriterThread {
 
 		process.on("message",(msg)=>{
 			let cmd = msg && msg.cmd || null;
-			if (cmd==="AWESOMELOG.WRITER.ENTRIES") {
-				this.write(msg.entries);
+			if (!cmd) {
+				this.write(msg);
 			}
 			else if (cmd==="AWESOMELOG.WRITER.FLUSH") {
 				this[$WRITER].flush();

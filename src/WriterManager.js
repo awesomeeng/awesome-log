@@ -20,6 +20,7 @@ const $THREAD = Symbol("thread");
 const $ISNULL = Symbol("isNullWriter");
 const $WRITER = Symbol("writer");
 const $WRITERFORMATTER = Symbol("writerFormatter");
+const $WRITEFUNC = Symbol("writeFunction");
 
 /**
  * @private
@@ -140,6 +141,8 @@ class WriterManager {
 					formatterOptions: this.formatterOptions,
 				};
 
+				this[$WRITEFUNC] = createWriteFunction.call(this);
+
 				if (this[$SEPARATE]) {
 					let opts = {
 						env: {
@@ -228,33 +231,10 @@ class WriterManager {
 
 	write(entries) {
 		if (this[$ISNULL]) return Promise.resolve();
-
-		entries = entries.filter((entry)=>{
-			return this.takesLevel(entry.level);
+		entries = entries.filter((logentry)=>{
+			return this.takesLevel(logentry.level);
 		});
-
-		return new Promise((resolve,reject)=>{
-			try {
-				if (this[$SEPARATE]) {
-					this[$THREAD].send({
-						cmd: "AWESOMELOG.WRITER.ENTRIES",
-						entries: entries
-					},()=>{
-						resolve();
-					});
-				}
-				else {
-					entries.forEach((logentry)=>{
-						let msg = this[$WRITERFORMATTER].format(logentry);
-						this[$WRITER].write(msg,logentry);
-					});
-					resolve();
-				}
-			}
-			catch (ex) {
-				return reject(ex);
-			}
-		});
+		return this[$WRITEFUNC](entries,this[$THREAD],this[$WRITER],this[$WRITERFORMATTER]);
 	}
 
 	flush() {
@@ -288,5 +268,35 @@ class WriterManager {
 		});
 	}
 }
+
+const createWriteFunction = function createWriteFunction() {
+	let f = "const entries = arguments[0];";
+	if (this[$SEPARATE]) {
+		f += "const thread = arguments[1];";
+		f += "return new Promise((resolve,reject)=>{";
+		f += "try {";
+		f += "thread.send(entries,()=>{";
+		f += "resolve();";
+		f += "});";
+	}
+	else {
+		f += "const writer = arguments[2];";
+		f += "const formatter = arguments[3];";
+		f += "return new Promise((resolve,reject)=>{";
+		f += "try {";
+		f += "entries.forEach((logentry)=>{";
+		f += "let msg = formatter.format(logentry);";
+		f += "writer.write(msg,logentry);";
+		f += "});";
+		f += "resolve();";
+	}
+	f += "}";
+	f += "catch (ex) {";
+	f += "return reject(ex);";
+	f += "}";
+	f += "});";
+
+	return new Function(f);
+};
 
 module.exports = WriterManager;

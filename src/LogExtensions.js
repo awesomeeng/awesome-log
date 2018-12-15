@@ -38,6 +38,7 @@ class LogExtensions {
 		this.defineWriter("filewriter",AwesomeUtils.Module.resolve(module,"./writers/FileWriter"));
 
 		// define built in formatters
+		this.defineFormatter("null",AwesomeUtils.Module.resolve(module,"./formatters/NullFormatter"));
 		this.defineFormatter("default",AwesomeUtils.Module.resolve(module,"./formatters/DefaultFormatter"));
 		this.defineFormatter("json",AwesomeUtils.Module.resolve(module,"./formatters/JSONFormatter"));
 		this.defineFormatter("js",AwesomeUtils.Module.resolve(module,"./formatters/JSObjectFormatter"));
