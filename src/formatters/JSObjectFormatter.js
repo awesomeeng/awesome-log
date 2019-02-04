@@ -2,6 +2,8 @@
 
 "use strict";
 
+const AwesomeUtils = require("@awesomeeng/awesome-utils");
+
 const AbstractLogFormatter = require("../AbstractLogFormatter");
 
 /**
@@ -36,14 +38,7 @@ class JSObjectFormatter extends AbstractLogFormatter {
 	 * @return {*}
 	 */
 	format(logentry) {
-		return {
-			timestamp: logentry.timestamp||Date.now(),
-			pid: logentry.pid||"????",
-			level: logentry.level||"",
-			system: logentry.system||"",
-			message: logentry.text||"",
-			args: logentry.args
-		};
+		return AwesomeUtils.Object.extend({},logentry);
 	}
 }
 

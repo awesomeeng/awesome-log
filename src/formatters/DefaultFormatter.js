@@ -49,15 +49,29 @@ class DefaultFormatter extends AbstractLogFormatter {
 	 * @return {*}
 	 */
 	format(logentry) {
-		let msg = "";
+		let msg = [];
 
-		msg += new Date(logentry.timestamp||Date.now()).toISOString();
-		msg += " : ";
-		msg += ("#"+logentry.pid||"????").padEnd(6);
-		msg += " : ";
-		msg += (logentry.level||"").slice(0,10).padEnd(10);
-		msg += " : ";
-		msg += (logentry.system||"").slice(0,16).padEnd(16);
+		if (logentry.timestamp) msg.push(new Date(logentry.timestamp||Date.now()).toISOString());
+		if (logentry.pid) msg.push(("#"+logentry.pid||"????").padEnd(6));
+		if (logentry.ppid) msg.push(("##"+logentry.ppid||"????").padEnd(6));
+		if (logentry.level) msg.push((logentry.level).slice(0,10).padEnd(10));
+		if (logentry.system) msg.push((logentry.system).slice(0,16).padEnd(16));
+		if (logentry.hostname) msg.push((logentry.hostname));
+		if (logentry.domain) msg.push((logentry.domain));
+		if (logentry.servername) msg.push((logentry.servername));
+		if (logentry.main) msg.push((logentry.main));
+		if (logentry.execpath) msg.push((logentry.execpath));
+		if (logentry.argv) msg.push((JSON.stringify(logentry.argv)));
+		if (logentry.arch) msg.push((logentry.arch));
+		if (logentry.platform) msg.push((logentry.platform));
+		if (logentry.bits) msg.push((""+logentry.bits));
+		if (logentry.cpus) msg.push((""+logentry.cpus));
+		if (logentry.startingdir) msg.push((logentry.startingdir));
+		if (logentry.homedir) msg.push((logentry.homedir));
+		if (logentry.username) msg.push((logentry.username));
+		if (logentry.version) msg.push((logentry.version));
+
+		msg = msg.join(" : ");
 
 		let args = logentry.args || [];
 		if (args.length>0) {
