@@ -136,6 +136,16 @@ class WriterThread {
 
 	write(entries) {
 		entries.forEach((entry)=>{
+			if (entry.args) {
+				entry.args = entry.args.map((arg)=>{
+					if (arg && arg.__TYPE==="error") {
+						let e = new Error(arg.message);
+						e.stack = arg.stack;
+						return e;
+					}
+					return arg;
+				});
+			}
 			let msg = this[$FORMATTER] && this[$FORMATTER].format(entry) || entry;
 			this[$WRITER].write(msg,entry);
 		});

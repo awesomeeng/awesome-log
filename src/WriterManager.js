@@ -232,6 +232,20 @@ class WriterManager {
 	write(entries) {
 		if (this[$ISNULL]) return Promise.resolve();
 		entries = entries.filter((logentry)=>{
+			// VM doesnt serialize errors, so
+			// we need to do it here.
+			if (logentry.args) {
+				logentry.args = logentry.args.map((arg)=>{
+					if (arg instanceof Error) {
+						return {
+							__TYPE: "error",
+							message: arg.message,
+							stack: arg.stack
+						};
+					}
+					return arg;
+				});
+			}
 			return this.takesLevel(logentry.level);
 		});
 		return this[$WRITEFUNC](entries,this[$THREAD],this[$WRITER],this[$WRITERFORMATTER]);
