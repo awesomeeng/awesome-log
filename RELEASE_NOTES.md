@@ -1,5 +1,15 @@
 # AwesomeLog Release Notes
 
+#### **Version 3.0.1**
+
+ - Fixes a bug with Error arguments not getting serialized correctly.
+
+ - DefaultFormatter and JSObjectFormatter now output all log fields.
+
+ - Add null formatter that just returns the raw log entry object.
+
+ - Some more minor performance tuning.
+
 #### **Version 3.0.0**
 
  - **Major performance tuning work** resulting in across the board performance gains and making AwesomeLog one of the fastest logging solutions available.
