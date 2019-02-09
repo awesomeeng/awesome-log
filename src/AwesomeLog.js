@@ -505,8 +505,6 @@ class AwesomeLog {
 		}
 		else if (this[$ISSUBPROCESS] && !this.config.disableSubProcesses) {
 			if (AwesomeUtils.Workers.enabled && AwesomeUtils.Workers.Workers && AwesomeUtils.Workers.Workers.parentPort) {
-				console.log(1,AwesomeUtils.Workers.Workers);
-				console.log(2,AwesomeUtils.Workers.Workers.parentPort);
 				AwesomeUtils.Workers.Workers.parentPort.postMessage({
 					cmd: "AWESOMELOG.ENTRY",
 					logentry
