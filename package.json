@@ -11,16 +11,16 @@
     "node": ">=10.5.0"
   },
   "dependencies": {
-    "@awesomeeng/awesome-utils": "^1.4.3"
+    "@awesomeeng/awesome-utils": "^1.4.6"
   },
   "devDependencies": {
     "jsdoc-to-markdown": "*",
     "mocha": "*",
-	"eslint": "*"
+    "eslint": "*"
   },
   "optionalDependencies": {},
   "scripts": {
-	"lint": "eslint src examples test",
+    "lint": "eslint src examples test",
     "docs": "jsdoc2md src/** --separators > docs/API.md",
     "test": "mocha test",
     "tests": "mocha test"
@@ -40,7 +40,6 @@
     "awesome",
     "engineering",
     "log",
-    "logging",
     "logs",
     "logger",
     "console",
