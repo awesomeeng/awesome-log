@@ -29,6 +29,10 @@ for usage programatically. It does not produce a readable string.</p>
 <dd><p>The JSON AwesomeLog formatter. This produces log message in JSON form. This
 will include all of the details in a log entry Object.</p>
 </dd>
+<dt><a href="#JSObjectFormatter">JSObjectFormatter</a> ⇐ <code><a href="#AbstractLogFormatter">AbstractLogFormatter</a></code></dt>
+<dd><p>The JS Object AwesomeLog formatter. This simply forwards the log entry Object onward
+for usage programatically. It does not produce a readable string.</p>
+</dd>
 <dt><a href="#LogExtensions">LogExtensions</a></dt>
 <dd><p>LogExtensions manages the formatters and writers defined for AwesomeLog.
 It is exposed only through <code>defineWriter</code> and <code>defineFormatter</code> in the
@@ -745,8 +749,24 @@ for usage programatically. It does not produce a readable string.
 
 * [JSObjectFormatter](#JSObjectFormatter) ⇐ [<code>AbstractLogFormatter</code>](#AbstractLogFormatter)
     * [new JSObjectFormatter(options)](#new_JSObjectFormatter_new)
+    * [new JSObjectFormatter(options)](#new_JSObjectFormatter_new)
     * [.options](#AbstractLogFormatter+options) ⇒ <code>Object</code>
     * [.format(logentry)](#JSObjectFormatter+format) ⇒ <code>\*</code>
+    * [.format(logentry)](#JSObjectFormatter+format) ⇒ <code>\*</code>
+
+
+* * *
+
+<a name="new_JSObjectFormatter_new"></a>
+
+### new JSObjectFormatter(options)
+Constructor for this formatter. Never called directly, but called by AwesomeLog
+when `Log.start()` is called.
+
+
+| Param | Type |
+| --- | --- |
+| options | <code>Object</code> | 
 
 
 * * *
@@ -771,6 +791,22 @@ when `Log.start()` is called.
 Returns the options passed into the constructor.
 
 **Kind**: instance property of [<code>JSObjectFormatter</code>](#JSObjectFormatter)  
+**Overrides**: [<code>options</code>](#AbstractLogFormatter+options)  
+
+* * *
+
+<a name="JSObjectFormatter+format"></a>
+
+### jsObjectFormatter.format(logentry) ⇒ <code>\*</code>
+Given the log entry object, format it tou our output string.
+
+**Kind**: instance method of [<code>JSObjectFormatter</code>](#JSObjectFormatter)  
+**Overrides**: [<code>format</code>](#AbstractLogFormatter+format)  
+
+| Param | Type |
+| --- | --- |
+| logentry | <code>Object</code> | 
+
 
 * * *
 
@@ -835,6 +871,93 @@ Returns the options passed into the constructor.
 Given the log entry object, format it tou our output string.
 
 **Kind**: instance method of [<code>JSONFormatter</code>](#JSONFormatter)  
+**Overrides**: [<code>format</code>](#AbstractLogFormatter+format)  
+
+| Param | Type |
+| --- | --- |
+| logentry | <code>Object</code> | 
+
+
+* * *
+
+<a name="JSObjectFormatter"></a>
+
+## JSObjectFormatter ⇐ [<code>AbstractLogFormatter</code>](#AbstractLogFormatter)
+The JS Object AwesomeLog formatter. This simply forwards the log entry Object onward
+for usage programatically. It does not produce a readable string.
+
+**Kind**: global class  
+**Extends**: [<code>AbstractLogFormatter</code>](#AbstractLogFormatter)  
+
+* [JSObjectFormatter](#JSObjectFormatter) ⇐ [<code>AbstractLogFormatter</code>](#AbstractLogFormatter)
+    * [new JSObjectFormatter(options)](#new_JSObjectFormatter_new)
+    * [new JSObjectFormatter(options)](#new_JSObjectFormatter_new)
+    * [.options](#AbstractLogFormatter+options) ⇒ <code>Object</code>
+    * [.format(logentry)](#JSObjectFormatter+format) ⇒ <code>\*</code>
+    * [.format(logentry)](#JSObjectFormatter+format) ⇒ <code>\*</code>
+
+
+* * *
+
+<a name="new_JSObjectFormatter_new"></a>
+
+### new JSObjectFormatter(options)
+Constructor for this formatter. Never called directly, but called by AwesomeLog
+when `Log.start()` is called.
+
+
+| Param | Type |
+| --- | --- |
+| options | <code>Object</code> | 
+
+
+* * *
+
+<a name="new_JSObjectFormatter_new"></a>
+
+### new JSObjectFormatter(options)
+Constructor for this formatter. Never called directly, but called by AwesomeLog
+when `Log.start()` is called.
+
+
+| Param | Type |
+| --- | --- |
+| options | <code>Object</code> | 
+
+
+* * *
+
+<a name="AbstractLogFormatter+options"></a>
+
+### jsObjectFormatter.options ⇒ <code>Object</code>
+Returns the options passed into the constructor.
+
+**Kind**: instance property of [<code>JSObjectFormatter</code>](#JSObjectFormatter)  
+**Overrides**: [<code>options</code>](#AbstractLogFormatter+options)  
+
+* * *
+
+<a name="JSObjectFormatter+format"></a>
+
+### jsObjectFormatter.format(logentry) ⇒ <code>\*</code>
+Given the log entry object, format it tou our output string.
+
+**Kind**: instance method of [<code>JSObjectFormatter</code>](#JSObjectFormatter)  
+**Overrides**: [<code>format</code>](#AbstractLogFormatter+format)  
+
+| Param | Type |
+| --- | --- |
+| logentry | <code>Object</code> | 
+
+
+* * *
+
+<a name="JSObjectFormatter+format"></a>
+
+### jsObjectFormatter.format(logentry) ⇒ <code>\*</code>
+Given the log entry object, format it tou our output string.
+
+**Kind**: instance method of [<code>JSObjectFormatter</code>](#JSObjectFormatter)  
 **Overrides**: [<code>format</code>](#AbstractLogFormatter+format)  
 
 | Param | Type |
