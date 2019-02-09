@@ -41,7 +41,7 @@ describe("AbstractLogFormatter",()=>{
 		assert(Log.history[0].pid);
 		assert.equal(Log.history[0].level,"INFO");
 		assert(Log.history[0].system);
-		assert.equal(Log.history[0].message,"Testing formatting...");
+		assert.equal(Log.history[0].text,"Testing formatting...");
 		assert.deepStrictEqual(Log.history[0].args,[]);
 
 		await Log.stop();

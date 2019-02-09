@@ -110,7 +110,7 @@ describe("AwesomeLog",()=>{
 		assert(Log.history[0].timestamp>0);
 		assert.equal(Log.history[0].level,"ACCESS");
 		assert(Log.history[0].system);
-		assert.equal(Log.history[0].message,"The quick brown fox jumped over the lazy dog.");
+		assert.equal(Log.history[0].text,"The quick brown fox jumped over the lazy dog.");
 		assert(Log.history[0].args.length<1);
 
 		await Log.stop();
