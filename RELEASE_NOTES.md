@@ -1,5 +1,17 @@
 # AwesomeLog Release Notes
 
+#### **Version 3.0.2**
+
+ - Updating API docs.
+
+ - Updating dependencies.
+
+ - Fixing broken tests.
+
+ - Updating external dependency versions.
+
+ - Fixes a bug where subprocess that have access to worker_threads but were not started via worker_threads would throw an exception.
+
 #### **Version 3.0.1**
 
  - Fixes a bug with Error arguments not getting serialized correctly.
