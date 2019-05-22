@@ -294,6 +294,8 @@ To learn more about The Awesome Engineering Company and our suite of products, v
 
 ## Support and Help
 
+This product is maintained and supported by The Awesome Engineering Company.  For support please [file an issue](./issues) or contact us via our Webiste at [https://awesomeeng.com](https://awesomeeng.com).  We will do our best to respond to you in a timely fashion.
+
 ## License
 
 AwesomeLog is released under the MIT License. Please read the  [LICENSE](./LICENSE) file for details.
