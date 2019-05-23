@@ -31,7 +31,7 @@ Using AwesomeLog is super simple, and fairly similar to other solutions, but als
 
  - **SubProcess Logging**. Seemlessly configure sub-processes (aka child_process, worker threads, clusters) to forward log data to a master process, to create a consistent unified stream of log data across processes/threads/clusters.
 
- - **No External Dependencies**. AwesomeLog is written and maintained by The Awesome Engineering Company and has no dependency that was not written by us. This means consistency of code throughout the product and that we have zero dependencies that were not written in-house.  This means safer code for you and your product.
+ - **No External Dependencies**. AwesomeConfig is written and maintained by The Awesome Engineering Company and has no dependency that was not written by us. This means consistency of code throughout the product and zero dependencies that were not written by us.  This means safer code and better support for you and your product.
 
  - **Free and Open**. AwesomeLog is released under the MIT License and complete free to use and modify.
 
