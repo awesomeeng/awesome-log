@@ -1,6 +1,6 @@
 # [AwesomeLog](../README.md) > Introducing AwesomeLog
 
-AwesomeLog is a Log System for enterprise nodejs applications. It provides a basic out of the box logging solution that is ready to go with zero configuration but also gives you a highly configurable logging solution with the power to do your logging right.
+AwesomeLog is a logging system for enterprise nodejs applications. It provides a basic out of the box logging solution that is ready to go with zero configuration but also gives you a highly configurable logging solution with the power to do your logging right.
 
 In particular, AwesomeLog provides a fast, easy means to log data across your entire application, including child_processes/threads/clusters.  And it includes all the standard things like different formatters, different writers, colorized console logging, etc.
 
@@ -25,7 +25,7 @@ Using AwesomeLog is super simple, and fairly similar to other solutions, but als
 
  - **Colorized Console Logging**. Oooh. Pretty.
 
- - **Log History**. AwesomeLog maintains a history object allowing you to introspect log data and perform better testing.
+ - **Log History**. AwesomeLog maintains a history of your log messages for a brief period of time. This allow you to programatically introspect log data and perform better testing.
 
  - **Pause/Resume**. Temporarily suspend logging with Pause and Resume.
 
@@ -61,7 +61,7 @@ Log.init({
 
 If you want to do things even faster, skip this step entirely and AwesomeLog will configure a default console writer out of the box and leave the harder configuration for another day.
 
-AwesomeLog requires configuration and startup (below) only once for your entire application. Once it has occurred you can use AwesomeLog in any module without needing to pass the log object around.  Thus configuration and starting AwesomeLog should happen as close to the top of your application as possible.
+AwesomeLog requires configuration and startup only once for your entire application. Once that has occurred you can use AwesomeLog in any module without needing to pass the log object around.  Thus configuration and starting AwesomeLog should happen as close to the top of your application as possible.
 
 #### 4). Start it.
 ```javascript
@@ -99,7 +99,7 @@ Formatters tell AwesomeLog what to write.  Each Writer has its own formatter.
 
 AwesomeLog will record a bunch of different factors (also called fields) when you send a log message.  Each field can then be used or not when formatting the log message. It is the job of the formatter to determine what to write and how to format that message.
 
-By default AwesomeLog ships with four formatters: Default, JSON, CSV, and JS.  The default formatter is AwesomeLog's custom format for log messages that includes the timestamp (as a unix epoch), process id, log level, system name, log message, and extra details.  The JSON formatter will include all fields in a standard JSON string format.  The CSV formatter includes timestamp (as a unix epoch), level, process id, system name, message, and extra details, in a CSV format for usage with a spreadsheet or like.  The JS format formats log message as a JavaScript object (specifically not JSON) for usage with internal writers like the history system.
+By default AwesomeLog ships with four formatters: Default, JSON, CSV, and JS.  The default formatter is AwesomeLog's custom format for log messages that includes the timestamp (as a unix epoch), process id, log level, system name, log message, and extra details.  The JSON formatter will include all fields in a standard JSON string format.  The CSV formatter includes timestamp (as a unix epoch), level, process id, system name, message, and extra details, in a CSV format for usage with a spreadsheet or like.  The JS format formats each log message as a JavaScript object (specifically not JSON) for usage with internal writers like the history system.
 
 ## Documentation
 
