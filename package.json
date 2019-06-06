@@ -25,7 +25,7 @@
     "test": "mocha test",
     "tests": "mocha test"
   },
-  "description": "AwesomeLog is a Log System for enterprise ready nodejs applications. It provides a basic out of the box logging solution that is ready to go with zero configuration but also gives you a highly configurable logging solution that with the power to do your logging right.",
+  "description": "AwesomeLog is a Log System for enterprise nodejs applications. It provides a basic out of the box logging solution that is ready to go with zero configuration but also gives you a highly configurable logging solution that with the power to do your logging right.",
   "directories": {
     "doc": "docs",
     "test": "test"

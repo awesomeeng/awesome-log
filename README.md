@@ -1,6 +1,6 @@
 # AwesomeLog
 
-AwesomeLog is a Log System for enterprise ready nodejs applications. It provides a basic out of the box logging solution that is ready to go with zero configuration but also gives you a highly configurable logging solution with the power to do your logging right.
+AwesomeLog is a Log System for enterprise nodejs applications. It provides a basic out of the box logging solution that is ready to go with zero configuration but also gives you a highly configurable logging solution with the power to do your logging right.
 
 ## Why Another Log Solution?
 
