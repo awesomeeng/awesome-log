@@ -1,3 +1,13 @@
+<a href="https://www.npmjs.com/package/@awesomeeng/awesome-log">![npm](https://img.shields.io/npm/v/@awesomeeng/awesome-log.svg "npm Details")</a>
+<a href="./LICENSE">![GitHub](https://img.shields.io/github/license/awesomeeng/awesome-log.svg "License Details")</a>
+<a href="http://npm-stats.com/~packages/@awesomeeng/awesome-log">![npm](https://img.shields.io/npm/dt/@awesomeeng/awesome-log.svg "npm download stats")</a>
+<a href="https://github.com/awesomeeng/awesome-log/graphs/contributors">![GitHub contributors](https://img.shields.io/github/contributors-anon/awesomeeng/awesome-log.svg "Github Contributors")</a>
+<a href="https://github.com/awesomeeng/awesome-log/commits/master">![GitHub last commit](https://img.shields.io/github/last-commit/awesomeeng/awesome-log.svg "Github Commit Log")</a>
+<br/><a href="https://nodejs.org/en/">![node](https://img.shields.io/node/v/@awesomeeng/awesome-log.svg "NodeJS")</a>
+<a href="https://github.com/awesomeeng/awesome-log/issues">![GitHub issues](https://img.shields.io/github/issues/awesomeeng/awesome-log.svg "Github Issues")</a>
+<a href="https://snyk.io/vuln/search?type=npm&q=@awesomeeng/awesome-log">![Snyk Vulnerabilities for GitHub Repo](https://img.shields.io/snyk/vulnerabilities/github/awesomeeng/awesome-log.svg "Synk Vulnerabilities Database")</a>
+<a href="https://www.npmjs.com/package/@awesomeeng/awesome-log">![David](https://img.shields.io/david/awesomeeng/awesome-log.svg)</a>
+
 # AwesomeLog
 
 AwesomeLog is a Log System for enterprise nodejs applications. It provides a basic out of the box logging solution that is ready to go with zero configuration but also gives you a highly configurable logging solution with the power to do your logging right.
