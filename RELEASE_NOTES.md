@@ -1,5 +1,9 @@
 # AwesomeLog Release Notes
 
+#### **Version 3.0.3**
+
+ - Adds the noDebugger configuration option to toggle debugger exectuion arguments getting passed to subprocess writers for AwesomeLog.  This can cause an issue when executing inside of VSCode.
+
 #### **Version 3.0.2**
 
  - Updating API docs.

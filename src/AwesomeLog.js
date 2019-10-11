@@ -194,6 +194,7 @@ class AwesomeLog {
 	 * config = {
 	 *   buffering: false,
 	 *   separate: true,
+	 *   noDebugger: true,
 	 *   history: true,
 	 *   historySizeLimit: 100,
 	 *   historyFormatter: "default",
@@ -231,6 +232,7 @@ class AwesomeLog {
 		let disableSP = config && config.disableSubProcesses || false;
 		config = AwesomeUtils.Object.extend({
 			separate: true,
+			noDebugger: true,
 			buffering: false,
 			history: true,
 			historySizeLimit: 100,
