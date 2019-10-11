@@ -636,7 +636,7 @@ const initWriters = function initWriters() {
 			this[$WRITERS] = await Promise.all(AwesomeUtils.Array.compact(configwriters.map((config)=>{
 				return new Promise(async (resolve,reject)=>{
 					try {
-						let writer = new WriterManager(this,config,this.config.separate);
+						let writer = new WriterManager(this,config,this.config.separate,this.config.noDebugger);
 						await writer.start();
 						resolve(writer);
 					}

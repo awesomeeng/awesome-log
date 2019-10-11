@@ -21,12 +21,13 @@ const $ISNULL = Symbol("isNullWriter");
 const $WRITER = Symbol("writer");
 const $WRITERFORMATTER = Symbol("writerFormatter");
 const $WRITEFUNC = Symbol("writeFunction");
+const $NODEBUGGER = Symbol("noDebugger");
 
 /**
  * @private
  */
 class WriterManager {
-	constructor(parent,config,separate=false) {
+	constructor(parent,config,separate=false,noDebugger=true) {
 		config = AwesomeUtils.Object.extend({
 			name: null,
 			levels: "*",
@@ -67,6 +68,7 @@ class WriterManager {
 
 		this[$PARENT] = parent;
 		this[$SEPARATE] = separate;
+		this[$NODEBUGGER] = noDebugger;
 		this[$NAME] = name;
 		this[$LEVELS] = levels;
 		this[$TYPE] = type;
@@ -148,7 +150,10 @@ class WriterManager {
 						env: {
 							AWESOMELOG_WRITER_CONFIG: JSON.stringify(config),
 							NODE_PATH: process.env.NODE_PATH
-						}
+						},
+						execArgv: this[$NODEBUGGER] && process.execArgv.filter((a)=>{
+							return !(a.match(/^--debug|^--inspect/g));
+						}) || process.execArgv
 					};
 
 					let thread = ChildProcess.fork(AwesomeUtils.Module.resolve(module,"./WriterThread"),[],opts);
