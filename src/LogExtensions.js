@@ -126,7 +126,7 @@ class LogExtensions {
 		if (!AwesomeUtils.FS.existsSync(filename)) throw new Error("Writer not found at "+filename+".");
 
 		let logWriter = require(filename);
-		if (!AbstractLogWriter.isPrototypeOf(logWriter)) throw new Error("Invalid writer constructor. Must inherit from AbstractLogWriter.");
+		if (!Object.prototype.isPrototypeOf.call(AbstractLogWriter,logWriter)) throw new Error("Invalid writer constructor. Must inherit from AbstractLogWriter.");
 
 		this[$WRITERS][name] = filename;
 	}
@@ -151,7 +151,7 @@ class LogExtensions {
 		if (!AwesomeUtils.FS.existsSync(filename)) throw new Error("Formatter not found at "+filename+".");
 
 		let logFormatter = require(filename);
-		if (!AbstractLogFormatter.isPrototypeOf(logFormatter)) throw new Error("Invalid formatter constructor. Must inherit from AbstractLogFormatter.");
+		if (!Object.prototype.isPrototypeOf.call(AbstractLogFormatter,logFormatter)) throw new Error("Invalid formatter constructor. Must inherit from AbstractLogFormatter.");
 
 		this[$FORMATTERS][name] = filename;
 	}

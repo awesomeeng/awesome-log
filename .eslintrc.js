@@ -14,6 +14,7 @@ module.exports = {
 		"no-self-assign": [
 			"off"
 		],
+		"no-async-promise-executor": "off",
         indent: [
             "error",
             "tab",
