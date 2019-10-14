@@ -1,5 +1,10 @@
 # AwesomeLog Release Notes
 
+#### **Version 3.1.0**
+
+ - Makes the global instance of AwesomeLog more stable across multiple instances of AwesomeLog being used by different modules.
+ - Fixes some tests execution errors under unix and WSL.
+
 #### **Version 3.0.3**
 
  - Adds the noDebugger configuration option to toggle debugger exectuion arguments getting passed to subprocess writers for AwesomeLog.  This can cause an issue when executing inside of VSCode.
