@@ -16,7 +16,7 @@ describe("FileWriterTest",()=>{
 	let id,dir,testfile;
 
 	beforeEach(()=>{
-		AwesomeUtils.Module.unrequire(AwesomeUtils.Module.resolve(module,"../src/AwesomeLog"));
+		require("../src/AwesomeLog").unrequire();
 
 		id = AwesomeUtils.Random.string(16);
 		testfile = Path.resolve(process.cwd(),"./temp."+id+".tmp");
@@ -24,7 +24,7 @@ describe("FileWriterTest",()=>{
 	});
 
 	afterEach(async ()=>{
-		AwesomeUtils.Module.unrequire(AwesomeUtils.Module.resolve(module,"../src/AwesomeLog"));
+		require("../src/AwesomeLog").unrequire();
 
 		await AwesomeUtils.Promise.sleep(100);
 
@@ -97,8 +97,6 @@ describe("FileWriterTest",()=>{
 	it("rotate",async function(){
 		this.slow(3000);
 		this.timeout(4000);
-
-		let id = AwesomeUtils.Random.string(16);
 
 		const Log = require("../src/AwesomeLog");
 		Log.init({

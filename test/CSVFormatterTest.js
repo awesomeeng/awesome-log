@@ -8,15 +8,9 @@
 
 const assert = require("assert");
 
-const AwesomeUtils = require("@awesomeeng/awesome-utils");
-
 describe("CVSFormatter",()=>{
 	beforeEach(()=>{
-		AwesomeUtils.Module.unrequire(AwesomeUtils.Module.resolve(module,"../src/AwesomeLog"));
-	});
-
-	afterEach(()=>{
-		AwesomeUtils.Module.unrequire(AwesomeUtils.Module.resolve(module,"../src/AwesomeLog"));
+		require("../src/AwesomeLog").unrequire();
 	});
 
 	it("csv formatter",async function(){

@@ -21,6 +21,7 @@ catch (ex) {
 	Worker = null;
 }
 
+const $INSTANCE = Symbol.for('@awesomeeng/awesome-log'); // global instance name, used at bottom
 const $CONFIG = Symbol("config");
 const $BACKLOG = Symbol("backlog");
 const $HISTORY = Symbol("history");
@@ -561,6 +562,14 @@ class AwesomeLog {
 
 		return this;
 	}
+
+	/**
+	 * Removes awesomelog global instace. used mostly in testing.
+	 */
+	unrequire() {
+		delete process[$INSTANCE];
+		AwesomeUtils.Module.unrequire(module.filename);
+	}
 }
 
 const initLevels = function initLevels(levels) {
@@ -785,4 +794,11 @@ const subProcessHandler = function subProcessHandler(message) {
 };
 
 // export our singleton instance.
-module.exports = new AwesomeLog();
+// we use a symbol here to expose log across
+// multiple installs, with the first insall winning.
+
+let instance = process[$INSTANCE];
+if (!instance) instance = new AwesomeLog();
+process[$INSTANCE] = instance;
+
+module.exports = instance;

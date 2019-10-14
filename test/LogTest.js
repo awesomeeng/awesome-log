@@ -10,14 +10,7 @@ const assert = require("assert");
 
 describe("AwesomeLog",()=>{
 	beforeEach(()=>{
-		const AwesomeUtils = require("@awesomeeng/awesome-utils");
-		AwesomeUtils.Module.unrequire(AwesomeUtils.Module.resolve(module,"../src/AwesomeLog"));
-
-	});
-
-	afterEach(()=>{
-		const AwesomeUtils = require("@awesomeeng/awesome-utils");
-		AwesomeUtils.Module.unrequire(AwesomeUtils.Module.resolve(module,"../src/AwesomeLog"));
+		require("../src/AwesomeLog").unrequire();
 	});
 
 	it("initialize",()=>{

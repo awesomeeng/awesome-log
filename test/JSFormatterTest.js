@@ -8,15 +8,9 @@
 
 const assert = require("assert");
 
-const AwesomeUtils = require("@awesomeeng/awesome-utils");
-
 describe("AbstractLogFormatter",()=>{
 	beforeEach(()=>{
-		AwesomeUtils.Module.unrequire(AwesomeUtils.Module.resolve(module,"../src/AwesomeLog"));
-	});
-
-	afterEach(()=>{
-		AwesomeUtils.Module.unrequire(AwesomeUtils.Module.resolve(module,"../src/AwesomeLog"));
+		require("../src/AwesomeLog").unrequire();
 	});
 
 	it("js formatter",async function(){

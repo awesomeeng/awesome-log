@@ -25,11 +25,7 @@ describe("Process",function(){
 	}
 
 	beforeEach(()=>{
-		AwesomeUtils.Module.unrequire(AwesomeUtils.Module.resolve(module,"../src/AwesomeLog"));
-	});
-
-	afterEach(()=>{
-		AwesomeUtils.Module.unrequire(AwesomeUtils.Module.resolve(module,"../src/AwesomeLog"));
+		require("../src/AwesomeLog").unrequire();
 	});
 
 	it("child_process",async function(){

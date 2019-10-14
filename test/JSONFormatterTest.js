@@ -8,16 +8,9 @@
 
 const assert = require("assert");
 
-
-const AwesomeUtils = require("@awesomeeng/awesome-utils");
-
 describe("AbstractLogFormatter",()=>{
 	beforeEach(()=>{
-		AwesomeUtils.Module.unrequire(AwesomeUtils.Module.resolve(module,"../src/AwesomeLog"));
-	});
-
-	afterEach(()=>{
-		AwesomeUtils.Module.unrequire(AwesomeUtils.Module.resolve(module,"../src/AwesomeLog"));
+		require("../src/AwesomeLog").unrequire();
 	});
 
 	it("json formatter",async function(){
@@ -39,7 +32,7 @@ describe("AbstractLogFormatter",()=>{
 		assert.equal(Log.history.length,1);
 		assert(Log.history[0]);
 
-		let entry = JSON.parse(Log.history[0]);
+		const entry = JSON.parse(Log.history[0]);
 		assert(entry);
 		assert(entry.timestamp);
 		assert(entry.pid);

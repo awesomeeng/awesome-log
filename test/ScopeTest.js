@@ -14,11 +14,10 @@ const assert = require("assert");
 
 describe("Scope",function(){
 	beforeEach(()=>{
-		AwesomeUtils.Module.unrequire(AwesomeUtils.Module.resolve(module,"../src/AwesomeLog"));
+		require("../src/AwesomeLog").unrequire();
 	});
 
 	afterEach(()=>{
-		AwesomeUtils.Module.unrequire(AwesomeUtils.Module.resolve(module,"../src/AwesomeLog"));
 		AwesomeUtils.Module.unrequire(AwesomeUtils.Module.resolve(module,"./scope/Module1"));
 		AwesomeUtils.Module.unrequire(AwesomeUtils.Module.resolve(module,"./scope/Module2"));
 		AwesomeUtils.Module.unrequire(AwesomeUtils.Module.resolve(module,"./scope/Module3"));
