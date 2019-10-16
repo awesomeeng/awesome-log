@@ -7,6 +7,7 @@ const AwesomeUtils = require("@awesomeeng/awesome-utils");
 const AbstractLogWriter = require("../AbstractLogWriter");
 
 const $THEME = Symbol("theme");
+const $CLOSED = Symbol("closed");
 
 /**
  * A writer for outputing to STDOUT. This is the default writer used if
@@ -40,8 +41,6 @@ const $THEME = Symbol("theme");
 class ConsoleWriter extends AbstractLogWriter {
 	/**
 	 * @private
-	 */
-	/**
 	 *
 	 * Creates a new Console Writer. Never called directly, but AwesomeLog
 	 * will call this when `AwesomeLog.start()` is issued.
@@ -70,12 +69,12 @@ class ConsoleWriter extends AbstractLogWriter {
 			});
 			this[$THEME] = theme;
 		}
+
+		this[$CLOSED] = false;
 	}
 
 	/**
 	 * @private
-	 */
-	/**
 	 *
 	 * Write a log message to STDOUT.
 	 *
@@ -85,17 +84,25 @@ class ConsoleWriter extends AbstractLogWriter {
 	 */
 	write(message,logentry) {
 		message = ""+message;
-		if (this.options.colorize) {
-			if (this.options.colorStyle==="level") process.stdout.write(message.replace(logentry.level,AwesomeUtils.ANSI.stylize(this[$THEME][logentry.level],(logentry.level)))+"\n");
-			else process.stdout.write(AwesomeUtils.ANSI.stylize(this[$THEME][logentry.level],message)+"\n");
+
+		try {
+			// sometimes the stdout stream closes (usualy during program termination) and we cant do anything about it.
+			if (!this[$CLOSED] && process.stdout.writable) {
+				if (this.options.colorize) {
+					if (this.options.colorStyle==="level") process.stdout.write(message.replace(logentry.level,AwesomeUtils.ANSI.stylize(this[$THEME][logentry.level],(logentry.level)))+"\n");
+					else process.stdout.write(AwesomeUtils.ANSI.stylize(this[$THEME][logentry.level],message)+"\n");
+				}
+				else process.stdout.write(message+"\n");
+			}
 		}
-		else process.stdout.write(message+"\n");
+		catch (ex) {
+			// if stdout throws an error, not much we can do other than stop writing.
+			this.close();
+		}
 	}
 
 	/**
-	 * @private
-	 */
-	/**
+ 	 * @private
 	 *
 	 * Flush the pending writes. This has not effect in this case.
 	 *
@@ -106,16 +113,14 @@ class ConsoleWriter extends AbstractLogWriter {
 	}
 
 	/**
-	 * @private
-	 */
-	/**
+ 	 * @private
 	 *
 	 * Close the writer. This has not effect in this case.
 	 *
 	 * @return {void}
 	 */
 	close() {
-		// intentionally blank
+		this[$CLOSED] = true;
 	}
 }
 
