@@ -1,5 +1,9 @@
 # AwesomeLog Release Notes
 
+#### **Version 3.1.1**
+
+ - Fixes bug with ConsoleWriter where stdout could be in a closed state, but ConsoleWriter would keep trying to write to it.
+
 #### **Version 3.1.0**
 
  - Makes the global instance of AwesomeLog more stable across multiple instances of AwesomeLog being used by different modules.
