@@ -1,6 +1,6 @@
 {
   "name": "@awesomeeng/awesome-log",
-  "version": "3.1.1",
+  "version": "3.2.0",
   "author": "the awesome engineering company",
   "license": "MIT",
   "contributors": [
@@ -14,9 +14,9 @@
     "@awesomeeng/awesome-utils": "^1.4.10"
   },
   "devDependencies": {
-    "eslint": "^6.6.0",
+    "eslint": "^6.5.1",
     "jsdoc-to-markdown": "^5.0.2",
-    "mocha": "^6.2.2"
+    "mocha": "^6.2.1"
   },
   "optionalDependencies": {},
   "scripts": {

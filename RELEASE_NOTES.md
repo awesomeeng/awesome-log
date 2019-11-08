@@ -1,5 +1,10 @@
 # AwesomeLog Release Notes
 
+#### **Version 3.2.0**
+
+ - Fixes an issue with FileWriter and creating directories in linux.
+ - Fix for programs that use AwesomeLog and which are started by nodemon/forever/pm2 often dont show console output.
+
 #### **Version 3.1.1**
 
  - Fixes bug with ConsoleWriter where stdout could be in a closed state, but ConsoleWriter would keep trying to write to it.
