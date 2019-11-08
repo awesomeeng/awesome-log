@@ -4,6 +4,7 @@
 
  - Fixes an issue with FileWriter and creating directories in linux.
  - Fix for programs that use AwesomeLog and which are started by nodemon/forever/pm2 often dont show console output.
+ - Module updates.
 
 #### **Version 3.1.1**
 
