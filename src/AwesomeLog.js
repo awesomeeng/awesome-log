@@ -4,7 +4,7 @@
 
 const OS = require("os");
 const Process = require("process");
-
+const ChildProcess = require("child_process");
 const AwesomeUtils = require("@awesomeeng/awesome-utils");
 
 const LogLevel = require("./LogLevel");
@@ -64,8 +64,32 @@ class AwesomeLog {
 			return obj;
 		};
 		this[$WRITEFUNC] = ()=>{};
-		this[$ISSUBPROCESS] = !!Process.channel || Worker && Worker.parentPort && Worker.parentPort.postMessage || false;
 		this[$STARTPENDING] = false;
+
+		// if we are a subprocess we want to look at what kind of subprocess we are...
+		// If we were run by nodemon, foever, or pm2, we are not really a sub-process.
+		this[$ISSUBPROCESS] = !!Process.channel || Worker && Worker.parentPort && Worker.parentPort.postMessage && true || false;
+		if (Process.channel) {
+			if (process.platform==="win32") {
+				try {
+					let ppid = process.ppid;
+					let processes = ChildProcess.execSync("wmic process get processid,commandline").toString().split(/\r\r/);
+					let re = new RegExp("\\s"+ppid+"$");
+					processes = processes.filter((line)=>{
+						return line && line.trim().match(re) || false;
+					});
+					let line = processes[0];
+					if (line && line.indexOf("\\nodemon")>-1 || line.indexOf("\\forever")>-1 || line.indexOf("\\pm2")>-1) this[$ISSUBPROCESS] = false;
+				}
+				catch (ex) {
+					// intentionally empty
+				}
+			}
+			else {
+				let pexec = process.env["_"];
+				if (pexec.indexOf("/nodemon")>-1 || pexec.indexOf("/forever")>-1 || pexec.indexOf("/pm2")>-1) this[$ISSUBPROCESS] = false;
+			}
+		}
 
 		initLevels.call(this,"access,error,warn,info,debug");
 	}
