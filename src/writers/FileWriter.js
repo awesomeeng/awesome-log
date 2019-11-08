@@ -147,7 +147,9 @@ const openLogFile = function openLogFile(filename) {
 
 	let dir = Path.dirname(this[$FILENAME]);
 	if (!AwesomeUtils.FS.existsSync(dir)) {
-		AwesomeUtils.FS.recursiveMkdirSync(dir);
+		FS.mkdirSync(dir,{
+			recursive: true
+		});
 	}
 
 	this[$FILE] = FS.openSync(this[$FILENAME],"a");
