@@ -87,7 +87,9 @@ class AwesomeLog {
 			}
 			else {
 				let pexec = process.env["_"];
-				if (pexec.indexOf("/nodemon")>-1 || pexec.indexOf("/forever")>-1 || pexec.indexOf("/pm2")>-1) this[$ISSUBPROCESS] = false;
+				if (pexec && (pexec.indexOf("/nodemon")>-1 || pexec.indexOf("/forever")>-1 || pexec.indexOf("/pm2")>-1)) this[$ISSUBPROCESS] = false;
+				let nls = process.env['npm_lifecycle_script'];
+				if (nls && (nls.indexOf("nodemon")>-1 || nls.indexOf("forever")>-1 || nls.indexOf("pm2")>-1)) this[$ISSUBPROCESS] = false;
 			}
 		}
 
