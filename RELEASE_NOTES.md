@@ -1,5 +1,9 @@
 # AwesomeLog Release Notes
 
+#### **Version 3.2.2**
+
+ - Fixes an issue with process.mainModule being deprecated and running with Jest.
+
 #### **Version 3.2.1**
 
  - Expands nodemon/forever/pm2 detection.
