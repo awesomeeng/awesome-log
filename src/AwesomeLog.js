@@ -708,7 +708,7 @@ const createFieldsFunction = function(fields) {
 		let bits = 32;
 		let arch = OS.arch();
 		if (arch==="arm64" || arch==="mipsel" || arch==="ppc64" || arch==="s390x" || arch==="x64") bits = 64;
-		let main = process.mainModule.filename;
+		let main = process.mainModule && process.mainModule.filename || process.main && process.main.filename || process.cwd();
 		let platform =  OS.platform();
 		let cpus =  OS.cpus().length;
 		let argv =  process.argv.slice(2).join(" ");
