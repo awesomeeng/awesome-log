@@ -230,6 +230,9 @@ Log.init({
 
 The `fields` configuration property is a comma delimited string of each field name.  Order is irrelevant as the formatter you choose will dictate its own ordering.
 
+The default fields are `timestamp,pid,system,text,args`. If your `NODE_ENV` environment variable is set to `prod` or `production` the default fields
+will omit `system` to encourage better performance on production environments.
+
 The following fields are available:
  - **timestamp**: The current time, in UTC.
  - **level**: The log level for this particular log entry.

@@ -1,5 +1,9 @@
 # AwesomeLog Release Notes
 
+#### **Version 4.0.0**
+
+ - Makes the default fields on production environments default to timestamp,pid,level,text,args which should speed those envionrments up by default. Environment is determined by environment variable NODE_ENV being equal to to prod or production.
+
 #### **Version 3.2.2**
 
  - Fixes an issue with process.mainModule being deprecated and running with Jest.
