@@ -257,6 +257,8 @@ class AwesomeLog {
 	 */
 	init(config) {
 		let disableSP = config && config.disableSubProcesses || false;
+		let prod = (process.env.NODE_ENV||'').toLowerCase();
+		prod = prod === "production" || prod === "prod";
 		config = AwesomeUtils.Object.extend({
 			separate: true,
 			noDebugger: true,
@@ -268,7 +270,7 @@ class AwesomeLog {
 			levels: "access,error,warn,info,debug",
 			disableLoggingNotices: !disableSP && this[$ISSUBPROCESS] ? true : false,
 			loggingNoticesLevel: "info",
-			fields: "timestamp,pid,system,level,text,args",
+			fields: !prod ? "timestamp,pid,system,level,text,args" : "timestamp,pid,level,text,args", // removes "system" on production environments.
 			writers: [],
 			backlogSizeLimit: 1000,
 			disableSubProcesses: false,
