@@ -1,18 +1,6 @@
 ## Classes
 
 <dl>
-<dt><a href="#AbstractLogFormatter">AbstractLogFormatter</a></dt>
-<dd><p>Describes the shape of a Log Formatter. This class is expected to be extend for all
-Log Formatter implementations. After this class is extended, you pass the extending
-class into <code>AwesomeLog.defineLogFormatter(name,filename)</code> to add your Log Formatter to
-AwesomeLog for usage.</p>
-</dd>
-<dt><a href="#AbstractLogWriter">AbstractLogWriter</a></dt>
-<dd><p>Describes the shape of a Log Writer. This class is expected to be extend for all
-Log Writer implementations. After this class is extended, you pass the extending
-class into <code>AwesomeLog.defineLogWriter(name,class)</code> to add your Log Writer to
-AwesomeLog for usage.</p>
-</dd>
 <dt><a href="#AwesomeLog">AwesomeLog</a></dt>
 <dd><p>AwesomeLog is a singleton object returned when you
 <code>const Log = require(&quot;@awesomeeng/awesome-log&quot;)</code>. From it you
@@ -26,28 +14,42 @@ log messages out. Please see our
 </dd>
 </dl>
 
+## Interfaces
+
+<dl>
+<dt><a href="#AbstractLogFormatter">AbstractLogFormatter</a></dt>
+<dd><p>Constructor for a Log Formatter.</p>
+<p>It is important to note that this constructor is never called by you, but
+is instead called by AwesomeLog when the <code>start()</code> command is issued.</p>
+<p>Your class must call this as shown here:</p>
+<pre><code>class MyFormatter extends AbstractLogFormatter {
+     constructor(options) {
+       super(options);
+
+       ... your initialization code ...
+     }
+}</code></pre><p>Failure to not do the super constructor will result in errors.</p>
+<p>You should put any kind of initialization of your formatter in this constructor.</p>
+</dd>
+<dt><a href="#AbstractLogWriter">AbstractLogWriter</a></dt>
+<dd><p>Constructor for a Log Writer.</p>
+<p>It is important to note that this constructor is never called by you, but
+is instead called by AwesomeLog when the <code>start()</code> command is issued.</p>
+<p>Your class must call this as shown here:</p>
+<pre><code>class MyWriter extends AbstractLogWriter {
+     constructor(options) {
+       super(options);
+
+       ... your initialization code ...
+     }
+}</code></pre><p>Failure to not do the super constructor will result in errors.</p>
+<p>You should put any kind of initialization of your writer in this constructor.</p>
+</dd>
+</dl>
+
 <a name="AbstractLogFormatter"></a>
 
 ## AbstractLogFormatter
-Describes the shape of a Log Formatter. This class is expected to be extend for all
-Log Formatter implementations. After this class is extended, you pass the extending
-class into `AwesomeLog.defineLogFormatter(name,filename)` to add your Log Formatter to
-AwesomeLog for usage.
-
-**Kind**: global class  
-**See**: [Log Writer](./docs/LogFormatters.md) documentation for more details.  
-
-* [AbstractLogFormatter](#AbstractLogFormatter)
-    * [new AbstractLogFormatter(options)](#new_AbstractLogFormatter_new)
-    * [.options](#AbstractLogFormatter+options) ⇒ <code>Object</code>
-    * [.format(logentry)](#AbstractLogFormatter+format) ⇒ <code>Object</code>
-
-
-* * *
-
-<a name="new_AbstractLogFormatter_new"></a>
-
-### new AbstractLogFormatter(options)
 Constructor for a Log Formatter.
 
 It is important to note that this constructor is never called by you, but
@@ -69,10 +71,17 @@ Failure to not do the super constructor will result in errors.
 
 You should put any kind of initialization of your formatter in this constructor.
 
+**Kind**: global interface  
+**See**: [Log Writer](./docs/LogFormatters.md) documentation for more details.  
 
 | Param | Type |
 | --- | --- |
 | options | <code>Object</code> | 
+
+
+* [AbstractLogFormatter](#AbstractLogFormatter)
+    * [.options](#AbstractLogFormatter+options) ⇒ <code>Object</code>
+    * [.format(logentry)](#AbstractLogFormatter+format) ⇒ <code>Object</code>
 
 
 * * *
@@ -104,27 +113,6 @@ each log message it needs to write out.
 <a name="AbstractLogWriter"></a>
 
 ## AbstractLogWriter
-Describes the shape of a Log Writer. This class is expected to be extend for all
-Log Writer implementations. After this class is extended, you pass the extending
-class into `AwesomeLog.defineLogWriter(name,class)` to add your Log Writer to
-AwesomeLog for usage.
-
-**Kind**: global class  
-**See**: [Log Writer](./docs/LogWriters.md) documentation for more details.  
-
-* [AbstractLogWriter](#AbstractLogWriter)
-    * [new AbstractLogWriter(options)](#new_AbstractLogWriter_new)
-    * [.options](#AbstractLogWriter+options) ⇒ <code>Object</code>
-    * [.write(message, logentry)](#AbstractLogWriter+write) ⇒ <code>void</code>
-    * [.flush()](#AbstractLogWriter+flush) ⇒ <code>void</code>
-    * [.close()](#AbstractLogWriter+close) ⇒ <code>void</code>
-
-
-* * *
-
-<a name="new_AbstractLogWriter_new"></a>
-
-### new AbstractLogWriter(options)
 Constructor for a Log Writer.
 
 It is important to note that this constructor is never called by you, but
@@ -146,10 +134,19 @@ Failure to not do the super constructor will result in errors.
 
 You should put any kind of initialization of your writer in this constructor.
 
+**Kind**: global interface  
+**See**: [Log Writer](./docs/LogWriters.md) documentation for more details.  
 
 | Param | Type |
 | --- | --- |
 | options | <code>Object</code> | 
+
+
+* [AbstractLogWriter](#AbstractLogWriter)
+    * [.options](#AbstractLogWriter+options) ⇒ <code>Object</code>
+    * [.write(message, logentry)](#AbstractLogWriter+write) ⇒ <code>void</code>
+    * [.flush()](#AbstractLogWriter+flush) ⇒ <code>void</code>
+    * [.close()](#AbstractLogWriter+close) ⇒ <code>void</code>
 
 
 * * *
