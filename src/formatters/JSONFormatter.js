@@ -36,8 +36,22 @@ class JSONFormatter extends AbstractLogFormatter {
 	 * @return {*}
 	 */
 	format(logentry) {
+		if (logentry.args) logentry.args = logentry.args.map(formatArg.bind(this));
 		return JSON.stringify(logentry);
 	}
+
+	
 }
+
+const formatArg = function formatArg(arg) {
+	if (arg instanceof Error) {
+		arg = {
+			__TYPE: "error",
+			message: arg.message,
+			stack: arg.stack
+		};
+	}
+	return arg;
+};
 
 module.exports = JSONFormatter;

@@ -239,7 +239,7 @@ class WriterManager {
 		entries = entries.filter((logentry)=>{
 			// VM doesnt serialize errors, so
 			// we need to do it here.
-			if (logentry.args) {
+			if (this[$SEPARATE] && logentry.args) {
 				logentry.args = logentry.args.map((arg)=>{
 					if (arg instanceof Error) {
 						return {
@@ -253,6 +253,7 @@ class WriterManager {
 			}
 			return this.takesLevel(logentry.level);
 		});
+		console.log(1,entries[0].args);
 		return this[$WRITEFUNC](entries,this[$THREAD],this[$WRITER],this[$WRITERFORMATTER]);
 	}
 
