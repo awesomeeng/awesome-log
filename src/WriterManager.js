@@ -253,7 +253,6 @@ class WriterManager {
 			}
 			return this.takesLevel(logentry.level);
 		});
-		console.log(1,entries[0].args);
 		return this[$WRITEFUNC](entries,this[$THREAD],this[$WRITER],this[$WRITERFORMATTER]);
 	}
 
