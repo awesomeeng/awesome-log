@@ -284,6 +284,7 @@ With regards to the `fields` configuration property: most fields are fine, howev
  - [Custom Log Formatters](./docs/LogFormatters.md)
  - [Working with Child Processes](./docs/ChildProcess.md)
  - [History](./docs/History.md)
+ - [Hooks](./docs/Hooks.md)
 
  - [API Documentation](./docs/API.md)
 

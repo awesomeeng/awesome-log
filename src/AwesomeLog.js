@@ -275,7 +275,19 @@ class AwesomeLog {
 			backlogSizeLimit: 1000,
 			disableSubProcesses: false,
 			scopeMap: null,
-			scopeCatchAll: "info"
+			scopeCatchAll: "info",
+			hooks: {
+				beforeLog: null,
+				afterLog: null,
+				beforeLogEntry: null,
+				afterLogEntry: null,
+				beforeWrite: null,
+				afterWrite: null,
+				beforeStart: null,
+				afterStart: null,
+				beforeStop: null,
+				afterStop: null,
+			}
 		},config||{});
 		disableSP = config.disableSubProcesses;
 
@@ -344,6 +356,9 @@ class AwesomeLog {
 
 		return new Promise(async (resolve,reject)=>{
 			try {
+				// fire the beforeStart hook.
+				fireHook.call(this,"beforeStart",this);
+
 				await initWriters.call(this);
 
 				[...this[$SUBPROCESSES].keys()].forEach((subprocess)=>{
@@ -359,6 +374,10 @@ class AwesomeLog {
 				this[$BACKLOG] = null;
 
 				this[$STARTPENDING] = false;
+
+				// fire the afterStart hook.
+				fireHook.call(this,"afterStart",this);
+
 				resolve(this);
 			}
 			catch (ex) {
@@ -394,14 +413,17 @@ class AwesomeLog {
 
 				let stop = ()=>{
 					this[$STARTS] -= 1;
-
+					
 					this[$BACKLOG] = this[$BACKLOG] || [];
 					this[$RUNNING] = false;
-
+					
 					if (!this.config.disableLoggingNotices) this.log(this.config.loggingNoticesLevel,"AwesomeLog stopped.");
-
+					
 					return new Promise(async (resolve,reject)=>{
 						try {
+							// fire the beforeStop hook.
+							fireHook.call(this,"beforeStop",this);
+							
 							[...this[$SUBPROCESSES].keys()].forEach((subprocess)=>{
 								this.releaseSubProcess(subprocess);
 								this[$SUBPROCESSES].set(subprocess,null);
@@ -411,6 +433,9 @@ class AwesomeLog {
 								return writer.stop(0);
 							}));
 
+							// fire the afterStop hook.
+							fireHook.call(this,"afterStop",this);
+							
 							resolve(this);
 						}
 						catch (ex) {
@@ -506,7 +531,10 @@ class AwesomeLog {
 	 * @return {AwesomeLog}
 	 */
 	log(level,text,...args) {
-		let logentry = null;
+		// fire the beforeLog hook.
+		fireHook.call(this,"beforeLog",...arguments);
+		
+		let logentry = {};
 
 		if (!text && level && typeof level==="object") {
 			logentry = level;
@@ -527,9 +555,17 @@ class AwesomeLog {
 
 		level = this.getLevel(level).name;
 
-		logentry = this[$FIELDSFUNC](logentry||{},level,text,args);
-
-
+		// fire the beforeLogEntry hook.
+		fireHook.call(this,"beforeLogEntry",logentry);
+		
+		logentry = this[$FIELDSFUNC](logentry,level,text,args);
+		
+		// fire the afterLogEntry hook.
+		fireHook.call(this,"afterLogEntry",logentry);
+		
+		// fire the beforeWrite hook.
+		fireHook.call(this,"beforeWrite",logentry);
+		
 		if (this[$BACKLOG]) {
 			this[$BACKLOG].push(logentry);
 			if (this[$BACKLOG].length>this.config.backlogSizeLimit) this[$BACKLOG].shift();
@@ -551,6 +587,12 @@ class AwesomeLog {
 		else {
 			write.call(this,logentry);
 		}
+		
+		// fire the afterWrite hook.
+		fireHook.call(this,"afterWrite",logentry);
+		
+		// fire the afterLog hook.
+		fireHook.call(this,"afterLog",logentry);
 	}
 
 	/**
@@ -819,6 +861,20 @@ const subProcessHandler = function subProcessHandler(message) {
 	this.getLevel(logentry.level); // cuases an exception of the process used a level we dont know.
 
 	this.log(logentry);
+};
+
+const fireHook = function fireHook(hookName,...args) {
+	if (!hookName) return null;
+
+	const hook = this.config && this.config.hooks && this.config.hooks[hookName] || null;
+	if (hook && hook instanceof Function) {
+		try {
+			hook(...args);
+		}
+		catch (ex) {
+			this.log("Error in AwesomeLog configured "+hookName+" hook.",ex);
+		}
+	}
 };
 
 // export our singleton instance.

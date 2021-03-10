@@ -66,6 +66,28 @@ The following configuration options are supported.
 
  - **scopeCatchAll** [string] - The log level to map anything to that didn't correctly map with `scopeMap`. Defaults to "info". See our [Nested Usage](./docs/NestedUsage.md) documentation for more details.
 
+ - **hooks** [object] - One or more hooks that can be tapped into.
+
+   - **beforeStart** [Function] - If provided, this hook will be executed prior to AwesomeLog being started. The given function is called with the a reference to AwesomeLog as its sole argument.
+
+   - **afterStart** [Function] - If provided, this hook will be executed after AwesomeLog is started. The given function is called with the a reference to AwesomeLog as its sole argument.
+
+   - **beforeStop** [Function] - If provided, this hook will be executed prior to AwesomeLog being stopped. The given function is called with the a reference to AwesomeLog as its sole argument.
+
+   - **afterStop** [Function] - If provided, this hook will be executed after AwesomeLog is stopped. The given function is called with the a reference to AwesomeLog as its sole argument.
+
+   - **beforeLog** [Function] - If provided, this hook will be executed before every logging call to AwesomeLog. The given function is called with the the same arguments provided to the log call, namely `(level, text, ...args)`.
+
+   - **afterLog** [Function] - If provided, this hook will be executed after every logging call to AwesomeLog. The given function is called with the the same arguments provided to the log call, namely `(level, text, ...args)`.
+
+   - **beforeLogEntry** [Function] - If provided, this hook will be executed before every logging call generates its LogEntry object. The given function is called with the logEntry object as its sole argument. The logEntry object can be mutated but not replaced at this point in time.
+
+   - **afterLogEntry** [Function] - If provided, this hook will be executed after every logging call generates its LogEntry object. The given function is called with the logEntry object as its sole argument. The logEntry object can be mutated but not replaced at this point in time.
+
+   - **beforeWrite** [Function] - If provided, this hook will be executed before every logging call performs its write operation. The write operation of a log call differs depending on whether or not subprocesses are being used and whether or not writers are being run in separate threads. The given function is called with the logEntry object as its sole argument. The logEntry object can be mutated but not replaced at this point in time.
+
+   - **afterWrite** [Function] - If provided, this hook will be executed before every logging call performs its write operation. The write operation of a log call differs depending on whether or not subprocesses are being used and whether or not writers are being run in separate threads. The given function is called with the logEntry object as its sole argument. The logEntry object **cannot** be mutated at this point in time as it is already written.
+
 Here is an example configuration using default values:
 
 ```
@@ -86,7 +108,19 @@ Log.init({
 	loggingNoticesLevel: "info"
 	disableSubProcess: false,
 	scopeMap: null,
-	scopeCatchAll: "info"
+	scopeCatchAll: "info",
+	hooks: {
+		beforeLog: null,
+		afterLog: null,
+		beforeLogEntry: null,
+		afterLogEntry: null,
+		beforeWrite: null,
+		afterWrite: null,
+		beforeStart: null,
+		afterStart: null,
+		beforeStop: null,
+		afterStop: null,
+	}
 });
 ```
 
