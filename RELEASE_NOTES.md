@@ -1,5 +1,10 @@
 # AwesomeLog Release Notes
 
+#### **Version 4.1.0**
+
+ - adds hooks to allow developers to tap into AwesomeLog lifecycle moments and mutate things in some 
+cases. See the [Hooks Documentatiuon](./docs/Hooks) for more details.
+
 #### **Version 4.0.1**
 
  - Makes the default fields on production environments default to timestamp,pid,level,text,args which should speed those envionrments up by default. Environment is determined by environment variable NODE_ENV being equal to to prod or production.
