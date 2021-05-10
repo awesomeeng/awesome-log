@@ -15,6 +15,8 @@ Log.init({
 		formatter: "json",
 		options: {
 		}
+		formatterOptions: {			
+		}
 	}]
 });
 ```
@@ -31,6 +33,11 @@ AwesomeLog ships with four built-in Log Formatters:
 	2018-09-10T15:46:27.714Z : #1234 : INFO       : AwesomeLog       : Log initialized.
 	2018-09-10T15:46:27.716Z : #1234 : INFO       : AwesomeLog       : Log started.
 	```
+
+	The default formatter may take the following options:
+
+	- **oneline**: If true all the text output for a single log entry is kept to a single line in the log. If false, 
+	arguments to a log entry beyond the initial message are spread across multiple lines. This is false by default.
 
  - **JSON**: The JSON formatter writes the entire log message out as a json string. You'll notice that there is a lot more detail in this example when compared with the one for `default` from above. Formatters often reduce the amount of log information.
 
@@ -137,3 +144,7 @@ Below is a list of the possible provided:
  - **homedir**: The user's home directory.
  - **username**: The user's username, if any.
  - **version**: The nodejs version string.
+
+## Log Formatter Options
+
+Some formatters can take additional options which can be configured by setting the `formatterOptions` option for the writer.  The default formatter, for example, can take additional options.

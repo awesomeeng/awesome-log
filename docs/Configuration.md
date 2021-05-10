@@ -98,7 +98,8 @@ Log.init({
 		type:  "console",
 		levels: "*",
 		formatter: "default",
-		options: {}
+		options: {},
+		formatterOptions: {},
 	}],
 	history: true,
 	historySizeLimit: 1000,
@@ -137,6 +138,8 @@ The configuration `writers` value takes an array of writer objects.  Each object
  - **formatter** [string] - The formatter to use for this writer. `default` if ommitted.  Can be one of the following: `default`, `json`, `csv`, `js`, or the name for your customer formatter.
 
  - **options** [Object] - An object that contains configuration information that is passed to the writer.  See [Console Writer Configuration](./docs/ConsoleWriterConfiguration) or [File Writer Configuration](./docs/FileWriterConfiguration) for more information.
+
+ - **formatterOptions** [Object] - An object that contaings configuration information that is passed to the formatter. See [Log Formatters](./docs/LogFormatters) for more information.
 
 ## Formatter Configuration
 

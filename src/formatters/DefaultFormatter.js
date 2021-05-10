@@ -20,7 +20,17 @@ const AbstractLogFormatter = require("../AbstractLogFormatter");
  * 2018-09-13T17:47:37.207Z : #12080 : INFO       : AwesomeLog.js    : AwesomeLog started.
  * 2018-09-13T17:47:37.208Z : #12080 : INFO       : Example.js       : This is an example log message.
  * ```
+ * 
+ * The default formatter can take the following options: 
+ * 
+ * 		options = {
+ * 			oneline: false
+ * 		}
  *
+ * 		oneline: if set to true, puts arguments on the same line as the log entry thus ensuring one line === one entry.
+ * 				 By default this is false, meaning any arguments supplied to a log entry over and above the message
+ * 				 are rendered into multiple lines.
+ * 
  * @extends AbstractLogFormatter
  */
 class DefaultFormatter extends AbstractLogFormatter {
@@ -35,6 +45,10 @@ class DefaultFormatter extends AbstractLogFormatter {
 	 * @param {Object} options
 	 */
 	constructor(options) {
+		AwesomeUtils.Object.extend({
+			oneline: false
+		},options);
+
 		super(options);
 	}
 
@@ -43,7 +57,7 @@ class DefaultFormatter extends AbstractLogFormatter {
 	 */
 	/**
 	 *
-	 * Given the log entry object, format it tou our output string.
+	 * Given the log entry object, format it out our output string.
 	 *
 	 * @param  {Object} logentry
 	 * @return {*}
@@ -72,26 +86,32 @@ class DefaultFormatter extends AbstractLogFormatter {
 		if (logentry.version) msg.push((logentry.version));
 
 		msg = msg.join(" : ");
+		
+		let prefix = msg.replace(/./g," ")+" | ";
+		
+		msg += " : ";
+		msg += logentry.text||"";
 
 		let args = logentry.args || [];
 		if (args.length>0) {
-			let prefix = msg.replace(/./g," ")+" | ";
-			args = args.map(formatArg.bind(this,prefix));
+			if (this.options.oneline) {
+				args = args.map(formatArgOneline.bind(this));
 
-			msg += " : ";
-			msg += logentry.text||"";
-			msg += args;
-		}
-		else {
-			msg += " : ";
-			msg += logentry.text||"";
+				msg += " : ";
+				msg += "[ "+args.join(" | ")+" ]";
+			}
+			else {
+				args = args.map(formatArgMultiline.bind(this,prefix));
+	
+				msg += args;
+			}
 		}
 
 		return msg;
 	}
 }
 
-const formatArg = function formatArg(prefix,arg) {
+const formatArgMultiline = function formatArg(prefix,arg) {
 	if (arg instanceof Error) {
 		return "\n"+prefix+(arg.stack && arg.stack.split(/\n[\t\s]*/).join("\n"+prefix) || arg.message || ""+arg);
 	}
@@ -102,6 +122,19 @@ const formatArg = function formatArg(prefix,arg) {
 	}
 	else {
 		return "\n"+prefix+arg;
+	}
+};
+
+
+const formatArgOneline = function formatArg(arg) {
+	if (arg instanceof Error) {
+		return arg.stack && arg.stack.split(/\n[\t\s]*/).join(" ") || arg.message || ""+arg;
+	}
+	else if (arg instanceof Array || AwesomeUtils.Object.isPlainObject(arg)) {
+		return JSON.stringify(arg);
+	}
+	else {
+		return ""+arg;
 	}
 };
 
