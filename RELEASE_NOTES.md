@@ -1,5 +1,11 @@
 # AwesomeLog Release Notes
 
+#### **Version 4.2.0**
+
+ - Adds the ability to configure the default formatter to output an entire log entry on a single line. By default the default formatter
+ will span argument output across multiple lines for easier readability. However, some cases, such as using logs in a cloud environment or
+ with a log aggregator dont like this approach. This solves that by making sure one log entry === one line.
+
 #### **Version 4.1.0**
 
  - adds hooks to allow developers to tap into AwesomeLog lifecycle moments and mutate things in some 
