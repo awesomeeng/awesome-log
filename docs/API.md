@@ -28,7 +28,9 @@ is instead called by AwesomeLog when the <code>start()</code> command is issued.
 
        ... your initialization code ...
      }
-}</code></pre><p>Failure to not do the super constructor will result in errors.</p>
+}
+</code></pre>
+<p>Failure to not do the super constructor will result in errors.</p>
 <p>You should put any kind of initialization of your formatter in this constructor.</p>
 </dd>
 <dt><a href="#AbstractLogWriter">AbstractLogWriter</a></dt>
@@ -42,7 +44,9 @@ is instead called by AwesomeLog when the <code>start()</code> command is issued.
 
        ... your initialization code ...
      }
-}</code></pre><p>Failure to not do the super constructor will result in errors.</p>
+}
+</code></pre>
+<p>Failure to not do the super constructor will result in errors.</p>
 <p>You should put any kind of initialization of your writer in this constructor.</p>
 </dd>
 </dl>
@@ -376,6 +380,7 @@ config = {
   history: true,
   historySizeLimit: 100,
   historyFormatter: "default",
+  historyFormatterOptions: {},
   levels: "access,error,warn,info,debug",
   disableLoggingNotices: false, // true if this is a child process
   loggingNoticesLevel: "info",

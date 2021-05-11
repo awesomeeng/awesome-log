@@ -1,5 +1,9 @@
 # AwesomeLog Release Notes
 
+#### **Version 4.2.1**
+
+ - Adds oneline, alias, and move formatter options to the JSON Formatter.  Please see the [LogFormatters Documentation](./docs/LogFormatters) for more details.
+
 #### **Version 4.2.0**
 
  - Adds the ability to configure the default formatter to output an entire log entry on a single line. By default the default formatter

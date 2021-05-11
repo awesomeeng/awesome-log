@@ -1,9 +1,9 @@
 "use strict";
 
 module.exports = {
-    rules: {
+	rules: {
 		"no-console": [
 			"off"
 		]
-    }
+	}
 };
