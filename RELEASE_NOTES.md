@@ -1,5 +1,9 @@
 # AwesomeLog Release Notes
 
+#### **Version 4.2.2**
+
+ - Fixes buig in JSON Formatter alias and move options.
+
 #### **Version 4.2.1**
 
  - Adds oneline, alias, and move formatter options to the JSON Formatter.  Please see the [LogFormatters Documentation](./docs/LogFormatters) for more details.
