@@ -85,10 +85,10 @@ describe("JSONFormatter",()=>{
 			historyFormatter: "json",
 			historyFormatterOptions: {
 				alias: {
-					level: "severity"
+					severity: "level"
 				},
 				move: {
-					text: "message"
+					message: "text"
 				}
 			}
 		});

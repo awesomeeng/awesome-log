@@ -51,10 +51,10 @@ AwesomeLog ships with four built-in Log Formatters:
 	- **alias**: An object that allows you to alias log entry data under a different key. That is
 	you create a copy from one logentry key into a new logentry key. You must supply
 	the new key as the key in the object, and to origin key as the value. You may
-	not overwrite an existing logentry key.
+	not overwrite an existing logentry key. Defined as `alias: { aliasName: "originalKey" }`
 
 	- **move**: Similar to alias, except this will remove the original key from logentry after moving the value.
-	All the same rules from alias apply.
+	All the same rules from alias apply. Defined as `move: { moveTo: "originalKey" }`
 
 	- **oneline**: This will ensure that the logentry.text value includes the logentry.args values in a single line
 	of text. This is similar to the Default formatter's oneline formatter option.

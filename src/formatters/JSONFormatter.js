@@ -70,17 +70,16 @@ class JSONFormatter extends AbstractLogFormatter {
 	}
 
 	remap(logentry) {
-		
-		Object.keys(this.options.alias || {}).forEach(from => {
-			const to = this.options.alias[from];
-			if (!to || typeof to !== 'string') return;
+		Object.keys(this.options.alias || {}).forEach(to => {
+			const from = this.options.alias[to];
+			if (!from || typeof from !== 'string') return;
 			if (logentry[to]!==undefined) return;
 			logentry[to] = logentry[from];
 		});
 
-		Object.keys(this.options.move || {}).forEach(from => {
-			const to = this.options.move[from];
-			if (!to || typeof to !== 'string') return;
+		Object.keys(this.options.move || {}).forEach(to => {
+			const from = this.options.move[to];
+			if (!from || typeof from !== 'string') return;
 			if (logentry[to]!==undefined) return;
 			logentry[to] = logentry[from];
 			delete logentry[from];
