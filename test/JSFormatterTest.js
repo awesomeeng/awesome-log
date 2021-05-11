@@ -8,7 +8,7 @@
 
 const assert = require("assert");
 
-describe("AbstractLogFormatter",()=>{
+describe("JSFormatter",()=>{
 	beforeEach(()=>{
 		require("../src/AwesomeLog").unrequire();
 	});

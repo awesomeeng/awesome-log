@@ -8,7 +8,7 @@
 
 const assert = require("assert");
 
-describe("AbstractLogFormatter",()=>{
+describe("JSONFormatter",()=>{
 	beforeEach(()=>{
 		require("../src/AwesomeLog").unrequire();
 	});
@@ -29,17 +29,80 @@ describe("AbstractLogFormatter",()=>{
 
 		Log.info("Testing formatting...");
 
-		assert.equal(Log.history.length,1);
+		assert.strictEqual(Log.history.length,1);
 		assert(Log.history[0]);
 
 		const entry = JSON.parse(Log.history[0]);
 		assert(entry);
 		assert(entry.timestamp);
 		assert(entry.pid);
-		assert.equal(entry.level,"INFO");
+		assert.strictEqual(entry.level,"INFO");
 		assert(entry.system);
-		assert.equal(entry.text,"Testing formatting...");
+		assert.strictEqual(entry.text,"Testing formatting...");
 		assert.deepStrictEqual(entry.args,[]);
+
+		await Log.stop();
+	});
+	
+	it("json formatter options - oneline",async function(){
+		const Log = require("../src/AwesomeLog");
+		Log.init({
+			writers: [{
+				name: "null",
+				type: "null"
+			}],
+			history: true,
+			buffering: false,
+			disableLoggingNotices: true,
+			historyFormatter: "json",
+			historyFormatterOptions: {
+				oneline: true
+			}
+		});
+		await Log.start();
+
+		Log.info("Testing formatting...", 1,"2",[3]);
+
+		assert.strictEqual(Log.history.length,1);
+
+		const entry = JSON.parse(Log.history[0]);
+		assert.strictEqual(entry.text,"Testing formatting... : [ 1 | 2 | [3] ]");
+		assert.deepStrictEqual(entry.args,[1,"2",[3]]);
+
+		await Log.stop();
+	});
+	
+	it("json formatter options - alias/move",async function(){
+		const Log = require("../src/AwesomeLog");
+		Log.init({
+			writers: [{
+				name: "null",
+				type: "null"
+			}],
+			history: true,
+			buffering: false,
+			disableLoggingNotices: true,
+			historyFormatter: "json",
+			historyFormatterOptions: {
+				alias: {
+					level: "severity"
+				},
+				move: {
+					text: "message"
+				}
+			}
+		});
+		await Log.start();
+
+		Log.info("Testing formatting...");
+
+		assert.strictEqual(Log.history.length,1);
+
+		const entry = JSON.parse(Log.history[0]);
+		assert.strictEqual(entry.level,"INFO");
+		assert.strictEqual(entry.severity,"INFO");
+		assert.strictEqual(entry.text,undefined);
+		assert.strictEqual(entry.message,"Testing formatting...");
 
 		await Log.stop();
 	});

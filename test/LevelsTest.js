@@ -25,7 +25,7 @@ describe("LogLevels",()=>{
 			historyFormatter: "js"
 		});
 
-		assert.equal(Log.levelNames.length,3);
+		assert.strictEqual(Log.levelNames.length,3);
 		assert(Log.levelNames.indexOf("BANANA")>-1);
 		assert(Log.levelNames.indexOf("APPLE")>-1);
 		assert(Log.levelNames.indexOf("ORANGE")>-1);
@@ -71,7 +71,7 @@ describe("LogLevels",()=>{
 		Log.banana("This is a ACCESS test.");
 		Log.orange("This is a ERROR test.");
 		Log.apple("This is a WARN test.");
-		assert.equal(Log.history.length,3);
+		assert.strictEqual(Log.history.length,3);
 
 		Log.apple("This is a INFO test.");
 		Log.orange("This is a INFO test.");

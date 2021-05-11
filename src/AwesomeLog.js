@@ -225,6 +225,7 @@ class AwesomeLog {
 	 *   history: true,
 	 *   historySizeLimit: 100,
 	 *   historyFormatter: "default",
+	 *   historyFormatterOptions: {},
 	 *   levels: "access,error,warn,info,debug",
 	 *   disableLoggingNotices: false, // true if this is a child process
 	 *   loggingNoticesLevel: "info",

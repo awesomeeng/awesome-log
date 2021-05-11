@@ -48,7 +48,7 @@ describe("Process",function(){
 		await AwesomeUtils.Promise.sleep(500);
 		child.kill();
 
-		assert.equal(Log.history.length,3);
+		assert.strictEqual(Log.history.length,3);
 
 		await Log.stop();
 	});
@@ -76,7 +76,7 @@ describe("Process",function(){
 		await AwesomeUtils.Promise.sleep(500);
 		worker.kill();
 
-		assert.equal(Log.history.length,3);
+		assert.strictEqual(Log.history.length,3);
 
 		await Log.stop();
 	});
@@ -103,7 +103,7 @@ describe("Process",function(){
 			await AwesomeUtils.Promise.sleep(500);
 			worker.terminate();
 
-			assert.equal(Log.history.length,3);
+			assert.strictEqual(Log.history.length,3);
 
 			await Log.stop();
 		}

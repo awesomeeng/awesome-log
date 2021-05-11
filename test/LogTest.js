@@ -98,12 +98,12 @@ describe("AwesomeLog",()=>{
 
 		assert(Log.history.length===0);
 		Log.log("access","The quick brown fox jumped over the lazy dog.");
-		assert.equal(Log.history.length,1);
+		assert.strictEqual(Log.history.length,1);
 		assert(Log.history[0].pid>0);
 		assert(Log.history[0].timestamp>0);
-		assert.equal(Log.history[0].level,"ACCESS");
+		assert.strictEqual(Log.history[0].level,"ACCESS");
 		assert(Log.history[0].system);
-		assert.equal(Log.history[0].text,"The quick brown fox jumped over the lazy dog.");
+		assert.strictEqual(Log.history[0].text,"The quick brown fox jumped over the lazy dog.");
 		assert(Log.history[0].args.length<1);
 
 		await Log.stop();
@@ -122,21 +122,21 @@ describe("AwesomeLog",()=>{
 		});
 
 		await Log.start();
-		assert.equal(Log.history.length,0);
+		assert.strictEqual(Log.history.length,0);
 		Log.info("Testing pause/resume 1.");
-		assert.equal(Log.history.length,1);
+		assert.strictEqual(Log.history.length,1);
 		Log.info("Testing pause/resume 2.");
-		assert.equal(Log.history.length,2);
+		assert.strictEqual(Log.history.length,2);
 		Log.pause();
-		assert.equal(Log.history.length,2);
+		assert.strictEqual(Log.history.length,2);
 		Log.info("Testing pause/resume 3.");
-		assert.equal(Log.history.length,2);
+		assert.strictEqual(Log.history.length,2);
 		Log.info("Testing pause/resume 4.");
-		assert.equal(Log.history.length,2);
+		assert.strictEqual(Log.history.length,2);
 		Log.resume();
-		assert.equal(Log.history.length,4);
+		assert.strictEqual(Log.history.length,4);
 		Log.info("Testing pause/resume 5.");
-		assert.equal(Log.history.length,5);
+		assert.strictEqual(Log.history.length,5);
 		await Log.stop();
 	});
 });

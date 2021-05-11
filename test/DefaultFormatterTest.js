@@ -28,7 +28,7 @@ describe("AbstractLogFormatter",()=>{
 
 		Log.info("Testing formatting...");
 
-		assert.equal(Log.history.length,1);
+		assert.strictEqual(Log.history.length,1);
 		assert(Log.history[0].match(/20\d\d-\d\d-\d\dT\d\d:\d\d:\d\d.\d\d\dZ\s:\s#\d{1,5}\s+:\sINFO\s+:\s[\w\d.-_]+\s+:\sTesting\sformatting\.\.\./));
 
 		await Log.stop();
@@ -47,27 +47,27 @@ describe("AbstractLogFormatter",()=>{
 		await Log.start();
 
 		Log.info("Testing argument formatting...",null);
-		assert.equal(Log.history.length,1);
+		assert.strictEqual(Log.history.length,1);
 		assert(Log.history[0].endsWith("| null"));
 		Log.clearHistory();
 
 		Log.info("Testing argument formatting...",true);
-		assert.equal(Log.history.length,1);
+		assert.strictEqual(Log.history.length,1);
 		assert(Log.history[0].endsWith("| true"));
 		Log.clearHistory();
 
 		Log.info("Testing argument formatting...",false);
-		assert.equal(Log.history.length,1);
+		assert.strictEqual(Log.history.length,1);
 		assert(Log.history[0].endsWith("| false"));
 		Log.clearHistory();
 
 		Log.info("Testing argument formatting...",123);
-		assert.equal(Log.history.length,1);
+		assert.strictEqual(Log.history.length,1);
 		assert(Log.history[0].endsWith("| 123"));
 		Log.clearHistory();
 
 		Log.info("Testing argument formatting...","abc");
-		assert.equal(Log.history.length,1);
+		assert.strictEqual(Log.history.length,1);
 		assert(Log.history[0].endsWith("| abc"));
 		Log.clearHistory();
 

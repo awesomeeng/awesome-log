@@ -43,10 +43,10 @@ describe("Scope",function(){
 		await Log.start();
 
 		Log.info("Main");
-		assert.equal(Log.history.length,1);
+		assert.strictEqual(Log.history.length,1);
 
 		require("./scope/Module1.js");
-		assert.equal(Log.history.length,3);
+		assert.strictEqual(Log.history.length,3);
 
 		await Log.stop();
 	});
@@ -69,10 +69,10 @@ describe("Scope",function(){
 		await Log.start();
 
 		Log.info("Main");
-		assert.equal(Log.history.length,1);
+		assert.strictEqual(Log.history.length,1);
 
 		require("./scope/Module2.js");
-		assert.equal(Log.history.length,5);
+		assert.strictEqual(Log.history.length,5);
 
 		await Log.stop();
 	});
@@ -95,14 +95,14 @@ describe("Scope",function(){
 		await Log.start();
 
 		Log.info("Main");
-		assert.equal(Log.history.length,1);
+		assert.strictEqual(Log.history.length,1);
 
 		let M = require("./scope/Module4.js");
 		let m = new M();
 		m.someFunction();
 		m.module5.someFunction();
 
-		assert.equal(Log.history.length,7);
+		assert.strictEqual(Log.history.length,7);
 
 		await Log.stop();
 	});

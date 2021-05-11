@@ -33,7 +33,7 @@ describe("CVSFormatter",()=>{
 		Log.info("Testing formatting...",123,"abc");
 		Log.info("Testing formatting...",123,"abc",[456,"def"]);
 
-		assert.equal(Log.history.length,4);
+		assert.strictEqual(Log.history.length,4);
 		assert(Log.history[0].match(/^\d+,"INFO",\d+,"[\w\d.-_]+","Testing formatting..."$/));
 		assert(Log.history[1].match(/^\d+,"INFO",\d+,"[\w\d.-_]+","Testing formatting...",123$/));
 		assert(Log.history[2].match(/^\d+,"INFO",\d+,"[\w\d.-_]+","Testing formatting...",123,"abc"$/));

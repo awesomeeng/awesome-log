@@ -46,6 +46,19 @@ AwesomeLog ships with four built-in Log Formatters:
 	{"hostname":"blah.awesomeeng.com","domain":"awesomeeng.com","servername":"blah","pid":1234,"ppid":5678,"main":"/code/project","arch":"x64","platform":"linux","bits":64,"cpus":8,"argv":"","execPath":"node","startingDirectory":"/code/project","homedir":"/home/blah","username":"blah","version":"v10.9.0","level":"INFO","system":"AwesomeLog","message":"Log started.","args":[],"timestamp":1536594573582}
 	```
 
+	The JSON formatter supports the following formatter options:
+
+	- **alias**: An object that allows you to alias log entry data under a different key. That is
+	you create a copy from one logentry key into a new logentry key. You must supply
+	the new key as the key in the object, and to origin key as the value. You may
+	not overwrite an existing logentry key.
+
+	- **move**: Similar to alias, except this will remove the original key from logentry after moving the value.
+	All the same rules from alias apply.
+
+	- **oneline**: This will ensure that the logentry.text value includes the logentry.args values in a single line
+	of text. This is similar to the Default formatter's oneline formatter option.
+
  - **CSV**: The CSV formatter outputs the log information in a CSV format friendly to spreadsheets. The CSV format is `timestamp(unix epoch),level,pid,system name,message,arg0,arg1,...arg9999`.
 
  	```
