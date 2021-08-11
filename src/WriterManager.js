@@ -50,9 +50,7 @@ class WriterManager {
 			else levels = levels.split(",");
 		}
 		if (!(levels instanceof Array)) throw new Error("Invalid levels argument");
-		this[$LEVELS] = levels.map((level)=>{
-			return parent.getLevel(level);
-		});
+		this[$LEVELS] = levels.map(level => parent.getLevel(level)).filter(item => item !== null);
 
 		let type = config.type;
 		if (!type) throw new Error("Missing type.");
@@ -70,7 +68,7 @@ class WriterManager {
 		this[$SEPARATE] = separate;
 		this[$NODEBUGGER] = noDebugger;
 		this[$NAME] = name;
-		this[$LEVELS] = levels;
+		//this[$LEVELS] = levels;
 		this[$TYPE] = type;
 		this[$OPTIONS] = writerOptions;
 		this[$FORMATTER] = formatter;
@@ -288,6 +286,7 @@ class WriterManager {
 	}
 }
 
+// todo: rewrite this blob
 const createWriteFunction = function createWriteFunction() {
 	let f = "const entries = arguments[0];";
 	if (this[$SEPARATE]) {
