@@ -60,7 +60,7 @@ The following configuration options are supported.
 
  - **loggingNoticesLevel** [string] - The Log Level used for AwesomeLog's Log Notices.  If you change your log levels it is recommended you change this as well if you want Log Notices.
 
- - **disableSubProcess** [boolean] - If true this will prevent child processes that create their own instance of AwesomeLog from sending messages to the parent process.  Defaults to false. See our [Child Process](./docs/ChildProcess.md) documentation for more details.
+ - **disableSubProcesses** [boolean] - If true this will prevent child processes that create their own instance of AwesomeLog from sending messages to the parent process.  Defaults to false. See our [Child Process](./docs/ChildProcess.md) documentation for more details.
 
  - **scopeMap** [object] - Maps nested instance log levels to these log levels. Defaults to null. See our [Nested Usage](./docs/NestedUsage.md) documentation for more details.
 
@@ -107,7 +107,7 @@ Log.init({
 	backlogSizeLimit: 1000,
 	disableLoggingNotices: false,
 	loggingNoticesLevel: "info"
-	disableSubProcess: false,
+	disableSubProcesses: false,
 	scopeMap: null,
 	scopeCatchAll: "info",
 	hooks: {
