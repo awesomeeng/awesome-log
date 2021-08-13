@@ -4,7 +4,7 @@ AwesomeLog will keep a small number of the last N log message. This is called th
 
 ## Configuring History
 
-The history setting are configured as part of the `Log.init()` configuration.  You can read more about [configuration](./docs/Configuration.md) in our detailed documentation on the subject.  Specifically the following properties apply to history:
+The history setting are configured as part of the `Log.init()` configuration.  You can read more about [configuration](./Configuration.md) in our detailed documentation on the subject.  Specifically the following properties apply to history:
 
  - **history** [boolean] - Set to false if you do not want AwesomeLog to keep a small history of log messages.  The history can be used for programatic access to the log. History is enabled by default.
 
