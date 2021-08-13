@@ -68,15 +68,15 @@ Changing the custom log levels can have implications on a few other parts of the
 
 #### Logging Notices
 
-Logging Notices are log messages that AwesomeLog sends as part of its operation.  They can be disabled via [configuration](./docs/Configuration.md) property `disableLoggingNotices`. However, if they are not and you are using custom Log levels, make sure to change the `loggingNoticesLevel` to be the appropraite custom log level for these notices, whatever you decided that is.
+Logging Notices are log messages that AwesomeLog sends as part of its operation.  They can be disabled via [configuration](./Configuration.md) property `disableLoggingNotices`. However, if they are not and you are using custom Log levels, make sure to change the `loggingNoticesLevel` to be the appropraite custom log level for these notices, whatever you decided that is.
 
 #### Log Writers
 
-If your Log Writer [configuration](./docs/Configuration.md) refers to the default Log Levels, in its `levels` property, you should change it to reflect your new custom log levels.
+If your Log Writer [configuration](./Configuration.md) refers to the default Log Levels, in its `levels` property, you should change it to reflect your new custom log levels.
 
 #### Console Writer Colors
 
-The [Console Writer colorization feature](./docs/ConsoleWriterConfiguration.md) requires a map from Log Levels to colors.  This is set in the Console Writer `options` property. Here's an example:
+The [Console Writer colorization feature](./ConsoleWriterConfiguration.md) requires a map from Log Levels to colors.  This is set in the Console Writer `options` property. Here's an example:
 
 ```
 colors: {
@@ -90,8 +90,8 @@ colors: {
 
 #### Scope Mapping and Catch All
 
-If you are taking advantage of Scope you should be aware of the need to provide `scopeMap` and `scopeCatchAll` settings. Please see our [Scope](./docs/Scope.md) documentation for more details.
+If you are taking advantage of Scope you should be aware of the need to provide `scopeMap` and `scopeCatchAll` settings. Please see our [Scope](./Scope.md) documentation for more details.
 
 ## Child Processes
 
-If you are using the [AwesomeLog with Child Processes](./docs/ChildProcess.md), please be aware that the `levels` configuration property for the Child Process must match that of its parent process.
+If you are using the [AwesomeLog with Child Processes](./ChildProcess.md), please be aware that the `levels` configuration property for the Child Process must match that of its parent process.

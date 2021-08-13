@@ -47,9 +47,9 @@ For each writer there are the following configuration settings:
 
  - **formatter** [string] - The formatter to use for this writer. `default` if ommitted.  Can be one of the following: `default`, `json`, `csv`, `js`, or the name for your customer formatter.
 
- - **options** [Object] - An object that contains configuration information that is passed to the writer.  See [Console Writer Configuration](./docs/ConsoleWriterConfiguration) or [File Writer Configuration](./docs/FileWriterConfiguration) for more information.
+ - **options** [Object] - An object that contains configuration information that is passed to the writer.  See [Console Writer Configuration](./ConsoleWriterConfiguration) or [File Writer Configuration](./FileWriterConfiguration) for more information.
 
-See [Console Writer Configuration](./docs/ConsoleWriterConfiguration) or [File Writer Configuration](./docs/FileWriterConfiguration) for more information about those specific writers and their configuration.
+See [Console Writer Configuration](./ConsoleWriterConfiguration) or [File Writer Configuration](./FileWriterConfiguration) for more information about those specific writers and their configuration.
 
 ## The Default Console Writer
 

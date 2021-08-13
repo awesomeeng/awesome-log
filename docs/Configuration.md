@@ -60,11 +60,11 @@ The following configuration options are supported.
 
  - **loggingNoticesLevel** [string] - The Log Level used for AwesomeLog's Log Notices.  If you change your log levels it is recommended you change this as well if you want Log Notices.
 
- - **disableSubProcesses** [boolean] - If true this will prevent child processes that create their own instance of AwesomeLog from sending messages to the parent process.  Defaults to false. See our [Child Process](./docs/ChildProcess.md) documentation for more details.
+ - **disableSubProcesses** [boolean] - If true this will prevent child processes that create their own instance of AwesomeLog from sending messages to the parent process.  Defaults to false. See our [Child Process](./ChildProcess.md) documentation for more details.
 
- - **scopeMap** [object] - Maps nested instance log levels to these log levels. Defaults to null. See our [Nested Usage](./docs/NestedUsage.md) documentation for more details.
+ - **scopeMap** [object] - Maps nested instance log levels to these log levels. Defaults to null. See our [Nested Usage](./NestedUsage.md) documentation for more details.
 
- - **scopeCatchAll** [string] - The log level to map anything to that didn't correctly map with `scopeMap`. Defaults to "info". See our [Nested Usage](./docs/NestedUsage.md) documentation for more details.
+ - **scopeCatchAll** [string] - The log level to map anything to that didn't correctly map with `scopeMap`. Defaults to "info". See our [Nested Usage](./NestedUsage.md) documentation for more details.
 
  - **hooks** [object] - One or more hooks that can be tapped into.
 
@@ -137,9 +137,9 @@ The configuration `writers` value takes an array of writer objects.  Each object
 
  - **formatter** [string] - The formatter to use for this writer. `default` if ommitted.  Can be one of the following: `default`, `json`, `csv`, `js`, or the name for your customer formatter.
 
- - **options** [Object] - An object that contains configuration information that is passed to the writer.  See [Console Writer Configuration](./docs/ConsoleWriterConfiguration) or [File Writer Configuration](./docs/FileWriterConfiguration) for more information.
+ - **options** [Object] - An object that contains configuration information that is passed to the writer.  See [Console Writer Configuration](./ConsoleWriterConfiguration) or [File Writer Configuration](./FileWriterConfiguration) for more information.
 
- - **formatterOptions** [Object] - An object that contaings configuration information that is passed to the formatter. See [Log Formatters](./docs/LogFormatters) for more information.
+ - **formatterOptions** [Object] - An object that contaings configuration information that is passed to the formatter. See [Log Formatters](./LogFormatters) for more information.
 
 ## Formatter Configuration
 
@@ -175,4 +175,4 @@ AwesomeLog ships with four built-in Log Formatters:
 	[object Object]
 	```
 
-You can read more about how to write your own [Custom Log Formatter](./docs/LogFormatters) in the documentation.
+You can read more about how to write your own [Custom Log Formatter](./LogFormatters) in the documentation.

@@ -1,6 +1,6 @@
 # [AwesomeLog](../README.md) > Hooks
 
-AwesomeLog (as of version 4.1.0) allows developers to tap into a number of its process hook and execute code when certain AwesomeLog lifecycle events happen. In some cases this allows developers to mutate the LogEntry object (that describes each log action) in whatever way they wish. This should be done carefully and using hooks is not a replacement for implementing a [Custom Log Formatter](./docs/LogFormatters) or a [Custom Log Writer](./docs/LogWriters).
+AwesomeLog (as of version 4.1.0) allows developers to tap into a number of its process hook and execute code when certain AwesomeLog lifecycle events happen. In some cases this allows developers to mutate the LogEntry object (that describes each log action) in whatever way they wish. This should be done carefully and using hooks is not a replacement for implementing a [Custom Log Formatter](./LogFormatters) or a [Custom Log Writer](./LogWriters).
 
 ## AwesomeLog Lifecycle
 
