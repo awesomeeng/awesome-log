@@ -50,7 +50,6 @@ class WriterManager {
 			else levels = levels.split(",");
 		}
 		if (!(levels instanceof Array)) throw new Error("Invalid levels argument");
-		this[$LEVELS] = levels.map(level => parent.getLevel(level)).filter(item => item !== null);
 
 		let type = config.type;
 		if (!type) throw new Error("Missing type.");
@@ -68,7 +67,7 @@ class WriterManager {
 		this[$SEPARATE] = separate;
 		this[$NODEBUGGER] = noDebugger;
 		this[$NAME] = name;
-		//this[$LEVELS] = levels;
+		this[$LEVELS] = levels.map(level => parent.getLevel(level)).filter(item => item !== null);
 		this[$TYPE] = type;
 		this[$OPTIONS] = writerOptions;
 		this[$FORMATTER] = formatter;
@@ -286,35 +285,37 @@ class WriterManager {
 	}
 }
 
-// todo: rewrite this blob
-const createWriteFunction = function createWriteFunction() {
-	let f = "const entries = arguments[0];";
+const createWriteFunction = function () {
 	if (this[$SEPARATE]) {
-		f += "const thread = arguments[1];";
-		f += "return new Promise((resolve,reject)=>{";
-		f += "try {";
-		f += "thread.send(entries,()=>{";
-		f += "resolve();";
-		f += "});";
+		return function (...args) {
+			const entries = args[0];
+			const thread = args[1];
+			return new Promise((resolve, reject) => {
+				try {
+					thread.send(entries, () => resolve());
+				} catch (ex) {
+					return reject(ex);
+				}
+			});
+		};
+	} else {
+		return function (...args) {
+			const entries = args[0];
+			const writer = args[2];
+			const formatter = args[3];
+			return new Promise((resolve, reject) => {
+				try {
+					entries.forEach((logentry) => {
+						let msg = formatter.format(logentry);
+						writer.write(msg,logentry);
+					});
+					resolve();
+				} catch (ex) {
+					return reject(ex);
+				}
+			});
+		};
 	}
-	else {
-		f += "const writer = arguments[2];";
-		f += "const formatter = arguments[3];";
-		f += "return new Promise((resolve,reject)=>{";
-		f += "try {";
-		f += "entries.forEach((logentry)=>{";
-		f += "let msg = formatter.format(logentry);";
-		f += "writer.write(msg,logentry);";
-		f += "});";
-		f += "resolve();";
-	}
-	f += "}";
-	f += "catch (ex) {";
-	f += "return reject(ex);";
-	f += "}";
-	f += "});";
-
-	return new Function(f);
 };
 
 module.exports = WriterManager;
