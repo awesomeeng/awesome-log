@@ -1,8 +1,12 @@
 # AwesomeLog Release Notes
 
+#### **Version 4.2.3**
+
+ - Adds simple typescript typings to make things easier for typescript users.
+
 #### **Version 4.2.2**
 
- - Fixes buig in JSON Formatter alias and move options.
+ - Fixes bug in JSON Formatter alias and move options.
 
 #### **Version 4.2.1**
 
