@@ -50,7 +50,7 @@ class WriterManager {
 			else levels = levels.split(",");
 		}
 		if (!(levels instanceof Array)) throw new Error("Invalid levels argument");
-		this[$LEVELS] = levels.map((level)=>{
+		levels = levels.map((level)=>{
 			return parent.getLevel(level);
 		});
 

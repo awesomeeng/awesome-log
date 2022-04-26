@@ -1,5 +1,8 @@
 # AwesomeLog Release Notes
 
+#### **Version 4.2.4**
+ - Fixes a bug in writers filtering out specific log levels. Thank you Josh Fisher!
+
 #### **Version 4.2.3**
 
  - Adds simple typescript typings to make things easier for typescript users.
