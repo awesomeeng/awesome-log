@@ -93,6 +93,13 @@ describe("AwesomeLog",()=>{
 		Log.log("DEBUG","This is a DEBUG test.");
 		assert(Log.history.length===10);
 
+		try {
+			Log.log("","This is an empty string test and it should throw.");
+			assert(Log.history.length===11);			
+		} catch (error) {
+			assert(Log.history.length===10);
+		}
+
 		await Log.stop();
 		await Log.start();
 
@@ -106,6 +113,37 @@ describe("AwesomeLog",()=>{
 		assert.strictEqual(Log.history[0].text,"The quick brown fox jumped over the lazy dog.");
 		assert(Log.history[0].args.length<1);
 
+		await Log.stop();
+	});
+	
+	it("Log without message",async function(){
+		const Log = require("../src/AwesomeLog");
+		Log.init({
+			writers: [{
+				name: "null",
+				type: "null"
+			}],
+			buffering: false,
+			disableLoggingNotices: true,
+			historyFormatter: "js"
+		});
+
+		await Log.start();
+		
+		Log.debug('');
+		Log.debug(0);
+		Log.debug(false);
+		Log.debug(null);
+		Log.debug(undefined);
+		assert(Log.history.length===5);
+		
+		Log.debug('','items');
+		Log.debug(0,'items');
+		Log.debug(false,'items');
+		Log.debug(null,'items');
+		Log.debug(undefined,'items');
+		assert(Log.history.length===10);
+		
 		await Log.stop();
 	});
 

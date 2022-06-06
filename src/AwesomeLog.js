@@ -536,14 +536,13 @@ class AwesomeLog {
 		fireHook.call(this,"beforeLog",...arguments);
 		
 		let logentry = {};
-
-		if (!text && level && typeof level==="object") {
+		if (!text && level && typeof level==="object" && !(level instanceof LogLevel)) {
 			logentry = level;
 			text = logentry.text||"";
 			args = logentry.args||[];
 			level = logentry.level||"";
 		}
-		if (typeof text==="object" && !(text instanceof Error)) {
+		if (text && typeof text==="object" && !(text instanceof Error)) {
 			logentry = text;
 			text = logentry.text||"";
 			args = logentry.args||[];
@@ -552,6 +551,15 @@ class AwesomeLog {
 		if (text instanceof Error) {
 			args.unshift(text);
 			text = text.message;
+		}
+
+		if (!text) {
+			if (text===null) text = "<null>";
+			else if (text===undefined) text = "<undefined>";
+			else if (text===false) text = "false";
+			else if (text===0) text = "0";
+			else if (text==="") text = "<empty string>";
+			else text = ""+text;
 		}
 
 		level = this.getLevel(level).name;
