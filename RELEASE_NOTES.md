@@ -1,5 +1,8 @@
 # AwesomeLog Release Notes
 
+#### **Version 4.3.0**
+ - Fixes an error that would occur if you passed a falsey value as the first argument instead of a string message.
+
 #### **Version 4.2.4**
  - Fixes a bug in writers filtering out specific log levels. Thank you Josh Fisher!
 
