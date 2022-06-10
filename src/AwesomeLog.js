@@ -38,6 +38,33 @@ const $FIELDSFUNC = Symbol("fieldsFunction");
 const $WRITEFUNC = Symbol("writeFunction");
 const $ISSUBPROCESS = Symbol("isSubprocess");
 const $STARTPENDING = Symbol("startPending");
+const $OVERRIDE = Symbol("logEntryOverride");
+
+/**
+ * A class for providing a way to quickly mutate the produced LogEntry during a single Log.xyz() call.
+ * 
+ * For example, say you want to add a field to a log entry after you call `Log.error(ex)` called `errorNote`. 
+ * You do this by creating a LogEntryOverride instance and passing it as part of the `Log.error()` call
+ * as shown here...
+ * 
+ * 		const override = new Log.LogEntryOverride({
+ * 			errorNote: 'This was an error.',
+ * 		});
+ * 		Log.error(ex,override);
+ * 
+ * Before the LogEntry is sent off to be written, the items passed into `Log.xyz()` will get scanned for
+ * overrides and those overrides merged intot he LogEntry. Then the resulting LogEntry will get sent
+ * to be written.
+ */
+class LogEntryOverride {
+	constructor(details = {}) {
+		this[$OVERRIDE] = details || {};
+	}
+
+	get details() {
+		return this[$OVERRIDE] || {};
+	}
+}
 
 /**
  * AwesomeLog is a singleton object returned when you
@@ -94,6 +121,15 @@ class AwesomeLog {
 		}
 
 		initLevels.call(this,"access,error,warn,info,debug");
+	}
+
+	/**
+	 * Returns the LogEntryOverride class for use mutating LogEntry objects after a call to Log.xyz().
+	 *
+	 * @return {Class<LogEntryOverride>}
+	 */
+	get LogEntryOverride() {
+		return LogEntryOverride;
 	}
 
 	/**
@@ -526,7 +562,7 @@ class AwesomeLog {
 	 *
 	 * `log()` is called by all other shortcut log methods.
 	 *
-	 * @param  {string|LogLevel} level
+	 * @param  {string|LogLevel|LogEntry} level
 	 * @param  {string} text
 	 * @param  {*} args
 	 * @return {AwesomeLog}
@@ -536,13 +572,13 @@ class AwesomeLog {
 		fireHook.call(this,"beforeLog",...arguments);
 		
 		let logentry = {};
-		if (!text && level && typeof level==="object" && !(level instanceof LogLevel)) {
+		if (!text && level && typeof level==="object" && !(level instanceof LogLevel) && !(level instanceof LogEntryOverride)) {
 			logentry = level;
 			text = logentry.text||"";
 			args = logentry.args||[];
 			level = logentry.level||"";
 		}
-		if (text && typeof text==="object" && !(text instanceof Error)) {
+		if (text && typeof text==="object" && !(text instanceof Error) && !(text instanceof LogEntryOverride)) {
 			logentry = text;
 			text = logentry.text||"";
 			args = logentry.args||[];
@@ -551,6 +587,11 @@ class AwesomeLog {
 		if (text instanceof Error) {
 			args.unshift(text);
 			text = text.message;
+		}
+		if (text instanceof LogEntryOverride) {
+			const texthold = args.shift();
+			args.unshift(text);
+			text = texthold;
 		}
 
 		if (!text) {
@@ -564,10 +605,17 @@ class AwesomeLog {
 
 		level = this.getLevel(level).name;
 
+		// pull out any LogEntryOverrides
+		const overrides = args.filter(arg => arg instanceof LogEntryOverride);
+		args = args.filter(arg => !(arg instanceof LogEntryOverride));
+
 		// fire the beforeLogEntry hook.
 		fireHook.call(this,"beforeLogEntry",logentry);
 		
 		logentry = this[$FIELDSFUNC](logentry,level,text,args);
+
+		// apply overrides, if any
+		overrides.forEach(override => logentry = Object.assign(logentry,override.details));
 		
 		// fire the afterLogEntry hook.
 		fireHook.call(this,"afterLogEntry",logentry);
