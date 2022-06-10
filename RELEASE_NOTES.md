@@ -1,5 +1,9 @@
 # AwesomeLog Release Notes
 
+#### **Version 4.4.0**
+ - Fixes an error on OSX where FileWriter would not append message to a file but overwrite it each time.
+ - Adds LogEntryOverride to allow for mutating a log entry from a log.xyz() call.
+
 #### **Version 4.3.0**
  - Fixes an error that would occur if you passed a falsey value as the first argument instead of a string message.
 

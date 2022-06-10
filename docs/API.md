@@ -1,6 +1,20 @@
 ## Classes
 
 <dl>
+<dt><a href="#LogEntryOverride">LogEntryOverride</a></dt>
+<dd><p>A class for providing a way to quickly mutate the produced LogEntry during a single Log.xyz() call.</p>
+<p>For example, say you want to add a field to a log entry after you call <code>Log.error(ex)</code> called <code>errorNote</code>. 
+You do this by creating a LogEntryOverride instance and passing it as part of the <code>Log.error()</code> call
+as shown here...</p>
+<pre><code>    const override = new Log.LogEntryOverride({
+        errorNote: &#39;This was an error.&#39;,
+    });
+    Log.error(ex,override);
+</code></pre>
+<p>Before the LogEntry is sent off to be written, the items passed into <code>Log.xyz()</code> will get scanned for
+overrides and those overrides merged intot he LogEntry. Then the resulting LogEntry will get sent
+to be written.</p>
+</dd>
 <dt><a href="#AwesomeLog">AwesomeLog</a></dt>
 <dd><p>AwesomeLog is a singleton object returned when you
 <code>const Log = require(&quot;@awesomeeng/awesome-log&quot;)</code>. From it you
@@ -205,6 +219,28 @@ will be received after this call has been made.
 
 * * *
 
+<a name="LogEntryOverride"></a>
+
+## LogEntryOverride
+A class for providing a way to quickly mutate the produced LogEntry during a single Log.xyz() call.
+
+For example, say you want to add a field to a log entry after you call `Log.error(ex)` called `errorNote`. 
+You do this by creating a LogEntryOverride instance and passing it as part of the `Log.error()` call
+as shown here...
+
+		const override = new Log.LogEntryOverride({
+			errorNote: 'This was an error.',
+		});
+		Log.error(ex,override);
+
+Before the LogEntry is sent off to be written, the items passed into `Log.xyz()` will get scanned for
+overrides and those overrides merged intot he LogEntry. Then the resulting LogEntry will get sent
+to be written.
+
+**Kind**: global class  
+
+* * *
+
 <a name="AwesomeLog"></a>
 
 ## AwesomeLog
@@ -217,6 +253,7 @@ log messages out. Please see our
 **Kind**: global class  
 
 * [AwesomeLog](#AwesomeLog)
+    * [.LogEntryOverride](#AwesomeLog+LogEntryOverride) ⇒ [<code>Class.&lt;LogEntryOverride&gt;</code>](#LogEntryOverride)
     * [.AbstractLogWriter](#AwesomeLog+AbstractLogWriter) ⇒ [<code>Class.&lt;AbstractLogWriter&gt;</code>](#AbstractLogWriter)
     * [.AbstractLogFormatter](#AwesomeLog+AbstractLogFormatter) ⇒ [<code>Class.&lt;AbstractLogFormatter&gt;</code>](#AbstractLogFormatter)
     * [.initialized](#AwesomeLog+initialized) ⇒ <code>boolean</code>
@@ -240,6 +277,15 @@ log messages out. Please see our
     * [.releaseSubProcess(subprocess)](#AwesomeLog+releaseSubProcess) ⇒ [<code>AwesomeLog</code>](#AwesomeLog)
     * [.unrequire()](#AwesomeLog+unrequire)
 
+
+* * *
+
+<a name="AwesomeLog+LogEntryOverride"></a>
+
+### awesomeLog.LogEntryOverride ⇒ [<code>Class.&lt;LogEntryOverride&gt;</code>](#LogEntryOverride)
+Returns the LogEntryOverride class for use mutating LogEntry objects after a call to Log.xyz().
+
+**Kind**: instance property of [<code>AwesomeLog</code>](#AwesomeLog)  
 
 * * *
 
@@ -503,7 +549,7 @@ Log a single messages.
 
 | Param | Type |
 | --- | --- |
-| level | <code>string</code> \| [<code>LogLevel</code>](#LogLevel) | 
+| level | <code>string</code> \| [<code>LogLevel</code>](#LogLevel) \| <code>LogEntry</code> | 
 | text | <code>string</code> | 
 | ...args | <code>\*</code> | 
 
