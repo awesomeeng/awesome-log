@@ -27,7 +27,7 @@ const $ROOT = Symbol("root");
  * ```
  *
  * If you give a simple filename, the log will be written to that filename
- * indefinately, appending each time. This is fine for simple systems.
+ * indefinitely, appending each time. This is fine for simple systems.
  *
  * For more complex systems you will want to provide a filename pattern
  * which looks something like this `logs/NyLog.{YYYYMMDD}.log` which will change
@@ -171,7 +171,7 @@ const writeLogFile = function writeLogFile(entries) {
 	if (typeof entries==="string") entries = [entries];
 
 	let s = entries.join("\n")+"\n";
-	FS.writeSync(this[$FILE],s,0,"utf-8");
+	FS.writeSync(this[$FILE],s,"append","utf-8");
 };
 
 const housekeeping = function housekeeping() {
