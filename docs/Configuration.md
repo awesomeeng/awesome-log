@@ -36,9 +36,10 @@ The following configuration options are supported.
    - **text**: The text message for this particular log entry.
    - **args**: Any extra arguments passed to the log call.
    - **system**: The javascript file in which this log call was made. Please note that including this field is very expensive from a performance standpoint, and it should only be used in development systems.
-   - **hostname**: The hostname of the machine the log event occured on. Good for integrated log systems.
+   - **system:<X>**: Like **system**, but move X number of places down the stack to find the system name. This is useful if you have wrapped AwesomeLog in a service of some sort and system always reports that wrapper name. X is an integer. By default X is 1 and a value of 0 is not allowed. Like **system** above this comes with significant performance costs and should only be used in development.
+   - **hostname**: The hostname of the machine the log event occurred on. Good for integrated log systems.
    - **domain**: The domain name portion of the hostname, that is the last two segments of the hostname.
-   - **servername**: The computer name for the machine the log event occured on. This is the first segment of the hostname.
+   - **servername**: The computer name for the machine the log event occurred on. This is the first segment of the hostname.
    - **pid**: The process id for this log message. In subprocess systems this can be a valuable debugging tool.
    - **ppid**: The parent process id.
    - **main**: The path to the executed node executable.

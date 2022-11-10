@@ -1,5 +1,8 @@
 # AwesomeLog Release Notes
 
+#### **Version 4.5.0**
+ - Adds the **system:<x>** field for doing system output, but allows the configuration to descend deeper into the stack trace.
+
 #### **Version 4.4.0**
  - Fixes an error on OSX where FileWriter would not append message to a file but overwrite it each time.
  - Adds LogEntryOverride to allow for mutating a log entry from a log.xyz() call.
