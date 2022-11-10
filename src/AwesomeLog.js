@@ -821,16 +821,18 @@ const createFieldsFunction = function(fields) {
 
 		if (field==="timestamp") f += "obj.timestamp = Date.now();";
 		else if (field==="level") f += "obj.level = level && level.name || level;";
-		else if (field==="system") {
+		else if (field==="system" || field.startsWith('system:')) {
+			const depth = field.startsWith('system:') && parseInt(field.slice(7),10) || 1;
 			f += `const system = ()=>{
 				let system = {};
 				Error.captureStackTrace(system);
-				system = system.stack.split(/\\n/)[4].split(/\\s/);
+				system = (system.stack.split(/\\n/)[3+${depth}] || "").split(/\\s/);
 				system = system[system.length-1];
 				let pos = system.lastIndexOf("/");
 				if (pos===-1) pos = system.lastIndexOf("\\\\");
 				system = system.substring(pos+1);
 				system = system.substring(0,system.indexOf(":"));
+				system = system || "<unknown>";
 				return system;
 			};`;
 
