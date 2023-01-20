@@ -313,6 +313,7 @@ class AwesomeLog {
 			disableSubProcesses: false,
 			scopeMap: null,
 			scopeCatchAll: "info",
+			timestampFormat: "epoch", // "epoch" or "iso8601" (or "iso" or "ISO8601")
 			hooks: {
 				beforeLog: null,
 				afterLog: null,
@@ -818,8 +819,10 @@ const createFieldsFunction = function(fields) {
 		let homedir =  OS.homedir();
 		let username =  OS.userInfo().username;
 		let version =  process.version;
+		let timestampISO = !!(this.config.timestampFormat.match(/^iso(8601)?$/i));
 
-		if (field==="timestamp") f += "obj.timestamp = Date.now();";
+		if (field==="timestamp" && timestampISO) f += "obj.timestamp = new Date().toISOString();";
+		else if (field==="timestamp" && !timestampISO) f += "obj.timestamp = Date.now();";
 		else if (field==="level") f += "obj.level = level && level.name || level;";
 		else if (field==="system" || field.startsWith('system:')) {
 			const depth = field.startsWith('system:') && parseInt(field.slice(7),10) || 1;
