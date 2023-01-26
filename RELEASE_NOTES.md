@@ -1,5 +1,8 @@
 # AwesomeLog Release Notes
 
+#### **Version 4.6.0**
+ - Adds the **timestampFormat** configuration property for specifying the format of the timestamp on all log messages. This defaults to "epoch" which is the unix epoch in milliseconds. However, if you like you can set it to `iso8601` to get time as an iso8601 string in UTC (zulu) time such as `2023-01-26T15:46:56.109Z`.
+
 #### **Version 4.5.0**
  - Adds the **system:<x>** field for doing system output, but allows the configuration to descend deeper into the stack trace.
 

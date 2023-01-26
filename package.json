@@ -1,6 +1,6 @@
 {
   "name": "@awesomeeng/awesome-log",
-  "version": "4.5.0",
+  "version": "4.6.0",
   "author": "the awesome engineering company",
   "license": "MIT",
   "contributors": [
@@ -16,9 +16,8 @@
   "devDependencies": {
     "eslint": "^7.32.0",
     "jsdoc-to-markdown": "^7.1.1",
-    "mocha": "^8.4.0"
+    "mocha": "^10.2.0"
   },
-  "optionalDependencies": {},
   "scripts": {
     "lint": "eslint src examples test",
     "docs": "jsdoc2md src/** --separators > docs/API.md",

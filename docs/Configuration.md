@@ -54,6 +54,7 @@ The following configuration options are supported.
    - **username**: The user's username.
    - **version**: The version of node.
 
+ - **timestampFormat** [string] - Specifies the format of the timestamp on all log messages. This defaults to `epoch` which is the unix epoch in milliseconds. However, if you like you can set it to `iso8601` to get time as an iso8601 string in UTC (zulu) time such as `2023-01-26T15:46:56.109Z`.
 
  - **backlogSizeLimit** [number] - The number of log entries to hold pending being written.  If the backlog is exceeded, old messages will be dropped in favor of newer messages. This should be incredibly rare. 1000 is the default setting.
 
