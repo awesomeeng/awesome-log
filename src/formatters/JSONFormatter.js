@@ -14,7 +14,8 @@ const AbstractLogFormatter = require("../AbstractLogFormatter");
  * 		formatterOptions = {
  * 			alias: {},
  * 			move: {},
- * 			oneline: false
+ * 			oneline: false,
+ * 			allowCircularReferenceErrors: true
  *  	}
  * 
  * 		alias - An object that allows you to alias log entry data under a different key. That is
@@ -33,6 +34,16 @@ const AbstractLogFormatter = require("../AbstractLogFormatter");
  * 
  * 		oneline - This will ensure that the logentry.text value includes the logentry.args values in a single line
  * 				  of text. This is similar to the Default formatter's oneline formatter option.
+ * 
+ * 		allowCircularReferenceErrors -   If during the process of converting a log message to a json string
+ * 									     the JSON.stringify method encounters a circular reference it will
+ * 										 just keep delving into the circular object until it exceeds the
+ * 										 call stack maximum and throw an error, potentially leaving awesome log in
+ * 										 a bad way. So you can set this to `true` and whenever awesomelog
+ * 										 encounters this behavior it will strip the args object out of the log
+ * 										 entry since that is where these circular references are likely to occur.
+ * 										 This option is enabled by default as of v4.7.0, but we wanted to give
+ * 										 the option to disable it by setting this to `false`. It is `true` by default.
  *
  * @extends AbstractLogFormatter
  */
@@ -46,7 +57,12 @@ class JSONFormatter extends AbstractLogFormatter {
 	 * @param {Object} options
 	 */
 	constructor(options) {
-		super(options);
+		super(AwesomeUtils.Object.extend({
+			alias: {},
+			move: {},
+			oneline: false,
+			allowCircularReferenceErrors: true,
+		},options));
 	}
 
 	/**
@@ -61,12 +77,30 @@ class JSONFormatter extends AbstractLogFormatter {
 		if (logentry.args) logentry.args = logentry.args.map(formatArg.bind(this));
 
 		if (this.options.alias || this.options.move || this.options.oneline) {
-			logentry = AwesomeUtils.Object.extend({},logentry);
 			logentry = this.remap(logentry);
 			logentry = this.onelineMessage(logentry);
 		}
 
-		return JSON.stringify(logentry);
+		try {
+			return JSON.stringify(logentry);
+		} catch (err) {
+			// if json parsing fails, its probably a circular reference
+			// which can be very bad for performance and leave AwesomeLog in a bad
+			// state. So if we get here, we fix it silently and mutate the log message.
+			if (!this.options.allowCircularReferenceErrors) throw err;
+
+			Object.keys(logentry).forEach((key)=>{
+				const value = logentry[key];
+				try {
+					JSON.stringify(value);
+				} catch (ex) {
+					logentry[key] = "<JSON Parse Error: An error parsing this object into JSON occurred and AwesomeLog has removed it>";
+					if (key==="args") logentry[key] = [logentry[key]];
+				}
+			});
+
+			return JSON.stringify(logentry);
+		}
 	}
 
 	remap(logentry) {

@@ -1,5 +1,8 @@
 # AwesomeLog Release Notes
 
+#### **Version 4.7.0**
+ - When using the JSON Formatter it is possible to pass objects in as additional arguments that cannot be turned into JSON due to Circular References or other serialization problems. We added the `allowCircularReferenceErrors` Formatter option for the JSON formatter and set it to `true` by default. This will attempt to detect when these problems occur and just remove those fields from the entry and replace it with some description of why it was removed. You can disable the behavior by setting this to `false`.
+
 #### **Version 4.6.0**
  - Adds the **timestampFormat** configuration property for specifying the format of the timestamp on all log messages. This defaults to "epoch" which is the unix epoch in milliseconds. However, if you like you can set it to `iso8601` to get time as an iso8601 string in UTC (zulu) time such as `2023-01-26T15:46:56.109Z`.
 
