@@ -45,7 +45,7 @@ class DefaultFormatter extends AbstractLogFormatter {
 	 * @param {Object} options
 	 */
 	constructor(options) {
-		AwesomeUtils.Object.extend({
+		options = AwesomeUtils.Object.extend({
 			oneline: false
 		},options);
 
@@ -113,7 +113,21 @@ class DefaultFormatter extends AbstractLogFormatter {
 
 const formatArgMultiline = function formatArg(prefix,arg) {
 	if (arg instanceof Error) {
-		return "\n"+prefix+(arg.stack && arg.stack.split(/\n[\t\s]*/).join("\n"+prefix) || arg.message || ""+arg);
+		let text = "\n";
+		if (arg.stack) {
+			text += prefix + arg.stack.split(/\n[\t\s]*/).join("\n"+prefix);
+			if (arg.cause) text = text
+				+ "\n"+prefix+""
+				+ "\n"+prefix+"Caused by: "
+				+ formatArgMultiline(prefix+"  ",arg.cause).replace(/\n$/,"");
+		}
+		else if (arg.message) {
+			text += prefix + arg.message;
+		}
+		else {
+			text += prefix + ("" + arg);
+		}
+		return text;
 	}
 	else if (arg instanceof Array || AwesomeUtils.Object.isPlainObject(arg)) {
 		return JSON.stringify(arg,null,2).split(/\n/).map((s)=>{
@@ -126,9 +140,20 @@ const formatArgMultiline = function formatArg(prefix,arg) {
 };
 
 
-const formatArgOneline = function formatArg(arg) {
+const formatArgOneline = function formatArgOneline(arg) {
 	if (arg instanceof Error) {
-		return arg.stack && arg.stack.split(/\n[\t\s]*/).join(" ") || arg.message || ""+arg;
+		let text = "";
+		if (arg.stack) {
+			text += arg.stack.split(/\n[\t\s]*/).join(" ");
+			if (arg.cause) text += " [ Caused by: " + formatArgOneline(arg.cause)+" ]";
+		}
+		else if (arg.message) {
+			text += arg.message;
+		}
+		else {
+			text += ("" + arg);
+		}
+		return text;
 	}
 	else if (arg instanceof Array || AwesomeUtils.Object.isPlainObject(arg)) {
 		return JSON.stringify(arg);

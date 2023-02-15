@@ -62,7 +62,7 @@ class JSONFormatter extends AbstractLogFormatter {
 			move: {},
 			oneline: false,
 			allowCircularReferenceErrors: true,
-		},options));
+		}, options));
 	}
 
 	/**
@@ -89,13 +89,13 @@ class JSONFormatter extends AbstractLogFormatter {
 			// state. So if we get here, we fix it silently and mutate the log message.
 			if (!this.options.allowCircularReferenceErrors) throw err;
 
-			Object.keys(logentry).forEach((key)=>{
+			Object.keys(logentry).forEach((key) => {
 				const value = logentry[key];
 				try {
 					JSON.stringify(value);
 				} catch (ex) {
 					logentry[key] = "<JSON Parse Error: An error parsing this object into JSON occurred and AwesomeLog has removed it>";
-					if (key==="args") logentry[key] = [logentry[key]];
+					if (key === "args") logentry[key] = [logentry[key]];
 				}
 			});
 
@@ -107,14 +107,14 @@ class JSONFormatter extends AbstractLogFormatter {
 		Object.keys(this.options.alias || {}).forEach(to => {
 			const from = this.options.alias[to];
 			if (!from || typeof from !== 'string') return;
-			if (logentry[to]!==undefined) return;
+			if (logentry[to] !== undefined) return;
 			logentry[to] = logentry[from];
 		});
 
 		Object.keys(this.options.move || {}).forEach(to => {
 			const from = this.options.move[to];
 			if (!from || typeof from !== 'string') return;
-			if (logentry[to]!==undefined) return;
+			if (logentry[to] !== undefined) return;
 			logentry[to] = logentry[from];
 			delete logentry[from];
 		});
@@ -125,24 +125,16 @@ class JSONFormatter extends AbstractLogFormatter {
 	onelineMessage(logentry) {
 		if (this.options.oneline === true) {
 			let args = logentry.args && [].concat(logentry.args) || null;
-			if (args.length>0) {
+			if (args.length > 0) {
 				args = args.map(arg => {
-					if (arg instanceof Error) {
-						return arg.stack && arg.stack.split(/\n[\t\s]*/).join(" ") || arg.message || ""+arg;
-					}
-					else if (arg instanceof Array || AwesomeUtils.Object.isPlainObject(arg)) {
-						return JSON.stringify(arg);
-					}
-					else {
-						return ""+arg;
-					}						
+					return formatArgOneline(arg);
 				});
 
 				logentry.text += " : ";
-				logentry.text += "[ "+args.join(" | ")+" ]";
+				logentry.text += "[ " + args.join(" | ") + " ]";
 			}
 		}
-		
+
 		return logentry;
 	}
 }
@@ -152,10 +144,34 @@ const formatArg = function formatArg(arg) {
 		arg = {
 			__TYPE: "error",
 			message: arg.message,
-			stack: arg.stack
+			stack: arg.stack,
+			cause: formatArg(arg.cause),
 		};
 	}
 	return arg;
+};
+
+const formatArgOneline = function formatArgOneline(arg) {
+	if (arg instanceof Error) {
+		let text = "";
+		if (arg.stack) {
+			text += arg.stack.split(/\n[\t\s]*/).join(" ");
+			if (arg.cause) text += 'Caused by: ' + formatArgOneline(arg.cause);
+		}
+		else if (arg.message) {
+			text += arg.message;
+		}
+		else {
+			text += ("" + arg);
+		}
+		return text;
+	}
+	else if (arg instanceof Array || AwesomeUtils.Object.isPlainObject(arg)) {
+		return JSON.stringify(arg);
+	}
+	else {
+		return "" + arg;
+	}
 };
 
 module.exports = JSONFormatter;

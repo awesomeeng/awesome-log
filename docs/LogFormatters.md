@@ -59,6 +59,8 @@ AwesomeLog ships with four built-in Log Formatters:
 	- **oneline**: This will ensure that the logentry.text value includes the logentry.args values in a single line
 	of text. This is similar to the Default formatter's oneline formatter option.
 
+	- **allowCircularReferenceErrors** - If during the process of converting a log message to a json string the JSON.stringify method encounters a circular reference it will just keep delving into the circular object until it exceeds the call stack maximum and throw an error, potentially leaving awesome log in a bad way. So you can set this to `true` and whenever awesomelog encounters this behavior it will strip the args object out of the log entry since that is where these circular references are likely to occur. This option is enabled by default as of v4.7.0, but we wanted to give the option to disable it by setting this to `false`. It is `true` by default.
+
  - **CSV**: The CSV formatter outputs the log information in a CSV format friendly to spreadsheets. The CSV format is `timestamp(unix epoch),level,pid,system name,message,arg0,arg1,...arg9999`.
 
  	```
