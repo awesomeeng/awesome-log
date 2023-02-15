@@ -141,6 +141,7 @@ class WriterThread {
 					if (arg && arg.__TYPE==="error") {
 						let e = new Error(arg.message);
 						e.stack = arg.stack;
+						e.cause = arg.cause;
 						return e;
 					}
 					return arg;

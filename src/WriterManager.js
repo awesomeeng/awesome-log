@@ -245,7 +245,8 @@ class WriterManager {
 						return {
 							__TYPE: "error",
 							message: arg.message,
-							stack: arg.stack
+							stack: arg.stack,
+							cause: arg.cause,
 						};
 					}
 					return arg;
