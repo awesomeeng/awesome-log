@@ -138,13 +138,7 @@ class WriterThread {
 		entries.forEach((entry)=>{
 			if (entry.args) {
 				entry.args = entry.args.map((arg)=>{
-					if (arg && arg.__TYPE==="error") {
-						let e = new Error(arg.message);
-						e.stack = arg.stack;
-						e.cause = arg.cause;
-						return e;
-					}
-					return arg;
+					return reformArg(arg);
 				});
 			}
 			let msg = this[$FORMATTER] && this[$FORMATTER].format(entry) || entry;
@@ -169,6 +163,16 @@ class WriterThread {
 		});
 	}
 }
+
+const reformArg = function reformArg(arg) {
+	if (arg && arg.__TYPE==="error") {
+		let e = new Error(arg.message);
+		e.stack = arg.stack;
+		e.cause = reformArg(arg.cause);
+		return e;
+	}
+	return arg;
+};
 
 (async ()=>{
 	let writerThread = new WriterThread(JSON.parse(process.env.AWESOMELOG_WRITER_CONFIG||"{}"));

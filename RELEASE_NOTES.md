@@ -1,5 +1,9 @@
 # AwesomeLog Release Notes
 
+#### **Version 4.8.3**
+
+ - Fixes a bug introduced in v4.8.0 that we tried to fix in v4.8.2 but we really, really suck.
+ 
 #### **Version 4.8.2**
 
  - Fixes a bug introduced in v4.8.0 that we trid to fix in v4.8.1 but we suck.

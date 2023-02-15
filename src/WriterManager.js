@@ -241,15 +241,7 @@ class WriterManager {
 			// we need to do it here.
 			if (this[$SEPARATE] && logentry.args) {
 				logentry.args = logentry.args.map((arg)=>{
-					if (arg instanceof Error) {
-						return {
-							__TYPE: "error",
-							message: arg.message,
-							stack: arg.stack,
-							cause: arg.cause,
-						};
-					}
-					return arg;
+					return formatArg(arg);
 				});
 			}
 			return this.takesLevel(logentry.level);
@@ -317,6 +309,18 @@ const createWriteFunction = function createWriteFunction() {
 	f += "});";
 
 	return new Function(f);
+};
+
+const formatArg = function formatArg(arg) {
+	if (arg instanceof Error) {
+		return {
+			__TYPE: "error",
+			message: arg.message,
+			stack: arg.stack,
+			cause: formatArg(arg.cause),
+		};
+	}
+	return arg;
 };
 
 module.exports = WriterManager;
