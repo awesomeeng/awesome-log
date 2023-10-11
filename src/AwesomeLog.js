@@ -1,18 +1,21 @@
-// (c) 2018, The Awesome Engineering Company, https://awesomeneg.com
+// (c) 2018-2023, The Awesome Engineering Company, https://awesomeeng.com
 
 "use strict";
 
+// External dependencies
 const OS = require("os");
 const Process = require("process");
 const ChildProcess = require("child_process");
 const AwesomeUtils = require("@awesomeeng/awesome-utils");
 
+// Internal Dependencies
 const LogLevel = require("./LogLevel");
 const LogExtensions = require("./LogExtensions");
 const WriterManager = require("./WriterManager");
 const AbstractLogWriter = require("./AbstractLogWriter");
 const AbstractLogFormatter = require("./AbstractLogFormatter");
 
+// Set up worker threads, if they are available.
 let Worker;
 try {
 	Worker = require('worker_threads');
@@ -21,6 +24,9 @@ catch (ex) {
 	Worker = null;
 }
 
+// define our global symbols
+// We use symbols for private methods and members on objects, because
+// private methods and members were not available when written
 const $INSTANCE = Symbol.for('@awesomeeng/awesome-log'); // global instance name, used at bottom
 const $CONFIG = Symbol("config");
 const $BACKLOG = Symbol("backlog");
@@ -53,7 +59,7 @@ const $OVERRIDE = Symbol("logEntryOverride");
  * 		Log.error(ex,override);
  * 
  * Before the LogEntry is sent off to be written, the items passed into `Log.xyz()` will get scanned for
- * overrides and those overrides merged intot he LogEntry. Then the resulting LogEntry will get sent
+ * overrides and those overrides merged into the LogEntry. Then the resulting LogEntry will get sent
  * to be written.
  */
 class LogEntryOverride {
@@ -75,6 +81,7 @@ class LogEntryOverride {
  */
 class AwesomeLog {
 	constructor() {
+		// default state
 		this[$CONFIG] = null;
 		this[$BACKLOG] = [];
 		this[$HISTORY] = [];
@@ -94,7 +101,7 @@ class AwesomeLog {
 		this[$STARTPENDING] = false;
 
 		// if we are a subprocess we want to look at what kind of subprocess we are...
-		// If we were run by nodemon, foever, or pm2, we are not really a sub-process.
+		// If we were run by nodemon, forever, or pm2, we are not really a sub-process.
 		this[$ISSUBPROCESS] = !!Process.channel || Worker && Worker.parentPort && Worker.parentPort.postMessage && true || false;
 		if (Process.channel) {
 			if (process.platform==="win32") {
@@ -120,6 +127,8 @@ class AwesomeLog {
 			}
 		}
 
+		// setup the default log levels. These can be changed via config later, but we provide the 
+		// standard initially to get things rolling.
 		initLevels.call(this,"access,error,warn,info,debug");
 	}
 
@@ -296,6 +305,8 @@ class AwesomeLog {
 		let disableSP = config && config.disableSubProcesses || false;
 		let prod = (process.env.NODE_ENV||'').toLowerCase();
 		prod = prod === "production" || prod === "prod";
+
+		// merge any passed settings into our default settings.
 		config = AwesomeUtils.Object.extend({
 			separate: true,
 			noDebugger: true,
@@ -329,7 +340,10 @@ class AwesomeLog {
 		},config||{});
 		disableSP = config.disableSubProcesses;
 
+		// if we havent been initialized yet, do so now.
 		if (!this.initialized) {
+			// make sure we have at least one writer. 
+			// if we are a sub process, the default writer might need to be different.
 			if (config.writers.length<1) config.writers.push({
 				name: "DefaultWriter",
 				type:  !disableSP && this[$ISSUBPROCESS] ? "null" : "default",
@@ -338,26 +352,36 @@ class AwesomeLog {
 				options: {}
 			});
 
+			// setup our configed log levels
 			initLevels.call(this,config.levels);
 			if (!this.getLevel(config.loggingNoticesLevel)) config.loggingNoticesLevel = this.levels.slice(-1)[0] && this.levels.slice(-1)[0].name || null;
 
+			// setup history logging.
 			let histformpath = LogExtensions.getFormatter(config.historyFormatter);
 			if (!histformpath) throw new Error("Invalid history formatter.");
 			if (!AwesomeUtils.FS.existsSync(histformpath)) throw new Error("Formatter not found at "+histformpath+".");
 			this[$HISTORYFORMATTER] = new (require(histformpath))(config.historyFormatterOptions||{});
 
+			// store our config for reference
 			this[$CONFIG] = config;
 
-			// these must come after this[$CONFIG] is set.
+			// build a single repeatable fields() function programatically. Makes things faster.
+			// this must come after this[$CONFIG] is set.
 			this[$FIELDSFUNC] = createFieldsFunction.call(this,config.fields);
+			
+			// build a single repeatable write() function programatically. Makes things faster.
+			// this must come after this[$CONFIG] is set.
 			this[$WRITEFUNC] = createWriteFunction.call(this);
 
-			// these must come after this[$CONFIG] is set.
+			// Log out that we initialized.
+			// this must come after this[$CONFIG] is set.
 			if (!config.disableLoggingNotices) this.log(config.loggingNoticesLevel,"AwesomeLog initialized for levels "+this.levelNames.join("|")+".");
 		}
 		else {
+			// if we were already initialized, lets make sure our levels are mapped to functions.
 			mapLevels.call(this,config.levels);
 
+			// and log out that we initialized.
 			if (!this.config.disableLoggingNotices) this.log(this.config.loggingNoticesLevel,"AwesomeLog mapped levels from dependant module "+config.levels+".");
 		}
 
@@ -382,28 +406,35 @@ class AwesomeLog {
 	start() {
 		this[$STARTS] += 1;
 
+		// if ew are already started, do nothing.
 		if (this.running) return Promise.resolve(this);
 
+		// If start() was called before init(), setup init() for default values.
 		if (this[$CONFIG]===null) this.init();
 
 		this[$STARTPENDING] = true;
 		this[$RUNNING] = true;
 		this[$HISTORY] = [];
 
+		// Log that we started.
 		if (!this.config.disableLoggingNotices) this.log(this.config.loggingNoticesLevel,"AwesomeLog started.");
 
+		// return a promise and then do our start behavior.
 		return new Promise(async (resolve,reject)=>{
 			try {
 				// fire the beforeStart hook.
 				fireHook.call(this,"beforeStart",this);
 
+				// start our writers
 				await initWriters.call(this);
 
+				// setup any subprocess we have.
 				[...this[$SUBPROCESSES].keys()].forEach((subprocess)=>{
 					this[$SUBPROCESSES].delete(subprocess);
 					this.captureSubProcess(subprocess);
 				});
 
+				// make sure anything logged prior to start gets written out now.
 				if (this[$BACKLOG]) {
 					this[$BACKLOG].forEach((logentry)=>{
 						write.call(this,logentry);
@@ -436,10 +467,16 @@ class AwesomeLog {
 	 * @return {void}
 	 */
 	stop() {
+		// if not started, do nothing.
 		if (!this.running || this[$STARTS]>1) return Promise.resolve(this);
 
+		// return a promise, then do our stop stuff.
 		return new Promise((resolve,reject)=>{
+			// stop needs to make sure start wasnt called before it but not yet run.
+			// to do this, we need to check that state and then stop only after that
+			// state is resolved.
 			try {
+				// make sure we are not pending a start, and if so, stop after that happens.
 				let check = async ()=>{
 					if (!this[$STARTPENDING]) {
 						await stop();
@@ -455,18 +492,22 @@ class AwesomeLog {
 					this[$BACKLOG] = this[$BACKLOG] || [];
 					this[$RUNNING] = false;
 					
+					// log that we are stopping.
 					if (!this.config.disableLoggingNotices) this.log(this.config.loggingNoticesLevel,"AwesomeLog stopped.");
 					
+					// return a promise, then do our stop.
 					return new Promise(async (resolve,reject)=>{
 						try {
 							// fire the beforeStop hook.
 							fireHook.call(this,"beforeStop",this);
 							
+							// cler up any subprocesses we were monitoring.
 							[...this[$SUBPROCESSES].keys()].forEach((subprocess)=>{
 								this.releaseSubProcess(subprocess);
 								this[$SUBPROCESSES].set(subprocess,null);
 							});
 
+							// stop all the writers.
 							await Promise.all(this[$WRITERS].map((writer)=>{
 								return writer.stop(0);
 							}));
@@ -572,6 +613,9 @@ class AwesomeLog {
 		// fire the beforeLog hook.
 		fireHook.call(this,"beforeLog",...arguments);
 		
+		// parse out what was passed in and how it plays into logging.
+		// generally speaking we log everything out that is sent, but there
+		// are a lot of ways to send it in.
 		let logentry = {};
 		if (!text && level && typeof level==="object" && !(level instanceof LogLevel) && !(level instanceof LogEntryOverride)) {
 			logentry = level;
@@ -595,6 +639,7 @@ class AwesomeLog {
 			text = texthold;
 		}
 
+		// handle a false log message.
 		if (!text) {
 			if (text===null) text = "<null>";
 			else if (text===undefined) text = "<undefined>";
@@ -604,15 +649,20 @@ class AwesomeLog {
 			else text = ""+text;
 		}
 
+		// extract out the level for this log message.
 		level = this.getLevel(level).name;
 
 		// pull out any LogEntryOverrides
+		// LogEntryOverrides allow you to change a log entry on a call by call basis, but
+		// since we log out everything passed into a log call, we needed a special 
+		// "marker" to diferentiate these overrides.
 		const overrides = args.filter(arg => arg instanceof LogEntryOverride);
 		args = args.filter(arg => !(arg instanceof LogEntryOverride));
 
 		// fire the beforeLogEntry hook.
 		fireHook.call(this,"beforeLogEntry",logentry);
 		
+		// compute the log entry.
 		logentry = this[$FIELDSFUNC](logentry,level,text,args);
 
 		// apply overrides, if any
@@ -624,10 +674,12 @@ class AwesomeLog {
 		// fire the beforeWrite hook.
 		fireHook.call(this,"beforeWrite",logentry);
 		
+		// if backlogging is on (paused or unstarted state), write to the backlog for now.
 		if (this[$BACKLOG]) {
 			this[$BACKLOG].push(logentry);
 			if (this[$BACKLOG].length>this.config.backlogSizeLimit) this[$BACKLOG].shift();
 		}
+		// otherwise, if we are a subprocess, send the log entry to the parent process.
 		else if (this[$ISSUBPROCESS] && !this.config.disableSubProcesses) {
 			if (AwesomeUtils.Workers.enabled && AwesomeUtils.Workers.Workers && AwesomeUtils.Workers.Workers.parentPort) {
 				AwesomeUtils.Workers.Workers.parentPort.postMessage({
@@ -642,6 +694,7 @@ class AwesomeLog {
 				});
 			}
 		}
+		// otherwise, write the entry out via our writers
 		else {
 			write.call(this,logentry);
 		}
@@ -700,6 +753,12 @@ class AwesomeLog {
 	}
 }
 
+/**
+ * @private
+ * 
+ * Internal method for setting up log levels and addinging and removing the level specific 
+ * functions like debug() or error().
+ */
 const initLevels = function initLevels(levels) {
 	// If we have pre-existing levels, remove the functions...
 	this[$LEVELS].forEach((level)=>{
@@ -708,10 +767,16 @@ const initLevels = function initLevels(levels) {
 		delete this[level.name.slice(0,1).toUpperCase()+level.name.slice(1).toLowerCase()];
 	});
 
+	// clear it out
 	this[$LEVELS] = [];
 
+
 	let configlevels = levels;
+
+	// error out if no levels setup.
 	if (!configlevels) throw new Error("No levels configured.");
+	
+	// convert to an array
 	if (typeof configlevels==="string") configlevels = configlevels.split(",");
 	if (!(configlevels instanceof Array)) throw new Error("Invalid levels configured.");
 
@@ -727,6 +792,7 @@ const initLevels = function initLevels(levels) {
 		this[level.name.slice(0,1).toUpperCase()+level.name.slice(1).toLowerCase()]) throw new Error("Invalid log level: '"+level.name+"' is a reserved word.");
 	});
 
+	// store it for usage
 	this[$LEVELS] = configlevels;
 
 	// add our level functions
@@ -739,7 +805,13 @@ const initLevels = function initLevels(levels) {
 	});
 };
 
-const mapLevels = function initLevels(levels) {
+/**
+ * @private
+ * 
+ * Internal function to map levels if provided in configuration. Mapping translates a level like
+ * "silly" to "debug" or something like that. purely optional.
+ */
+const mapLevels = function mapLevels(levels) {
 	let configlevels = levels;
 	if (!configlevels) throw new Error("No levels configured.");
 	if (typeof configlevels==="string") configlevels = configlevels.split(",");
@@ -758,6 +830,11 @@ const mapLevels = function initLevels(levels) {
 	});
 };
 
+/**
+ * @private
+ * 
+ * Internal function to initialize our writers.
+ */
 const initWriters = function initWriters() {
 	return new Promise(async (resolve,reject)=>{
 		try {
@@ -767,6 +844,7 @@ const initWriters = function initWriters() {
 			});
 			this[$WRITERS] = [];
 
+			// Error out if there are no writers.
 			let configwriters = this.config.writers;
 			if (!configwriters) throw new Error("No writers configured.");
 			if (!(configwriters instanceof Array)) throw new Error("Invalid writers configured.");
@@ -793,6 +871,14 @@ const initWriters = function initWriters() {
 	});
 };
 
+/**
+ * @private
+ * 
+ * Internal function to build a single function to add additional fields to a log entry as
+ * desired. We recreate this function when config changes, such that we can easily reuse it instead of calling
+ * a more generic one over and over. This gives us some performance gain on each write because we dont
+ * need to recompute every time.
+ */
 const createFieldsFunction = function(fields) {
 	let f = "const obj = arguments[0];";
 	f += "const level = arguments[1];";
@@ -870,6 +956,13 @@ const createFieldsFunction = function(fields) {
 	return new Function(f).bind(this);
 };
 
+/**
+ * @private
+ * 
+ * Internal functions to create a function to write a log message out to our writers. We 
+ * create this function anew any time config changes, such that we do not have to use a more
+ * generic and slower functions. This means each call to write a log message is thus faster.
+ */
 const createWriteFunction = function createWriteFunction() {
 	let f = "const logentry = arguments[0];";
 	f += "const history = arguments[1];";
@@ -896,16 +989,31 @@ const createWriteFunction = function createWriteFunction() {
 	return new Function(f).bind(this);
 };
 
+/**
+ * @private
+ * 
+ * Internal function to call the write functions created above. Just a shortcut really.
+ */
 const write = function write(logentry) {
 	this[$WRITEFUNC](logentry,this[$HISTORY],this[$HISTORYFORMATTER],this[$BUFFER],this[$WRITERS],scheduleDrain);
 };
 
+/**
+ * @private
+ * 
+ * Internal function to schedule a drain event when buffering is in use.
+ */
 const scheduleDrain = function scheduleDrain() {
 	if (this[$DRAINSCHEDULED]) return;
 	this[$DRAINSCHEDULED] = true;
 	process.nextTick(drain.bind(this));
 };
 
+/**
+ * @private
+ * 
+ * Internal function to drain the buffer to the writters, if buffering is used.
+ */
 const drain = function drain() {
 	this[$DRAINSCHEDULED] = false;
 	this[$WRITERS].forEach((writer)=>{
@@ -914,6 +1022,11 @@ const drain = function drain() {
 	this[$BUFFER].length = 0;
 };
 
+/**
+ * @private
+ * 
+ * Internal function to handle subprocess messaging.
+ */
 const subProcessHandler = function subProcessHandler(message) {
 	if (!message) return;
 	if (!message.cmd) return;
@@ -925,6 +1038,11 @@ const subProcessHandler = function subProcessHandler(message) {
 	this.log(logentry);
 };
 
+/**
+ * @private
+ * 
+ * Internal function to fire any hook, if setup.
+ */
 const fireHook = function fireHook(hookName,...args) {
 	if (!hookName) return null;
 

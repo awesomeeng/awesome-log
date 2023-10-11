@@ -1,4 +1,4 @@
-// (c) 2018, The Awesome Engineering Company, https://awesomeneg.com
+// (c) 2018-2023, The Awesome Engineering Company, https://awesomeneg.com
 
 "use strict";
 
