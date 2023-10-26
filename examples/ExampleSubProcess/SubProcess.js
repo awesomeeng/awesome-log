@@ -6,7 +6,7 @@ const Log = require("@awesomeeng/awesome-log");
 Log.init();
 Log.start();
 
-const FREQ = 10;
+const FREQ = 300;
 
 let id = 0;
 let running = true;
@@ -16,7 +16,7 @@ const next = ()=>{
 
 	id += 1;
 	let level = Log.levels[(Math.random()*Log.levels.length)|0];
-	Log.log(level,"This is log message "+id);
+	Log.log(level,"This is log message "+id+" from PID "+process.pid);
 	setTimeout(next,(Math.random()*FREQ)|0);
 };
 
@@ -27,4 +27,4 @@ process.on("error",()=>{
 	running = false;
 });
 
-next();
+setTimeout(next,60);

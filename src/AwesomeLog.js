@@ -45,6 +45,8 @@ const $WRITEFUNC = Symbol("writeFunction");
 const $ISSUBPROCESS = Symbol("isSubprocess");
 const $STARTPENDING = Symbol("startPending");
 const $OVERRIDE = Symbol("logEntryOverride");
+const $SUBPROCESSCOUNTER = Symbol("subprocessCounter");
+const $SUBPROCESSRECENTS = Symbol("subprocessRecents");
 
 /**
  * A class for providing a way to quickly mutate the produced LogEntry during a single Log.xyz() call.
@@ -99,6 +101,8 @@ class AwesomeLog {
 		};
 		this[$WRITEFUNC] = ()=>{};
 		this[$STARTPENDING] = false;
+		this[$SUBPROCESSCOUNTER] = 0;
+		this[$SUBPROCESSRECENTS] = new Map(); // subprocess/counter
 
 		// if we are a subprocess we want to look at what kind of subprocess we are...
 		// If we were run by nodemon, forever, or pm2, we are not really a sub-process.
@@ -681,15 +685,18 @@ class AwesomeLog {
 		}
 		// otherwise, if we are a subprocess, send the log entry to the parent process.
 		else if (this[$ISSUBPROCESS] && !this.config.disableSubProcesses) {
+			this[$SUBPROCESSCOUNTER] += 1;
 			if (AwesomeUtils.Workers.enabled && AwesomeUtils.Workers.Workers && AwesomeUtils.Workers.Workers.parentPort) {
 				AwesomeUtils.Workers.Workers.parentPort.postMessage({
 					cmd: "AWESOMELOG.ENTRY",
+					counter: this[$SUBPROCESSCOUNTER],
 					logentry
 				});
 			}
 			else {
 				process.send({
 					cmd: "AWESOMELOG.ENTRY",
+					counter: this[$SUBPROCESSCOUNTER],
 					logentry
 				});
 			}
@@ -720,7 +727,9 @@ class AwesomeLog {
 		if (!subprocess.on) return;
 		if (this[$SUBPROCESSES].has(subprocess)) return;
 
-		this[$SUBPROCESSES].set(subprocess,subProcessHandler.bind(this));
+		this[$SUBPROCESSES].set(subprocess,subProcessHandler.bind(this,subprocess));
+		this[$SUBPROCESSRECENTS].set(subprocess,[]);
+
 		subprocess.on("message",this[$SUBPROCESSES].get(subprocess));
 
 		return this;
@@ -739,6 +748,8 @@ class AwesomeLog {
 		if (!this[$SUBPROCESSES].has(subprocess)) return;
 
 		subprocess.off("message",this[$SUBPROCESSES].get(subprocess));
+		
+		this[$SUBPROCESSRECENTS].delete(subprocess);
 		this[$SUBPROCESSES].delete(subprocess);
 
 		return this;
@@ -1027,10 +1038,20 @@ const drain = function drain() {
  * 
  * Internal function to handle subprocess messaging.
  */
-const subProcessHandler = function subProcessHandler(message) {
+const subProcessHandler = function subProcessHandler(subprocess,message) {
 	if (!message) return;
 	if (!message.cmd) return;
 	if (!message.cmd==="AWESOMELOG.ENTRY") return;
+
+	// check for duplicate messages.
+	if (message.counter!==undefined) {
+		const recents = this[$SUBPROCESSRECENTS].get(subprocess);
+
+		if (recents.includes(message.counter)) return;
+
+		recents.push(message.counter);
+		if (recents.length>150) this[$SUBPROCESSRECENTS].set(subprocess,recents.slice(50));
+	}
 
 	let logentry = message.logentry;
 	this.getLevel(logentry.level); // cuases an exception of the process used a level we dont know.
